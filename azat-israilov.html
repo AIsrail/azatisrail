@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Азат Израилов — Консультант | Фандрайзинг | Бизнес-тренер</title>
+    <meta name="description" content="15+ лет помогаю предпринимателям, НКО и консультантам находить финансирование, строить организации и расти. Бишкек, Кыргызстан.">
+    <meta property="og:title" content="Азат Израилов — Консультант по фандрайзингу">
+    <meta property="og:description" content="15+ лет. $2.8M+ привлечённых грантов. Помогаю бизнесу, НКО и консультантам.">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --cream:   #FAF8F3;
+    --white:   #FFFFFF;
+    --text:    #1A1814;
+    --mid:     #5A5550;
+    --muted:   #9A9590;
+    --red:     #C41E3A;
+    --red2:    #E02040;
+    --gold:    #C0832A;
+    --goldf:   #E8B050;
+    --blue:    #2B4C7E;
+    --border:  #E8E2D8;
+    --sect:    #F2EDE6;
+    --dark:    #1A1814;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;line-height:1.6}
+a{text-decoration:none}
+
+/* ── NAV ─────────────────────────────── */
+nav{
+    position:fixed;top:0;left:0;right:0;z-index:999;
+    height:68px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 56px;
+    background:rgba(250,248,243,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid transparent;transition:border-color .3s,background .3s;
+}
+nav.scrolled{border-color:var(--border);background:rgba(250,248,243,.97)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text);letter-spacing:.03em}
+.nav-logo span{color:var(--red)}
+.nav-links{display:flex;align-items:center;gap:30px;list-style:none}
+.nav-links a{font-size:12px;font-weight:400;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--red)}
+.nav-cta{background:var(--red)!important;color:white!important;padding:9px 20px;border-radius:2px;font-weight:500!important;transition:background .2s,transform .2s!important}
+.nav-cta:hover{background:var(--red2)!important;transform:translateY(-1px)!important}
+.nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-toggle span{display:block;width:24px;height:2px;background:var(--text);transition:all .3s;border-radius:2px}
+
+/* ── HERO ────────────────────────────── */
+.hero{
+    min-height:100vh;display:grid;grid-template-columns:1.15fr .85fr;
+    align-items:center;padding:100px 56px 72px;gap:40px;position:relative;overflow:hidden;
+}
+.hero-eyebrow{
+    display:inline-flex;align-items:center;gap:12px;
+    font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);
+    margin-bottom:26px;opacity:0;transform:translateY(14px);animation:up .7s ease forwards .2s;
+}
+.hero-eyebrow::before{content:'';width:28px;height:1.5px;background:var(--red)}
+h1.hero-title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(50px,6.8vw,92px);font-weight:300;line-height:1.02;letter-spacing:-.01em;
+    margin-bottom:26px;opacity:0;transform:translateY(18px);animation:up .7s ease forwards .35s;
+}
+h1.hero-title em{font-style:italic;color:var(--red)}
+.hero-desc{
+    font-size:16px;font-weight:300;line-height:1.8;color:var(--mid);max-width:450px;
+    margin-bottom:38px;opacity:0;transform:translateY(18px);animation:up .7s ease forwards .5s;
+}
+.hero-btns{
+    display:flex;gap:12px;flex-wrap:wrap;margin-bottom:60px;
+    opacity:0;transform:translateY(18px);animation:up .7s ease forwards .65s;
+}
+.btn-p{display:inline-flex;align-items:center;gap:7px;background:var(--red);color:white;padding:14px 28px;font-size:14px;font-weight:500;letter-spacing:.03em;border-radius:2px;transition:background .2s,transform .2s}
+.btn-p:hover{background:var(--red2);transform:translateY(-2px)}
+.btn-g{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--text);padding:13px 26px;font-size:14px;font-weight:400;border:1.5px solid var(--border);border-radius:2px;transition:border-color .2s,transform .2s}
+.btn-g:hover{border-color:var(--mid);transform:translateY(-2px)}
+.hero-stats{
+    display:flex;gap:36px;flex-wrap:wrap;align-items:center;
+    opacity:0;transform:translateY(18px);animation:up .7s ease forwards .8s;
+}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;color:var(--text)}
+.stat-n sup{font-size:22px;color:var(--red)}
+.stat-l{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.03em}
+.stat-sep{width:1px;height:44px;background:var(--border)}
+.hero-right{display:flex;justify-content:center;align-items:center;opacity:0;animation:fi .9s ease forwards .5s}
+.hero-svg{width:100%;max-width:470px;filter:drop-shadow(0 24px 64px rgba(196,30,58,.07))}
+
+/* ── SHYRDAK DIVIDER ─────────────────── */
+.s-div{width:100%;height:36px;overflow:hidden;line-height:0}
+.s-div svg{display:block}
+
+/* ── SECTIONS ────────────────────────── */
+.sw{padding:88px 56px}
+.s-tag{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:14px}
+.s-tag::before{content:'';width:20px;height:1.5px;background:var(--red)}
+.s-ttl{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,50px);font-weight:300;line-height:1.1}
+.s-ttl em{font-style:italic;color:var(--red)}
+
+/* ── AUDIENCES ───────────────────────── */
+.audiences{background:var(--white)}
+.aud-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:52px;gap:24px;flex-wrap:wrap}
+.aud-sub{font-size:15px;color:var(--mid);max-width:320px;line-height:1.7;font-weight:300}
+.aud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:var(--border)}
+.aud-card{background:var(--cream);padding:44px 34px;position:relative;overflow:hidden;transition:background .3s}
+.aud-card:hover{background:#FDF9F4}
+.aud-top{position:absolute;top:0;left:0;right:0;height:4px}
+.aud-card:nth-child(1) .aud-top{background:var(--red)}
+.aud-card:nth-child(2) .aud-top{background:var(--blue)}
+.aud-card:nth-child(3) .aud-top{background:var(--gold)}
+.aud-num{
+    font-family:'Cormorant Garamond',serif;font-size:76px;font-weight:300;
+    color:var(--border);line-height:1;position:absolute;top:16px;right:24px;
+    transition:color .3s;pointer-events:none;
+}
+.aud-card:hover .aud-num{color:#E0D9CF}
+.aud-ico{width:42px;height:42px;margin-bottom:18px}
+.aud-title{font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin-bottom:12px}
+.aud-desc{font-size:14px;color:var(--mid);line-height:1.7;margin-bottom:18px;font-weight:300}
+.aud-note{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.aud-orn{position:absolute;bottom:-14px;right:-14px;opacity:.07;width:90px;pointer-events:none}
+
+/* ── SERVICES ────────────────────────── */
+.services{background:var(--cream)}
+.svc-lay{display:grid;grid-template-columns:300px 1fr;gap:64px;margin-top:52px;align-items:start}
+.svc-list{border-top:1px solid var(--border)}
+.svc-item{display:flex;align-items:flex-start;gap:14px;padding:22px 0;border-bottom:1px solid var(--border);cursor:default;transition:all .2s}
+.svc-item:hover .svc-arrow{transform:translateX(4px);color:var(--red)}
+.svc-n{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--muted);min-width:22px;padding-top:2px}
+.svc-info{flex:1}
+.svc-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin-bottom:3px}
+.svc-sub{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.svc-arrow{color:var(--border);font-size:17px;transition:all .2s;margin-top:2px}
+.callout{background:var(--sect);padding:44px;position:relative;overflow:hidden}
+.callout-lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px}
+.callout-ttl{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;line-height:1.25;margin-bottom:14px}
+.callout-desc{font-size:14px;color:var(--mid);line-height:1.7;margin-bottom:28px;font-weight:300}
+.callout-feats{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.callout-feat{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mid)}
+.callout-feat::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;flex-shrink:0}
+.callout-orn{position:absolute;bottom:-36px;right:-36px;opacity:.07;width:160px;pointer-events:none}
+
+/* ── RESOURCES ───────────────────────── */
+.resources{background:var(--sect)}
+.res-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:52px;gap:24px;flex-wrap:wrap}
+.res-sub{font-size:15px;color:var(--mid);max-width:300px;line-height:1.7;font-weight:300}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.res-card{background:var(--white);padding:30px;border:1px solid var(--border);transition:all .3s;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.res-card:hover{transform:translateY(-5px);box-shadow:0 18px 50px rgba(0,0,0,.07);border-color:transparent}
+.res-emo{font-size:26px;margin-bottom:14px}
+.res-ttl{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin-bottom:8px;color:var(--text)}
+.res-desc{font-size:13px;color:var(--mid);line-height:1.6;flex:1;margin-bottom:18px;font-weight:300}
+.res-lnk{display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-weight:500;transition:gap .2s}
+.res-card:hover .res-lnk{gap:9px}
+.res-soon{background:var(--cream)!important;border-style:dashed!important;cursor:default}
+.res-soon:hover{transform:none!important;box-shadow:none!important;border-color:var(--border)!important}
+
+/* ── DARK / NUMBERS ──────────────────── */
+.dark{background:var(--dark);color:white;position:relative;overflow:hidden}
+.dark .s-tag{color:var(--goldf)}
+.dark .s-tag::before{background:var(--goldf)}
+.dark .s-ttl{color:white}
+.dark .s-ttl em{color:var(--goldf)}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:44px;margin-top:60px}
+.num-bar{width:30px;height:2px;background:var(--red);margin-bottom:14px}
+.num-val{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:300;line-height:1;color:white;margin-bottom:8px}
+.num-val span{color:var(--goldf)}
+.num-lbl{font-size:13px;color:rgba(255,255,255,.4);line-height:1.5;letter-spacing:.02em}
+.partners{margin-top:68px;padding-top:44px;border-top:1px solid rgba(255,255,255,.08)}
+.p-lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:24px}
+.p-list{display:flex;gap:36px;flex-wrap:wrap;align-items:center}
+.p-name{font-size:13px;color:rgba(255,255,255,.38);letter-spacing:.04em;transition:color .2s;cursor:default}
+.p-name:hover{color:rgba(255,255,255,.7)}
+.dark-orn{position:absolute;right:-60px;top:50%;transform:translateY(-50%);opacity:.04;width:380px;pointer-events:none}
+
+/* ── CONTACT ─────────────────────────── */
+.contact{background:var(--cream)}
+.con-lay{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:52px}
+.con-tagline{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;line-height:1.45;color:var(--text);margin-bottom:36px}
+.con-items{display:flex;flex-direction:column;gap:22px}
+.con-item{display:flex;gap:14px;align-items:flex-start}
+.con-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:7px}
+.con-lbl{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.con-val{font-size:15px;color:var(--text)}
+.con-val a{color:var(--text);border-bottom:1px solid var(--border);transition:border-color .2s,color .2s}
+.con-val a:hover{border-color:var(--red);color:var(--red)}
+.con-form{display:flex;flex-direction:column;gap:14px}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f-grp{display:flex;flex-direction:column;gap:6px}
+.f-lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.f-in,.f-sel,.f-ta{padding:12px 15px;border:1.5px solid var(--border);background:var(--white);font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;border-radius:2px;transition:border-color .2s,box-shadow .2s;width:100%}
+.f-in:focus,.f-sel:focus,.f-ta:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(196,30,58,.06)}
+.f-ta{resize:vertical;min-height:110px}
+.f-note{font-size:12px;color:var(--muted);line-height:1.5}
+.f-note a{color:var(--red)}
+.btn-submit{border:none;cursor:pointer;width:100%;justify-content:center;font-family:'Outfit',sans-serif}
+
+/* ── FOOTER ──────────────────────────── */
+footer{background:var(--dark);padding:36px 56px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
+.f-logo{font-family:'Cormorant Garamond',serif;font-size:18px;color:white;font-weight:600}
+.f-logo span{color:var(--goldf)}
+.f-copy{font-size:12px;color:rgba(255,255,255,.3)}
+.f-links{display:flex;gap:22px;list-style:none}
+.f-links a{font-size:12px;color:rgba(255,255,255,.38);letter-spacing:.04em;transition:color .2s}
+.f-links a:hover{color:rgba(255,255,255,.8)}
+
+/* ── ANIMATIONS ──────────────────────── */
+@keyframes up{to{opacity:1;transform:translateY(0)}}
+@keyframes fi{to{opacity:1}}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* ── RESPONSIVE ──────────────────────── */
+@media(max-width:1024px){
+    nav{padding:0 32px}
+    .hero{grid-template-columns:1fr;padding:96px 32px 64px}
+    .hero-right{display:none}
+    .sw{padding:68px 32px}
+    .aud-grid{grid-template-columns:1fr;gap:3px}
+    .svc-lay{grid-template-columns:1fr;gap:44px}
+    .res-grid{grid-template-columns:repeat(2,1fr)}
+    .nums{grid-template-columns:repeat(2,1fr);gap:36px}
+    .con-lay{grid-template-columns:1fr;gap:44px}
+    footer{padding:28px 32px;flex-direction:column;align-items:flex-start}
+}
+@media(max-width:640px){
+    nav{padding:0 20px}
+    .nav-links{display:none}
+    .nav-links.open{display:flex;flex-direction:column;position:fixed;top:68px;left:0;right:0;background:var(--cream);padding:20px;border-bottom:1px solid var(--border);gap:14px;z-index:998}
+    .nav-toggle{display:flex}
+    .hero{padding:88px 20px 56px}
+    .hero-stats{gap:20px}.stat-sep{display:none}
+    .sw{padding:56px 20px}
+    .res-grid{grid-template-columns:1fr}
+    .nums{grid-template-columns:1fr 1fr;gap:28px}
+    .f-row{grid-template-columns:1fr}
+    footer{padding:24px 20px}
+    .f-links{flex-wrap:wrap;gap:14px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nb">
+    <a href="#" class="nav-logo">Азат <span>Израилов</span></a>
+    <ul class="nav-links" id="nl">
+        <li><a href="#audiences">Для кого</a></li>
+        <li><a href="#services">Услуги</a></li>
+        <li><a href="#resources">Ресурсы</a></li>
+        <li><a href="#about">Опыт</a></li>
+        <li><a href="#contact" class="nav-cta">Связаться</a></li>
+    </ul>
+    <div class="nav-toggle" onclick="tNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+    <div>
+        <div class="hero-eyebrow">Консультант · Бизнес-тренер · Фандрайзер</div>
+        <h1 class="hero-title">
+            Деньги<br>
+            <em>есть.</em><br>
+            Нужно знать,<br>
+            где искать.
+        </h1>
+        <p class="hero-desc">
+            15+ лет помогаю предпринимателям, НКО и консультантам 
+            находить финансирование, строить устойчивые организации 
+            и расти — в Кыргызстане и за его пределами.
+        </p>
+        <div class="hero-btns">
+            <a href="#contact" class="btn-p">Записаться на консультацию →</a>
+            <a href="#resources" class="btn-g">Изучить ресурсы</a>
+        </div>
+        <div class="hero-stats">
+            <div>
+                <div class="stat-n">15<sup>+</sup></div>
+                <div class="stat-l">лет опыта</div>
+            </div>
+            <div class="stat-sep"></div>
+            <div>
+                <div class="stat-n">$2.8M</div>
+                <div class="stat-l">привлечено финансирования</div>
+            </div>
+            <div class="stat-sep"></div>
+            <div>
+                <div class="stat-n">36</div>
+                <div class="stat-l">стран-партнёров</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO GRAPHIC: Shyrdak frame + Yurt -->
+    <div class="hero-right">
+        <svg class="hero-svg" viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background -->
+            <rect width="480" height="480" fill="#F5F0E8" rx="3"/>
+
+            <!-- Shyrdak border: diamond repeats along all 4 edges -->
+            <g fill="#C41E3A">
+                <!-- Corners (solid) -->
+                <rect x="0" y="0" width="18" height="18" opacity=".65"/>
+                <rect x="462" y="0" width="18" height="18" opacity=".65"/>
+                <rect x="0" y="462" width="18" height="18" opacity=".65"/>
+                <rect x="462" y="462" width="18" height="18" opacity=".65"/>
+
+                <!-- Top edge diamonds -->
+                <polygon points="30,0 42,12 30,24 18,12" opacity=".55"/>
+                <polygon points="60,0 72,12 60,24 48,12" opacity=".35"/>
+                <polygon points="90,0 102,12 90,24 78,12" opacity=".55"/>
+                <polygon points="120,0 132,12 120,24 108,12" opacity=".35"/>
+                <polygon points="150,0 162,12 150,24 138,12" opacity=".55"/>
+                <polygon points="180,0 192,12 180,24 168,12" opacity=".35"/>
+                <polygon points="210,0 222,12 210,24 198,12" opacity=".55"/>
+                <polygon points="240,0 252,12 240,24 228,12" opacity=".35"/>
+                <polygon points="270,0 282,12 270,24 258,12" opacity=".55"/>
+                <polygon points="300,0 312,12 300,24 288,12" opacity=".35"/>
+                <polygon points="330,0 342,12 330,24 318,12" opacity=".55"/>
+                <polygon points="360,0 372,12 360,24 348,12" opacity=".35"/>
+                <polygon points="390,0 402,12 390,24 378,12" opacity=".55"/>
+                <polygon points="420,0 432,12 420,24 408,12" opacity=".35"/>
+                <polygon points="450,0 462,12 450,24 438,12" opacity=".55"/>
+
+                <!-- Bottom edge diamonds -->
+                <polygon points="30,456 42,468 30,480 18,468" opacity=".55"/>
+                <polygon points="60,456 72,468 60,480 48,468" opacity=".35"/>
+                <polygon points="90,456 102,468 90,480 78,468" opacity=".55"/>
+                <polygon points="120,456 132,468 120,480 108,468" opacity=".35"/>
+                <polygon points="150,456 162,468 150,480 138,468" opacity=".55"/>
+                <polygon points="180,456 192,468 180,480 168,468" opacity=".35"/>
+                <polygon points="210,456 222,468 210,480 198,468" opacity=".55"/>
+                <polygon points="240,456 252,468 240,480 228,468" opacity=".35"/>
+                <polygon points="270,456 282,468 270,480 258,468" opacity=".55"/>
+                <polygon points="300,456 312,468 300,480 288,468" opacity=".35"/>
+                <polygon points="330,456 342,468 330,480 318,468" opacity=".55"/>
+                <polygon points="360,456 372,468 360,480 348,468" opacity=".35"/>
+                <polygon points="390,456 402,468 390,480 378,468" opacity=".55"/>
+                <polygon points="420,456 432,468 420,480 408,468" opacity=".35"/>
+                <polygon points="450,456 462,468 450,480 438,468" opacity=".55"/>
+
+                <!-- Left edge diamonds -->
+                <polygon points="0,30 12,42 24,30 12,18" opacity=".55"/>
+                <polygon points="0,60 12,72 24,60 12,48" opacity=".35"/>
+                <polygon points="0,90 12,102 24,90 12,78" opacity=".55"/>
+                <polygon points="0,120 12,132 24,120 12,108" opacity=".35"/>
+                <polygon points="0,150 12,162 24,150 12,138" opacity=".55"/>
+                <polygon points="0,180 12,192 24,180 12,168" opacity=".35"/>
+                <polygon points="0,210 12,222 24,210 12,198" opacity=".55"/>
+                <polygon points="0,240 12,252 24,240 12,228" opacity=".35"/>
+                <polygon points="0,270 12,282 24,270 12,258" opacity=".55"/>
+                <polygon points="0,300 12,312 24,300 12,288" opacity=".35"/>
+                <polygon points="0,330 12,342 24,330 12,318" opacity=".55"/>
+                <polygon points="0,360 12,372 24,360 12,348" opacity=".35"/>
+                <polygon points="0,390 12,402 24,390 12,378" opacity=".55"/>
+                <polygon points="0,420 12,432 24,420 12,408" opacity=".35"/>
+                <polygon points="0,450 12,462 24,450 12,438" opacity=".55"/>
+
+                <!-- Right edge diamonds -->
+                <polygon points="456,30 468,42 480,30 468,18" opacity=".55"/>
+                <polygon points="456,60 468,72 480,60 468,48" opacity=".35"/>
+                <polygon points="456,90 468,102 480,90 468,78" opacity=".55"/>
+                <polygon points="456,120 468,132 480,120 468,108" opacity=".35"/>
+                <polygon points="456,150 468,162 480,150 468,138" opacity=".55"/>
+                <polygon points="456,180 468,192 480,180 468,168" opacity=".35"/>
+                <polygon points="456,210 468,222 480,210 468,198" opacity=".55"/>
+                <polygon points="456,240 468,252 480,240 468,228" opacity=".35"/>
+                <polygon points="456,270 468,282 480,270 468,258" opacity=".55"/>
+                <polygon points="456,300 468,312 480,300 468,288" opacity=".35"/>
+                <polygon points="456,330 468,342 480,330 468,318" opacity=".55"/>
+                <polygon points="456,360 468,372 480,360 468,348" opacity=".35"/>
+                <polygon points="456,390 468,402 480,390 468,378" opacity=".55"/>
+                <polygon points="456,420 468,432 480,420 468,408" opacity=".35"/>
+                <polygon points="456,450 468,462 480,450 468,438" opacity=".55"/>
+            </g>
+
+            <!-- Gold ring (like tunduk) -->
+            <circle cx="240" cy="240" r="155" fill="none" stroke="#C0832A" stroke-width="1.2" opacity=".3"/>
+            <circle cx="240" cy="240" r="142" fill="none" stroke="#C0832A" stroke-width=".5" opacity=".18"/>
+            <!-- Inner white circle -->
+            <circle cx="240" cy="240" r="136" fill="rgba(255,255,255,.65)"/>
+
+            <!-- Subtle radial spokes (tunduk metaphor) -->
+            <g stroke="#C41E3A" stroke-width=".5" opacity=".1">
+                <line x1="240" y1="104" x2="240" y2="376"/>
+                <line x1="104" y1="240" x2="376" y2="240"/>
+                <line x1="144" y1="144" x2="336" y2="336"/>
+                <line x1="336" y1="144" x2="144" y2="336"/>
+                <line x1="178" y1="112" x2="302" y2="368"/>
+                <line x1="112" y1="302" x2="368" y2="178"/>
+                <line x1="302" y1="112" x2="178" y2="368"/>
+                <line x1="112" y1="178" x2="368" y2="302"/>
+            </g>
+
+            <!-- YURT SILHOUETTE -->
+            <g transform="translate(240,245)">
+                <!-- Tunduk (crown ring) -->
+                <circle cx="0" cy="-82" r="21" fill="none" stroke="#1A1814" stroke-width="2.5"/>
+                <circle cx="0" cy="-82" r="13" fill="none" stroke="#1A1814" stroke-width="1.2" opacity=".5"/>
+                <!-- Tunduk cross bars -->
+                <line x1="-13" y1="-82" x2="13" y2="-82" stroke="#1A1814" stroke-width="1.2" opacity=".5"/>
+                <line x1="0" y1="-95" x2="0" y2="-69" stroke="#1A1814" stroke-width="1.2" opacity=".5"/>
+
+                <!-- Uuk (roof poles) -->
+                <g stroke="#1A1814" stroke-width="1.2" opacity=".45">
+                    <line x1="-8" y1="-61" x2="-108" y2="32"/>
+                    <line x1="8" y1="-61" x2="108" y2="32"/>
+                    <line x1="-5" y1="-62" x2="-78" y2="-12"/>
+                    <line x1="5" y1="-62" x2="78" y2="-12"/>
+                    <line x1="-7" y1="-62" x2="-115" y2="14"/>
+                    <line x1="7" y1="-62" x2="115" y2="14"/>
+                    <line x1="-4" y1="-63" x2="-48" y2="-38"/>
+                    <line x1="4" y1="-63" x2="48" y2="-38"/>
+                </g>
+
+                <!-- Dome -->
+                <path d="M-120,32 Q-95,-30 0,-61 Q95,-30 120,32"
+                      fill="none" stroke="#1A1814" stroke-width="2.5" stroke-linejoin="round"/>
+
+                <!-- Kerege (walls) -->
+                <rect x="-120" y="32" width="240" height="72"
+                      fill="none" stroke="#1A1814" stroke-width="2.5" rx="2"/>
+
+                <!-- Lattice lines on walls -->
+                <g stroke="#1A1814" stroke-width=".9" opacity=".28">
+                    <line x1="-90" y1="32" x2="-90" y2="104"/>
+                    <line x1="-60" y1="32" x2="-60" y2="104"/>
+                    <line x1="-30" y1="32" x2="-30" y2="104"/>
+                    <line x1="30" y1="32" x2="30" y2="104"/>
+                    <line x1="60" y1="32" x2="60" y2="104"/>
+                    <line x1="90" y1="32" x2="90" y2="104"/>
+                    <line x1="-120" y1="56" x2="-30" y2="32"/>
+                    <line x1="-120" y1="80" x2="30" y2="32"/>
+                    <line x1="-60" y1="104" x2="120" y2="44"/>
+                    <line x1="30" y1="104" x2="120" y2="68"/>
+                </g>
+
+                <!-- Door (esik) -->
+                <rect x="-28" y="46" width="56" height="58"
+                      fill="rgba(245,240,232,.85)" stroke="#1A1814" stroke-width="2" rx="2"/>
+                <path d="M-28,46 Q0,30 28,46" fill="none" stroke="#1A1814" stroke-width="1.5"/>
+            </g>
+
+            <!-- Cardinal diamonds (shyrdak accent) -->
+            <g fill="#C41E3A">
+                <polygon points="240,90 249,103 240,116 231,103"/>
+                <polygon points="240,364 249,377 240,390 231,377"/>
+                <polygon points="90,240 103,249 116,240 103,231"/>
+                <polygon points="364,240 377,249 390,240 377,231"/>
+            </g>
+
+            <!-- Diagonal gold diamonds -->
+            <g fill="#C0832A" opacity=".45">
+                <polygon points="127,127 136,136 127,145 118,136"/>
+                <polygon points="353,127 362,136 353,145 344,136"/>
+                <polygon points="127,353 136,362 127,371 118,362"/>
+                <polygon points="353,353 362,362 353,371 344,362"/>
+            </g>
+
+            <!-- Caption -->
+            <text x="240" y="450" text-anchor="middle"
+                  font-family="'Cormorant Garamond',serif"
+                  font-size="10" fill="#C41E3A" opacity=".55"
+                  letter-spacing="3.5">KYRGYZSTAN · БОЗ ҮЙ</text>
+        </svg>
+    </div>
+</section>
+
+<!-- Shyrdak Divider -->
+<div class="s-div">
+    <svg width="100%" height="36" viewBox="0 0 1200 36" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="p1" x="0" y="0" width="48" height="36" patternUnits="userSpaceOnUse">
+                <polygon points="24,2 34,12 24,22 14,12" fill="#C41E3A" opacity=".12"/>
+                <polygon points="24,16 30,22 24,28 18,22" fill="#C41E3A" opacity=".07"/>
+                <polygon points="0,2 8,10 0,18" fill="#C41E3A" opacity=".07"/>
+                <polygon points="48,2 40,10 48,18" fill="#C41E3A" opacity=".07"/>
+            </pattern>
+        </defs>
+        <rect width="1200" height="36" fill="url(#p1)"/>
+        <line x1="0" y1="18" x2="1200" y2="18" stroke="#C41E3A" stroke-width=".5" opacity=".14"/>
+    </svg>
+</div>
+
+<!-- AUDIENCES -->
+<section class="sw audiences" id="audiences">
+    <div class="aud-head reveal">
+        <div>
+            <div class="s-tag">Для кого</div>
+            <h2 class="s-ttl">Я работаю<br>с <em>тремя</em> типами клиентов</h2>
+        </div>
+        <p class="aud-sub">У каждой аудитории свои боли и цели. Найдите себя — и давайте поговорим.</p>
+    </div>
+
+    <div class="aud-grid reveal">
+        <!-- Card 1 -->
+        <div class="aud-card">
+            <div class="aud-top"></div>
+            <div class="aud-num">01</div>
+            <svg class="aud-ico" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="18" width="36" height="22" rx="2" stroke="#C41E3A" stroke-width="2"/>
+                <path d="M14 18V13C14 9.686 16.686 7 20 7H24C27.314 7 30 9.686 30 13V18" stroke="#C41E3A" stroke-width="2"/>
+                <circle cx="22" cy="29" r="3" fill="#C41E3A"/>
+                <line x1="22" y1="32" x2="22" y2="36" stroke="#C41E3A" stroke-width="1.5"/>
+            </svg>
+            <div class="aud-title">Предприниматели и МСБ</div>
+            <p class="aud-desc">Вы строите бизнес, ищете инвестиции или гранты, хотите выйти на новый уровень. Вам нужен практик — не теоретик.</p>
+            <div class="aud-note">💼 Платные консультации и тренинги</div>
+            <svg class="aud-orn" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="45,5 85,45 45,85 5,45" fill="none" stroke="#C41E3A" stroke-width="2"/>
+                <polygon points="45,22 68,45 45,68 22,45" fill="#C41E3A"/>
+                <polygon points="45,36 54,45 45,54 36,45" fill="none" stroke="#F5F0E8" stroke-width="2"/>
+            </svg>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="aud-card">
+            <div class="aud-top"></div>
+            <div class="aud-num">02</div>
+            <svg class="aud-ico" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="22" cy="13" r="6" stroke="#2B4C7E" stroke-width="2"/>
+                <path d="M8 37C8 29.268 14.268 23 22 23C29.732 23 36 29.268 36 37" stroke="#2B4C7E" stroke-width="2"/>
+                <line x1="30" y1="23" x2="36" y2="17" stroke="#2B4C7E" stroke-width="1.5" opacity=".5"/>
+                <line x1="14" y1="23" x2="8" y2="17" stroke="#2B4C7E" stroke-width="1.5" opacity=".5"/>
+                <circle cx="36" cy="15" r="4" stroke="#2B4C7E" stroke-width="1.5" opacity=".5"/>
+                <circle cx="8" cy="15" r="4" stroke="#2B4C7E" stroke-width="1.5" opacity=".5"/>
+            </svg>
+            <div class="aud-title">НКО и некоммерческие</div>
+            <p class="aud-desc">Гранты, доноры, отчётность, стратегия. Я знаю этот мир изнутри — 15 лет в международном развитии.</p>
+            <div class="aud-note">🤝 Тренинги, фасилитация, менторство</div>
+            <svg class="aud-orn" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="45,5 85,45 45,85 5,45" fill="none" stroke="#2B4C7E" stroke-width="2"/>
+                <polygon points="45,22 68,45 45,68 22,45" fill="#2B4C7E"/>
+                <polygon points="45,36 54,45 45,54 36,45" fill="none" stroke="#F5F0E8" stroke-width="2"/>
+            </svg>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="aud-card">
+            <div class="aud-top"></div>
+            <div class="aud-num">03</div>
+            <svg class="aud-ico" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 4L38 12V22C38 30.837 30.837 38 22 38C13.163 38 6 30.837 6 22V12L22 4Z" stroke="#C0832A" stroke-width="2"/>
+                <polyline points="16,22 20,26 28,18" stroke="#C0832A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="aud-title">Консультанты и эксперты</div>
+            <p class="aud-desc">Хотите запустить своё дело, углубиться в фандрайзинг или выстроить систему работы с клиентами.</p>
+            <div class="aud-note">🎓 Менторинг, курсы, коучинг</div>
+            <svg class="aud-orn" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="45,5 85,45 45,85 5,45" fill="none" stroke="#C0832A" stroke-width="2"/>
+                <polygon points="45,22 68,45 45,68 22,45" fill="#C0832A"/>
+                <polygon points="45,36 54,45 45,54 36,45" fill="none" stroke="#F5F0E8" stroke-width="2"/>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICES -->
+<section class="sw services" id="services">
+    <div class="reveal">
+        <div class="s-tag">Что я делаю</div>
+        <h2 class="s-ttl">Форматы<br><em>работы</em></h2>
+    </div>
+    <div class="svc-lay">
+        <div class="svc-list reveal d1">
+            <div class="svc-item"><div class="svc-n">01</div><div class="svc-info"><div class="svc-name">Бизнес-консалтинг</div><div class="svc-sub">Индивидуально · Проектно</div></div><div class="svc-arrow">→</div></div>
+            <div class="svc-item"><div class="svc-n">02</div><div class="svc-info"><div class="svc-name">Фандрайзинг и гранты</div><div class="svc-sub">Заявки · Стратегия · Доноры</div></div><div class="svc-arrow">→</div></div>
+            <div class="svc-item"><div class="svc-n">03</div><div class="svc-info"><div class="svc-name">Бизнес-тренинги</div><div class="svc-sub">Группы · Корпоративные</div></div><div class="svc-arrow">→</div></div>
+            <div class="svc-item"><div class="svc-n">04</div><div class="svc-info"><div class="svc-name">Бизнес-планирование</div><div class="svc-sub">Под инвестора · Под грант</div></div><div class="svc-arrow">→</div></div>
+            <div class="svc-item"><div class="svc-n">05</div><div class="svc-info"><div class="svc-name">Менторинг и акселерация</div><div class="svc-sub">Accelerate Prosperity · John Galt</div></div><div class="svc-arrow">→</div></div>
+            <div class="svc-item"><div class="svc-n">06</div><div class="svc-info"><div class="svc-name">Организационное развитие</div><div class="svc-sub">НКО · Стратегическое планирование</div></div><div class="svc-arrow">→</div></div>
+        </div>
+
+        <div class="callout reveal d2">
+            <div class="callout-lbl">⭐ Популярный продукт</div>
+            <h3 class="callout-ttl">Онлайн-курс<br>«Фандрайзинг с нуля до гранта»</h3>
+            <p class="callout-desc">Полная система поиска и привлечения финансирования — от понимания доноров до отправки выигрышной заявки.</p>
+            <div class="callout-feats">
+                <div class="callout-feat">6 модулей с видеоуроками</div>
+                <div class="callout-feat">База доноров и шаблоны заявок</div>
+                <div class="callout-feat">Живые разборы и Q&amp;A сессии</div>
+                <div class="callout-feat">Сертификат по завершению</div>
+            </div>
+            <a href="https://connect4funds.tilda.ws/" target="_blank" class="btn-p">Узнать подробнее →</a>
+            <svg class="callout-orn" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="90,8 172,90 90,172 8,90" fill="none" stroke="#C0832A" stroke-width="2.5"/>
+                <polygon points="90,38 142,90 90,142 38,90" fill="#C0832A"/>
+                <polygon points="90,68 112,90 90,112 68,90" fill="none" stroke="#F2EDE6" stroke-width="2.5"/>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- Shyrdak Divider (flipped) -->
+<div class="s-div" style="transform:scaleY(-1)">
+    <svg width="100%" height="36" viewBox="0 0 1200 36" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="p2" x="0" y="0" width="48" height="36" patternUnits="userSpaceOnUse">
+                <polygon points="24,2 34,12 24,22 14,12" fill="#C41E3A" opacity=".12"/>
+                <polygon points="24,16 30,22 24,28 18,22" fill="#C41E3A" opacity=".07"/>
+                <polygon points="0,2 8,10 0,18" fill="#C41E3A" opacity=".07"/>
+                <polygon points="48,2 40,10 48,18" fill="#C41E3A" opacity=".07"/>
+            </pattern>
+        </defs>
+        <rect width="1200" height="36" fill="url(#p2)"/>
+        <line x1="0" y1="18" x2="1200" y2="18" stroke="#C41E3A" stroke-width=".5" opacity=".14"/>
+    </svg>
+</div>
+
+<!-- RESOURCES -->
+<section class="sw resources" id="resources">
+    <div class="res-head reveal">
+        <div>
+            <div class="s-tag">Ресурсы</div>
+            <h2 class="s-ttl">Всё в<br><em>одном месте</em></h2>
+        </div>
+        <p class="res-sub">Инструменты, базы данных, курсы — собраны здесь, чтобы вы не тратили время на поиск.</p>
+    </div>
+    <div class="res-grid">
+        <a class="res-card reveal d1" href="https://connect4funds.tilda.ws/" target="_blank">
+            <div class="res-emo">🎓</div>
+            <div class="res-ttl">Курс по фандрайзингу</div>
+            <p class="res-desc">Онлайн-курс о поиске и привлечении финансирования. От понимания доноров до выигрышной заявки.</p>
+            <div class="res-lnk">Открыть курс →</div>
+        </a>
+        <a class="res-card reveal d2" href="https://grantmanual.tilda.ws/" target="_blank">
+            <div class="res-emo">📖</div>
+            <div class="res-ttl">Руководство по грантам</div>
+            <p class="res-desc">Пошаговое руководство для тех, кто впервые ищет гранты. Практично, ясно, на русском.</p>
+            <div class="res-lnk">Читать руководство →</div>
+        </a>
+        <a class="res-card reveal d3" href="https://connect4baza.tilda.ws/" target="_blank">
+            <div class="res-emo">🗄️</div>
+            <div class="res-ttl">База данных доноров</div>
+            <p class="res-desc">Каталог фондов, грантодателей и инвесторов, работающих в Центральной Азии и СНГ.</p>
+            <div class="res-lnk">Перейти к базе →</div>
+        </a>
+        <a class="res-card reveal d1" href="https://pro4dev.tilda.ws/" target="_blank">
+            <div class="res-emo">🚀</div>
+            <div class="res-ttl">Тренинги Pro4Dev</div>
+            <p class="res-desc">Программы обучения для НКО, предпринимателей и специалистов в сфере развития.</p>
+            <div class="res-lnk">Смотреть тренинги →</div>
+        </a>
+        <a class="res-card reveal d2" href="https://www.facebook.com/connect4kg" target="_blank">
+            <div class="res-emo">💡</div>
+            <div class="res-ttl">Connect4KG: Возможности</div>
+            <p class="res-desc">Актуальные возможности финансирования, гранты и ресурсы для Кыргызстана — в одной ленте.</p>
+            <div class="res-lnk">Подписаться →</div>
+        </a>
+        <div class="res-card res-soon reveal d3">
+            <div class="res-emo">🤖</div>
+            <div class="res-ttl">ИИ-ассистент (скоро)</div>
+            <p class="res-desc">Умный бот, который поможет найти доноров, проверит заявку и ответит на вопросы по фандрайзингу.</p>
+            <div class="res-lnk" style="color:var(--muted)">В разработке...</div>
+        </div>
+    </div>
+</section>
+
+<!-- DARK: NUMBERS & PARTNERS -->
+<section class="sw dark" id="about">
+    <svg class="dark-orn" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="180,18 342,180 180,342 18,180" fill="none" stroke="white" stroke-width="2"/>
+        <polygon points="180,64 296,180 180,296 64,180" fill="none" stroke="white" stroke-width="1.5"/>
+        <polygon points="180,110 250,180 180,250 110,180" fill="none" stroke="white" stroke-width="1"/>
+        <polygon points="180,156 204,180 180,204 156,180" fill="white"/>
+    </svg>
+    <div class="reveal">
+        <div class="s-tag">Цифры и опыт</div>
+        <h2 class="s-ttl">15 лет.<br>Результаты говорят<br><em>сами за себя.</em></h2>
+    </div>
+    <div class="nums">
+        <div class="reveal d1">
+            <div class="num-bar"></div>
+            <div class="num-val">15<span>+</span></div>
+            <div class="num-lbl">лет профессионального опыта в международном развитии и консалтинге</div>
+        </div>
+        <div class="reveal d2">
+            <div class="num-bar"></div>
+            <div class="num-val">$2.8<span>M</span></div>
+            <div class="num-lbl">привлечено финансирования для НКО, проектов и организаций</div>
+        </div>
+        <div class="reveal d3">
+            <div class="num-bar"></div>
+            <div class="num-val">550<span>+</span></div>
+            <div class="num-lbl">участников международных конференций из 36 стран мира</div>
+        </div>
+        <div class="reveal d1">
+            <div class="num-bar"></div>
+            <div class="num-val">3</div>
+            <div class="num-lbl">собственных бизнеса запущено + платформы Connect4Pro и Xpat4KG</div>
+        </div>
+    </div>
+    <div class="partners reveal">
+        <div class="p-lbl">Партнёры и доноры</div>
+        <div class="p-list">
+            <span class="p-name">USAID</span>
+            <span class="p-name">ООН / UN</span>
+            <span class="p-name">Big Lottery Fund</span>
+            <span class="p-name">Eurasia Foundation</span>
+            <span class="p-name">Soros Foundation</span>
+            <span class="p-name">PeaceNexus</span>
+            <span class="p-name">Hans Seidel Foundation</span>
+            <span class="p-name">ICCO</span>
+            <span class="p-name">HealthProm UK</span>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sw contact" id="contact">
+    <div class="reveal">
+        <div class="s-tag">Связаться</div>
+        <h2 class="s-ttl">Начнём<br>с <em>разговора</em></h2>
+    </div>
+    <div class="con-lay">
+        <div class="reveal d1">
+            <p class="con-tagline">Расскажите о своей задаче — и мы найдём подходящий формат работы.</p>
+            <div class="con-items">
+                <div class="con-item">
+                    <div class="con-dot"></div>
+                    <div>
+                        <div class="con-lbl">Телефон / WhatsApp</div>
+                        <div class="con-val"><a href="tel:+996702271827">+996 702 27 18 27</a></div>
+                    </div>
+                </div>
+                <div class="con-item">
+                    <div class="con-dot"></div>
+                    <div>
+                        <div class="con-lbl">Email</div>
+                        <div class="con-val"><a href="mailto:aisrail@gmail.com">aisrail@gmail.com</a></div>
+                    </div>
+                </div>
+                <div class="con-item">
+                    <div class="con-dot"></div>
+                    <div>
+                        <div class="con-lbl">LinkedIn</div>
+                        <div class="con-val"><a href="https://www.linkedin.com/in/azat-israilov-6b515228/" target="_blank">Азат Израилов</a></div>
+                    </div>
+                </div>
+                <div class="con-item">
+                    <div class="con-dot"></div>
+                    <div>
+                        <div class="con-lbl">Локация</div>
+                        <div class="con-val">Бишкек, Кыргызстан · Работаю онлайн</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reveal d2">
+            <form class="con-form" onsubmit="sendMail(event)">
+                <div class="f-row">
+                    <div class="f-grp">
+                        <label class="f-lbl">Имя</label>
+                        <input class="f-in" type="text" id="fname" placeholder="Ваше имя">
+                    </div>
+                    <div class="f-grp">
+                        <label class="f-lbl">Организация</label>
+                        <input class="f-in" type="text" id="forg" placeholder="Компания / НКО">
+                    </div>
+                </div>
+                <div class="f-grp">
+                    <label class="f-lbl">Email</label>
+                    <input class="f-in" type="email" id="femail" placeholder="your@email.com">
+                </div>
+                <div class="f-grp">
+                    <label class="f-lbl">Я — это...</label>
+                    <select class="f-sel" id="ftype">
+                        <option value="">Выберите тип</option>
+                        <option>Предприниматель / МСБ</option>
+                        <option>Представитель НКО</option>
+                        <option>Консультант / Эксперт</option>
+                        <option>Другое</option>
+                    </select>
+                </div>
+                <div class="f-grp">
+                    <label class="f-lbl">Ваш запрос</label>
+                    <textarea class="f-ta" id="fmsg" placeholder="Опишите кратко, с чем вам нужна помощь..."></textarea>
+                </div>
+                <button type="submit" class="btn-p btn-submit">Отправить сообщение →</button>
+                <p class="f-note">Нажимая кнопку, откроется ваш почтовый клиент. Или напишите напрямую: <a href="mailto:aisrail@gmail.com">aisrail@gmail.com</a></p>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="f-logo">Азат <span>Израилов</span></div>
+    <ul class="f-links">
+        <li><a href="#audiences">Для кого</a></li>
+        <li><a href="#services">Услуги</a></li>
+        <li><a href="#resources">Ресурсы</a></li>
+        <li><a href="https://www.linkedin.com/in/azat-israilov-6b515228/" target="_blank">LinkedIn</a></li>
+    </ul>
+    <div class="f-copy">© 2026 Азат Израилов · Бишкек, Кыргызстан</div>
+</footer>
+
+<script>
+// Nav scroll
+const nb = document.getElementById('nb');
+window.addEventListener('scroll', () => nb.classList.toggle('scrolled', scrollY > 50));
+
+// Mobile nav
+function tNav() {
+    document.getElementById('nl').classList.toggle('open');
+}
+document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => {
+    document.getElementById('nl').classList.remove('open');
+}));
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => e.isIntersecting && e.target.classList.add('visible'));
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Contact form → mailto
+function sendMail(e) {
+    e.preventDefault();
+    const name  = document.getElementById('fname').value;
+    const org   = document.getElementById('forg').value;
+    const email = document.getElementById('femail').value;
+    const type  = document.getElementById('ftype').value;
+    const msg   = document.getElementById('fmsg').value;
+    const body  = `Имя: ${name}\nОрганизация: ${org}\nEmail: ${email}\nТип: ${type}\n\nСообщение:\n${msg}`;
+    window.location.href = `mailto:aisrail@gmail.com?subject=Запрос с сайта от ${encodeURIComponent(name)}&body=${encodeURIComponent(body)}`;
+}
+</script>
+</body>
+</html>
