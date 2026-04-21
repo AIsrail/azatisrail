@@ -1,836 +1,857 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Азат Израилов — Консультант | Фандрайзинг | Бизнес-тренер</title>
-    <meta name="description" content="15+ лет помогаю предпринимателям, НКО и консультантам находить финансирование, строить организации и расти. Бишкек, Кыргызстан.">
-    <meta property="og:title" content="Азат Израилов — Консультант по фандрайзингу">
-    <meta property="og:description" content="15+ лет. $2.8M+ привлечённых грантов. Помогаю бизнесу, НКО и консультантам.">
-    <meta property="og:type" content="website">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Азат Исраилов — Консультант · Тренер · Фандрайзер</title>
+<meta name="description" content="Азат Исраилов — бизнес-консультант, тренер, фандрайзер. 15+ лет опыта. Бишкек, Кыргызстан.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 :root {
-    --cream:   #FAF8F3;
-    --white:   #FFFFFF;
-    --text:    #1A1814;
-    --mid:     #5A5550;
-    --muted:   #9A9590;
-    --red:     #C41E3A;
-    --red2:    #E02040;
-    --gold:    #C0832A;
-    --goldf:   #E8B050;
-    --blue:    #2B4C7E;
-    --border:  #E8E2D8;
-    --sect:    #F2EDE6;
-    --dark:    #1A1814;
+  --cream:  #FAFAF6;
+  --white:  #FFFFFF;
+  --ink:    #14120F;
+  --mid:    #4A4744;
+  --muted:  #8C8884;
+  --border: #DDD9D2;
+  --sect:   #F3F0EA;
+  --sap:    #1B6FA8;
+  --sap2:   #0F4F7A;
+  --gold:   #B8942A;
+  --goldf:  #D4AA40;
+  --pattern-color: #C8A84B;
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;line-height:1.6}
-a{text-decoration:none}
 
-/* ── NAV ─────────────────────────────── */
-nav{
-    position:fixed;top:0;left:0;right:0;z-index:999;
-    height:68px;display:flex;align-items:center;justify-content:space-between;
-    padding:0 56px;
-    background:rgba(250,248,243,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-    border-bottom:1px solid transparent;transition:border-color .3s,background .3s;
+/* ── SHYRDAK PATTERN ── */
+body {
+  background-color: var(--cream);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%23C8A84B' stroke-width='0.7' opacity='0.13'%3E%3Cpolygon points='40,4 68,20 68,60 40,76 12,60 12,20'/%3E%3Cpolygon points='40,16 58,26 58,54 40,64 22,54 22,26'/%3E%3Cline x1='40' y1='4' x2='40' y2='76'/%3E%3Cline x1='12' y1='20' x2='68' y2='60'/%3E%3Cline x1='68' y1='20' x2='12' y2='60'/%3E%3Ccircle cx='40' cy='40' r='6'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
 }
-nav.scrolled{border-color:var(--border);background:rgba(250,248,243,.97)}
-.nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text);letter-spacing:.03em}
-.nav-logo span{color:var(--red)}
-.nav-links{display:flex;align-items:center;gap:30px;list-style:none}
-.nav-links a{font-size:12px;font-weight:400;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
-.nav-links a:hover{color:var(--red)}
-.nav-cta{background:var(--red)!important;color:white!important;padding:9px 20px;border-radius:2px;font-weight:500!important;transition:background .2s,transform .2s!important}
-.nav-cta:hover{background:var(--red2)!important;transform:translateY(-1px)!important}
-.nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
-.nav-toggle span{display:block;width:24px;height:2px;background:var(--text);transition:all .3s;border-radius:2px}
 
-/* ── HERO ────────────────────────────── */
-.hero{
-    min-height:100vh;display:grid;grid-template-columns:1.15fr .85fr;
-    align-items:center;padding:100px 56px 72px;gap:40px;position:relative;overflow:hidden;
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
+html { scroll-behavior:smooth }
+
+body {
+  font-family:'DM Sans',sans-serif;
+  color: var(--ink);
+  overflow-x: hidden;
+  line-height: 1.6;
 }
-.hero-eyebrow{
-    display:inline-flex;align-items:center;gap:12px;
-    font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);
-    margin-bottom:26px;opacity:0;transform:translateY(14px);animation:up .7s ease forwards .2s;
+a { text-decoration:none; color:inherit }
+
+/* ── PATTERN OVERLAY: white fade at top for readability ── */
+body::before {
+  content:'';
+  position:fixed; top:0; left:0; right:0; height:120px;
+  background: linear-gradient(var(--cream), transparent);
+  z-index: 0; pointer-events:none;
 }
-.hero-eyebrow::before{content:'';width:28px;height:1.5px;background:var(--red)}
-h1.hero-title{
-    font-family:'Cormorant Garamond',serif;
-    font-size:clamp(50px,6.8vw,92px);font-weight:300;line-height:1.02;letter-spacing:-.01em;
-    margin-bottom:26px;opacity:0;transform:translateY(18px);animation:up .7s ease forwards .35s;
+
+/* ── CONTENT over pattern ── */
+#page { position:relative; z-index:1 }
+
+/* ═══ NAV ═══ */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:999;
+  height:62px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 56px;
+  transition: background .35s, border-color .35s;
+  border-bottom:1px solid transparent;
 }
-h1.hero-title em{font-style:italic;color:var(--red)}
-.hero-desc{
-    font-size:16px;font-weight:300;line-height:1.8;color:var(--mid);max-width:450px;
-    margin-bottom:38px;opacity:0;transform:translateY(18px);animation:up .7s ease forwards .5s;
+nav.scrolled {
+  background: rgba(250,250,246,0.95);
+  border-color: var(--border);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
 }
-.hero-btns{
-    display:flex;gap:12px;flex-wrap:wrap;margin-bottom:60px;
-    opacity:0;transform:translateY(18px);animation:up .7s ease forwards .65s;
+.logo {
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px; font-weight:600; letter-spacing:.04em; color:var(--ink);
 }
-.btn-p{display:inline-flex;align-items:center;gap:7px;background:var(--red);color:white;padding:14px 28px;font-size:14px;font-weight:500;letter-spacing:.03em;border-radius:2px;transition:background .2s,transform .2s}
-.btn-p:hover{background:var(--red2);transform:translateY(-2px)}
-.btn-g{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--text);padding:13px 26px;font-size:14px;font-weight:400;border:1.5px solid var(--border);border-radius:2px;transition:border-color .2s,transform .2s}
-.btn-g:hover{border-color:var(--mid);transform:translateY(-2px)}
-.hero-stats{
-    display:flex;gap:36px;flex-wrap:wrap;align-items:center;
-    opacity:0;transform:translateY(18px);animation:up .7s ease forwards .8s;
+.logo b { color:var(--sap) }
+
+.nav-r { display:flex; align-items:center; gap:10px }
+.nl { display:flex; align-items:center; gap:24px; list-style:none }
+.nl a {
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); transition:color .2s;
 }
-.stat-n{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1;color:var(--text)}
-.stat-n sup{font-size:22px;color:var(--red)}
-.stat-l{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.03em}
-.stat-sep{width:1px;height:44px;background:var(--border)}
-.hero-right{display:flex;justify-content:center;align-items:center;opacity:0;animation:fi .9s ease forwards .5s}
-.hero-svg{width:100%;max-width:470px;filter:drop-shadow(0 24px 64px rgba(196,30,58,.07))}
-
-/* ── SHYRDAK DIVIDER ─────────────────── */
-.s-div{width:100%;height:36px;overflow:hidden;line-height:0}
-.s-div svg{display:block}
-
-/* ── SECTIONS ────────────────────────── */
-.sw{padding:88px 56px}
-.s-tag{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:14px}
-.s-tag::before{content:'';width:20px;height:1.5px;background:var(--red)}
-.s-ttl{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,50px);font-weight:300;line-height:1.1}
-.s-ttl em{font-style:italic;color:var(--red)}
-
-/* ── AUDIENCES ───────────────────────── */
-.audiences{background:var(--white)}
-.aud-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:52px;gap:24px;flex-wrap:wrap}
-.aud-sub{font-size:15px;color:var(--mid);max-width:320px;line-height:1.7;font-weight:300}
-.aud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:var(--border)}
-.aud-card{background:var(--cream);padding:44px 34px;position:relative;overflow:hidden;transition:background .3s}
-.aud-card:hover{background:#FDF9F4}
-.aud-top{position:absolute;top:0;left:0;right:0;height:4px}
-.aud-card:nth-child(1) .aud-top{background:var(--red)}
-.aud-card:nth-child(2) .aud-top{background:var(--blue)}
-.aud-card:nth-child(3) .aud-top{background:var(--gold)}
-.aud-num{
-    font-family:'Cormorant Garamond',serif;font-size:76px;font-weight:300;
-    color:var(--border);line-height:1;position:absolute;top:16px;right:24px;
-    transition:color .3s;pointer-events:none;
+.nl a:hover { color:var(--sap) }
+.nl-cta {
+  background:var(--sap) !important; color:white !important;
+  padding:8px 17px; border-radius:2px; font-weight:500 !important;
+  transition:background .2s, transform .15s !important;
 }
-.aud-card:hover .aud-num{color:#E0D9CF}
-.aud-ico{width:42px;height:42px;margin-bottom:18px}
-.aud-title{font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;margin-bottom:12px}
-.aud-desc{font-size:14px;color:var(--mid);line-height:1.7;margin-bottom:18px;font-weight:300}
-.aud-note{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
-.aud-orn{position:absolute;bottom:-14px;right:-14px;opacity:.07;width:90px;pointer-events:none}
+.nl-cta:hover { background:var(--sap2) !important; transform:translateY(-1px) !important }
 
-/* ── SERVICES ────────────────────────── */
-.services{background:var(--cream)}
-.svc-lay{display:grid;grid-template-columns:300px 1fr;gap:64px;margin-top:52px;align-items:start}
-.svc-list{border-top:1px solid var(--border)}
-.svc-item{display:flex;align-items:flex-start;gap:14px;padding:22px 0;border-bottom:1px solid var(--border);cursor:default;transition:all .2s}
-.svc-item:hover .svc-arrow{transform:translateX(4px);color:var(--red)}
-.svc-n{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--muted);min-width:22px;padding-top:2px}
-.svc-info{flex:1}
-.svc-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin-bottom:3px}
-.svc-sub{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.svc-arrow{color:var(--border);font-size:17px;transition:all .2s;margin-top:2px}
-.callout{background:var(--sect);padding:44px;position:relative;overflow:hidden}
-.callout-lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px}
-.callout-ttl{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;line-height:1.25;margin-bottom:14px}
-.callout-desc{font-size:14px;color:var(--mid);line-height:1.7;margin-bottom:28px;font-weight:300}
-.callout-feats{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
-.callout-feat{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mid)}
-.callout-feat::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;flex-shrink:0}
-.callout-orn{position:absolute;bottom:-36px;right:-36px;opacity:.07;width:160px;pointer-events:none}
-
-/* ── RESOURCES ───────────────────────── */
-.resources{background:var(--sect)}
-.res-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:52px;gap:24px;flex-wrap:wrap}
-.res-sub{font-size:15px;color:var(--mid);max-width:300px;line-height:1.7;font-weight:300}
-.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.res-card{background:var(--white);padding:30px;border:1px solid var(--border);transition:all .3s;display:flex;flex-direction:column;position:relative;overflow:hidden}
-.res-card:hover{transform:translateY(-5px);box-shadow:0 18px 50px rgba(0,0,0,.07);border-color:transparent}
-.res-emo{font-size:26px;margin-bottom:14px}
-.res-ttl{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;margin-bottom:8px;color:var(--text)}
-.res-desc{font-size:13px;color:var(--mid);line-height:1.6;flex:1;margin-bottom:18px;font-weight:300}
-.res-lnk{display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-weight:500;transition:gap .2s}
-.res-card:hover .res-lnk{gap:9px}
-.res-soon{background:var(--cream)!important;border-style:dashed!important;cursor:default}
-.res-soon:hover{transform:none!important;box-shadow:none!important;border-color:var(--border)!important}
-
-/* ── DARK / NUMBERS ──────────────────── */
-.dark{background:var(--dark);color:white;position:relative;overflow:hidden}
-.dark .s-tag{color:var(--goldf)}
-.dark .s-tag::before{background:var(--goldf)}
-.dark .s-ttl{color:white}
-.dark .s-ttl em{color:var(--goldf)}
-.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:44px;margin-top:60px}
-.num-bar{width:30px;height:2px;background:var(--red);margin-bottom:14px}
-.num-val{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:300;line-height:1;color:white;margin-bottom:8px}
-.num-val span{color:var(--goldf)}
-.num-lbl{font-size:13px;color:rgba(255,255,255,.4);line-height:1.5;letter-spacing:.02em}
-.partners{margin-top:68px;padding-top:44px;border-top:1px solid rgba(255,255,255,.08)}
-.p-lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:24px}
-.p-list{display:flex;gap:36px;flex-wrap:wrap;align-items:center}
-.p-name{font-size:13px;color:rgba(255,255,255,.38);letter-spacing:.04em;transition:color .2s;cursor:default}
-.p-name:hover{color:rgba(255,255,255,.7)}
-.dark-orn{position:absolute;right:-60px;top:50%;transform:translateY(-50%);opacity:.04;width:380px;pointer-events:none}
-
-/* ── CONTACT ─────────────────────────── */
-.contact{background:var(--cream)}
-.con-lay{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:52px}
-.con-tagline{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;line-height:1.45;color:var(--text);margin-bottom:36px}
-.con-items{display:flex;flex-direction:column;gap:22px}
-.con-item{display:flex;gap:14px;align-items:flex-start}
-.con-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:7px}
-.con-lbl{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
-.con-val{font-size:15px;color:var(--text)}
-.con-val a{color:var(--text);border-bottom:1px solid var(--border);transition:border-color .2s,color .2s}
-.con-val a:hover{border-color:var(--red);color:var(--red)}
-.con-form{display:flex;flex-direction:column;gap:14px}
-.f-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.f-grp{display:flex;flex-direction:column;gap:6px}
-.f-lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.f-in,.f-sel,.f-ta{padding:12px 15px;border:1.5px solid var(--border);background:var(--white);font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;border-radius:2px;transition:border-color .2s,box-shadow .2s;width:100%}
-.f-in:focus,.f-sel:focus,.f-ta:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(196,30,58,.06)}
-.f-ta{resize:vertical;min-height:110px}
-.f-note{font-size:12px;color:var(--muted);line-height:1.5}
-.f-note a{color:var(--red)}
-.btn-submit{border:none;cursor:pointer;width:100%;justify-content:center;font-family:'Outfit',sans-serif}
-
-/* ── FOOTER ──────────────────────────── */
-footer{background:var(--dark);padding:36px 56px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
-.f-logo{font-family:'Cormorant Garamond',serif;font-size:18px;color:white;font-weight:600}
-.f-logo span{color:var(--goldf)}
-.f-copy{font-size:12px;color:rgba(255,255,255,.3)}
-.f-links{display:flex;gap:22px;list-style:none}
-.f-links a{font-size:12px;color:rgba(255,255,255,.38);letter-spacing:.04em;transition:color .2s}
-.f-links a:hover{color:rgba(255,255,255,.8)}
-
-/* ── ANIMATIONS ──────────────────────── */
-@keyframes up{to{opacity:1;transform:translateY(0)}}
-@keyframes fi{to{opacity:1}}
-.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
-
-/* ── RESPONSIVE ──────────────────────── */
-@media(max-width:1024px){
-    nav{padding:0 32px}
-    .hero{grid-template-columns:1fr;padding:96px 32px 64px}
-    .hero-right{display:none}
-    .sw{padding:68px 32px}
-    .aud-grid{grid-template-columns:1fr;gap:3px}
-    .svc-lay{grid-template-columns:1fr;gap:44px}
-    .res-grid{grid-template-columns:repeat(2,1fr)}
-    .nums{grid-template-columns:repeat(2,1fr);gap:36px}
-    .con-lay{grid-template-columns:1fr;gap:44px}
-    footer{padding:28px 32px;flex-direction:column;align-items:flex-start}
+/* Language switcher */
+.lang-sw {
+  display:flex; align-items:center;
+  border:1.5px solid var(--border); border-radius:2px; overflow:hidden;
 }
-@media(max-width:640px){
-    nav{padding:0 20px}
-    .nav-links{display:none}
-    .nav-links.open{display:flex;flex-direction:column;position:fixed;top:68px;left:0;right:0;background:var(--cream);padding:20px;border-bottom:1px solid var(--border);gap:14px;z-index:998}
-    .nav-toggle{display:flex}
-    .hero{padding:88px 20px 56px}
-    .hero-stats{gap:20px}.stat-sep{display:none}
-    .sw{padding:56px 20px}
-    .res-grid{grid-template-columns:1fr}
-    .nums{grid-template-columns:1fr 1fr;gap:28px}
-    .f-row{grid-template-columns:1fr}
-    footer{padding:24px 20px}
-    .f-links{flex-wrap:wrap;gap:14px}
+.lang-btn {
+  font-size:11px; letter-spacing:.1em; font-weight:500;
+  padding:5px 10px; cursor:pointer; border:none; background:transparent;
+  color:var(--muted); font-family:'DM Sans',sans-serif;
+  transition:background .2s, color .2s;
+}
+.lang-btn.active { background:var(--sap); color:white }
+.lang-sep { width:1px; background:var(--border); height:18px }
+
+.nm { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px }
+.nm span { width:21px; height:1.5px; background:var(--ink); display:block; transition:all .3s }
+
+/* ═══ HERO ═══ */
+.hero {
+  min-height:100vh;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:100px 56px 80px;
+  position:relative;
+}
+/* local white backing so text pops on pattern */
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background: linear-gradient(105deg, rgba(250,250,246,0.97) 55%, rgba(250,250,246,0.7) 78%, rgba(250,250,246,0.1) 100%);
+  pointer-events:none;
+}
+.hero > * { position:relative }
+
+.h-eyebrow {
+  font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:28px;
+  opacity:0; animation:up .6s ease forwards .1s;
+}
+h1.hname {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(68px,10.5vw,148px);
+  font-weight:300; line-height:.9; letter-spacing:-.025em;
+  margin-bottom:20px;
+  opacity:0; animation:up .8s ease forwards .28s;
+}
+.hrole {
+  display:flex; align-items:baseline; gap:12px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(20px,2.8vw,34px); font-weight:300;
+  color:var(--mid); margin-bottom:42px;
+  opacity:0; animation:up .7s ease forwards .48s;
+}
+.hrole em { color:var(--sap); font-style:italic }
+#rc { transition:opacity .3s, transform .3s; display:inline-block }
+
+.hdesc {
+  font-size:15px; color:var(--mid); line-height:1.85; font-weight:300;
+  max-width:460px; margin-bottom:38px;
+  opacity:0; animation:up .7s ease forwards .65s;
+}
+.hbtns {
+  display:flex; gap:11px; flex-wrap:wrap; margin-bottom:64px;
+  opacity:0; animation:up .7s ease forwards .8s;
+}
+.bp {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--sap); color:white;
+  padding:13px 26px; font-size:14px; font-weight:400; border-radius:2px;
+  transition:background .2s, transform .15s;
+}
+.bp:hover { background:var(--sap2); transform:translateY(-2px) }
+.bg2 {
+  display:inline-flex; align-items:center; gap:7px;
+  border:1.5px solid var(--border); color:var(--mid);
+  padding:12px 22px; font-size:14px; border-radius:2px;
+  transition:border-color .2s, color .2s, transform .15s;
+}
+.bg2:hover { border-color:var(--mid); color:var(--ink); transform:translateY(-2px) }
+
+.hstats {
+  display:flex; align-items:center; gap:32px; flex-wrap:wrap;
+  padding-top:30px; border-top:1px solid var(--border);
+  opacity:0; animation:up .7s ease forwards .95s;
+}
+.stn {
+  font-family:'Cormorant Garamond',serif;
+  font-size:36px; font-weight:600; line-height:1;
+}
+.stn sup { font-size:20px; color:var(--sap) }
+.stl { font-size:11px; color:var(--muted); margin-top:3px }
+.stsep { width:1px; height:38px; background:var(--border) }
+
+/* ═══ SECTIONS ═══ */
+.sw { padding:88px 56px; position:relative }
+
+/* White backing for content sections */
+.sw::before {
+  content:'';
+  position:absolute; inset:0;
+  background:rgba(250,250,246,0.88);
+  pointer-events:none;
+}
+.sw > * { position:relative }
+
+.sw-alt::before { background:rgba(243,240,234,0.92) }
+
+.sec-tag {
+  display:inline-flex; align-items:center; gap:9px;
+  font-size:10px; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--sap); font-weight:500; margin-bottom:10px;
+}
+.sec-tag::before { content:''; width:16px; height:1.5px; background:var(--sap) }
+.sec-ttl {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(28px,3.8vw,48px); font-weight:300; line-height:1.08;
+}
+.sec-ttl em { font-style:italic; color:var(--sap) }
+
+/* ═══ AUDIENCES ═══ */
+.aud-hd { margin-bottom:52px }
+.aud-strip {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--border);
+}
+.aud-c {
+  background:var(--white); padding:44px 34px;
+  position:relative; overflow:hidden; transition:background .3s;
+}
+.aud-c:hover { background:#FDFCF9 }
+.aln { width:24px; height:3px; margin-bottom:22px; border-radius:1px }
+.aud-c:nth-child(1) .aln { background:var(--sap) }
+.aud-c:nth-child(2) .aln { background:var(--goldf) }
+.aud-c:nth-child(3) .aln { background:#6DB5D4 }
+.aud-bg {
+  font-family:'Cormorant Garamond',serif;
+  font-size:72px; font-weight:300; line-height:1;
+  position:absolute; top:10px; right:14px;
+  color:var(--border); pointer-events:none; user-select:none;
+  transition:color .3s;
+}
+.aud-c:hover .aud-bg { color:#DDD9D4 }
+.aud-title { font-family:'Cormorant Garamond',serif; font-size:21px; font-weight:600; margin-bottom:10px }
+.aud-desc { font-size:14px; color:var(--mid); line-height:1.78; font-weight:300; margin-bottom:20px }
+.aud-tag {
+  display:inline-block; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted);
+  border:1px solid var(--border); padding:5px 9px;
+}
+
+/* ═══ SERVICES ═══ */
+.svc-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; margin-top:52px; align-items:start }
+.svc-intro p { font-size:15px; color:var(--mid); line-height:1.85; font-weight:300; margin-top:16px }
+.svc-row {
+  display:flex; align-items:baseline; gap:18px;
+  padding:19px 0; border-bottom:1px solid var(--border);
+  transition:padding-left .2s; cursor:default;
+}
+.svc-row:first-child { border-top:1px solid var(--border) }
+.svc-row:hover { padding-left:7px }
+.svc-row:hover .sarr { color:var(--sap) }
+.svc-num { font-family:'Cormorant Garamond',serif; font-size:12px; color:var(--muted); min-width:20px }
+.svc-name { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; flex:1 }
+.svc-sub { display:block; font-size:11px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin-top:2px }
+.sarr { color:var(--border); transition:color .2s; font-size:14px }
+
+/* ═══ CALLOUT ═══ */
+.callout-wrap { position:relative }
+.callout-wrap::before {
+  content:'';
+  position:absolute; inset:0;
+  background:rgba(243,240,234,0.92);
+  pointer-events:none;
+}
+.callout-wrap > * { position:relative }
+.callout-inner {
+  margin:0 56px 88px;
+  background:var(--sap); color:white;
+  padding:60px 64px; position:relative; overflow:hidden;
+}
+.ci-tag { font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.55); margin-bottom:14px }
+.ci-ttl {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(24px,3.2vw,42px); font-weight:300; line-height:1.15;
+  margin-bottom:14px;
+}
+.ci-ttl em { font-style:italic; color:var(--goldf) }
+.ci-desc { font-size:15px; color:rgba(255,255,255,.68); line-height:1.82; font-weight:300; max-width:460px; margin-bottom:30px }
+.ci-feats { display:flex; flex-direction:column; gap:9px; margin-bottom:34px; max-width:360px }
+.ci-feat { display:flex; align-items:center; gap:9px; font-size:14px; color:rgba(255,255,255,.7); font-weight:300 }
+.ci-feat::before { content:''; width:4px; height:4px; background:var(--goldf); border-radius:50%; flex-shrink:0 }
+.bw {
+  display:inline-flex; align-items:center; gap:8px;
+  background:white; color:var(--sap);
+  padding:12px 24px; font-size:14px; font-weight:500; border-radius:2px;
+  transition:opacity .2s, transform .15s;
+}
+.bw:hover { opacity:.9; transform:translateY(-2px) }
+.ci-gem {
+  position:absolute; right:56px; top:50%; transform:translateY(-50%);
+  width:200px; opacity:.06; pointer-events:none;
+}
+
+/* ═══ RESOURCES ═══ */
+.res-g {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--border); margin-top:52px;
+}
+.rc {
+  display:flex; flex-direction:column;
+  background:var(--white); padding:32px;
+  transition:background .3s, transform .3s, box-shadow .3s;
+}
+.rc:hover { background:#FDFCF9; transform:translateY(-4px); box-shadow:0 14px 40px rgba(0,0,0,.07) }
+.rc-ico { font-size:20px; margin-bottom:14px }
+.rc-ttl { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; margin-bottom:8px }
+.rc-desc { font-size:13px; color:var(--mid); line-height:1.65; font-weight:300; flex:1; margin-bottom:18px }
+.rc-lnk {
+  display:flex; align-items:center; gap:5px;
+  font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--sap); font-weight:500; transition:gap .2s;
+}
+.rc:hover .rc-lnk { gap:9px }
+.rc-soon { cursor:default }
+.rc-soon:hover { transform:none; box-shadow:none; background:var(--white) }
+.rc-soon .rc-lnk { color:var(--muted) }
+
+/* ═══ NUMBERS ═══ */
+.numbers { background:var(--ink) }
+.numbers::before { background:rgba(20,18,15,0.97) }
+.numbers .sec-tag { color:var(--goldf) }
+.numbers .sec-tag::before { background:var(--goldf) }
+.numbers .sec-ttl { color:white }
+.numbers .sec-ttl em { color:var(--goldf) }
+.num-g { display:grid; grid-template-columns:repeat(4,1fr); gap:48px; margin-top:64px }
+.nb2 { width:24px; height:1.5px; background:var(--sap); margin-bottom:14px; opacity:.6 }
+.nval { font-family:'Cormorant Garamond',serif; font-size:56px; font-weight:300; line-height:1; color:white; margin-bottom:8px }
+.nval sup { font-size:28px; color:var(--sap); vertical-align:top; margin-top:7px; opacity:.9 }
+.nlbl { font-size:13px; color:rgba(255,255,255,.36); line-height:1.55 }
+.ptrow { margin-top:64px; padding-top:40px; border-top:1px solid rgba(255,255,255,.07) }
+.ptlbl { font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.2); margin-bottom:18px }
+.ptnames { display:flex; gap:26px; flex-wrap:wrap }
+.ptn { font-size:13px; color:rgba(255,255,255,.26); letter-spacing:.04em; cursor:default; transition:color .2s }
+.ptn:hover { color:rgba(255,255,255,.7) }
+
+/* ═══ CONTACT ═══ */
+.con-g { display:grid; grid-template-columns:1fr 1fr; gap:80px; margin-top:52px }
+.con-q { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; line-height:1.55; margin-bottom:36px; color:var(--mid) }
+.ci-items { display:flex; flex-direction:column; gap:22px }
+.cit { display:flex; gap:12px }
+.citd { width:4px; height:4px; border-radius:50%; background:var(--sap); flex-shrink:0; margin-top:10px }
+.citl { font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-bottom:3px }
+.citv { font-size:15px }
+.citv a { border-bottom:1px solid var(--border); transition:border-color .2s, color .2s }
+.citv a:hover { border-color:var(--sap); color:var(--sap) }
+.cform { display:flex; flex-direction:column; gap:14px }
+.frow { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+.fg { display:flex; flex-direction:column; gap:5px }
+.fl { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted) }
+.fi,.fsl,.fta {
+  padding:11px 14px; border:1.5px solid var(--border);
+  background:var(--white); font-family:'DM Sans',sans-serif;
+  font-size:14px; color:var(--ink); outline:none; border-radius:2px;
+  transition:border-color .2s; width:100%;
+}
+.fi:focus,.fsl:focus,.fta:focus { border-color:var(--sap) }
+.fta { resize:vertical; min-height:108px }
+.fnote { font-size:12px; color:var(--muted); line-height:1.5 }
+.fnote a { color:var(--sap) }
+.bsub { border:none; cursor:pointer; width:100%; justify-content:center; font-family:'DM Sans',sans-serif }
+
+/* ═══ FOOTER ═══ */
+footer {
+  background:var(--ink); padding:30px 56px;
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:14px;
+  border-top:1px solid rgba(255,255,255,.05);
+  position:relative;
+}
+footer::before { background:rgba(20,18,15,.98) }
+.flogo { font-family:'Cormorant Garamond',serif; font-size:17px; color:white; font-weight:600 }
+.flogo b { color:var(--goldf) }
+.fcopy { font-size:11px; color:rgba(255,255,255,.22) }
+.flinks { display:flex; gap:20px; list-style:none }
+.flinks a { font-size:11px; color:rgba(255,255,255,.3); transition:color .2s }
+.flinks a:hover { color:rgba(255,255,255,.8) }
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes up {
+  from { opacity:0; transform:translateY(20px) }
+  to   { opacity:1; transform:translateY(0) }
+}
+.reveal { opacity:0; transform:translateY(22px); transition:opacity .65s ease, transform .65s ease }
+.reveal.vis { opacity:1; transform:translateY(0) }
+.d1{transition-delay:.08s} .d2{transition-delay:.18s} .d3{transition-delay:.28s}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1040px){
+  nav,.hero,.sw,footer { padding-left:32px; padding-right:32px }
+  .callout-inner { margin-left:32px; margin-right:32px; padding:40px 36px }
+  .aud-strip { grid-template-columns:1fr; gap:1px }
+  .svc-grid { grid-template-columns:1fr; gap:44px }
+  .res-g { grid-template-columns:1fr 1fr }
+  .num-g { grid-template-columns:1fr 1fr; gap:36px }
+  .con-g { grid-template-columns:1fr; gap:44px }
+  footer { padding:24px 32px }
+}
+@media(max-width:620px){
+  nav { padding:0 20px }
+  .nl { display:none }
+  .nl.open {
+    display:flex; flex-direction:column;
+    position:fixed; top:62px; left:0; right:0;
+    background:rgba(250,250,246,.97); padding:18px;
+    border-bottom:1px solid var(--border); z-index:998; gap:14px;
+    backdrop-filter:blur(10px);
+  }
+  .nm { display:flex }
+  .hero,.sw { padding-left:20px; padding-right:20px }
+  .hstats { gap:16px } .stsep { display:none }
+  .callout-inner { margin:0 0 56px; padding:30px 22px }
+  .res-g { grid-template-columns:1fr }
+  .num-g { grid-template-columns:1fr 1fr; gap:22px }
+  .frow { grid-template-columns:1fr }
+  footer { padding:20px; flex-direction:column; align-items:flex-start }
 }
 </style>
 </head>
 <body>
+<div id="page">
 
 <!-- NAV -->
 <nav id="nb">
-    <a href="#" class="nav-logo">Азат <span>Израилов</span></a>
-    <ul class="nav-links" id="nl">
-        <li><a href="#audiences">Для кого</a></li>
-        <li><a href="#services">Услуги</a></li>
-        <li><a href="#resources">Ресурсы</a></li>
-        <li><a href="#about">Опыт</a></li>
-        <li><a href="#contact" class="nav-cta">Связаться</a></li>
+  <a href="#" class="logo">Азат <b>Исраилов</b></a>
+  <div class="nav-r">
+    <ul class="nl" id="nl">
+      <li><a href="#aud" data-i="nav_aud">Для кого</a></li>
+      <li><a href="#svc" data-i="nav_svc">Услуги</a></li>
+      <li><a href="#res" data-i="nav_res">Ресурсы</a></li>
+      <li><a href="#num" data-i="nav_exp">Опыт</a></li>
+      <li><a href="#con" class="nl-cta" data-i="nav_con">Связаться</a></li>
     </ul>
-    <div class="nav-toggle" onclick="tNav()"><span></span><span></span><span></span></div>
+    <div class="lang-sw">
+      <button class="lang-btn active" onclick="setLang('ru')" id="lb-ru">RU</button>
+      <div class="lang-sep"></div>
+      <button class="lang-btn" onclick="setLang('en')" id="lb-en">EN</button>
+    </div>
+    <div class="nm" onclick="navToggle()"><span></span><span></span><span></span></div>
+  </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero" id="hero">
-    <div>
-        <div class="hero-eyebrow">Консультант · Бизнес-тренер · Фандрайзер</div>
-        <h1 class="hero-title">
-            Деньги<br>
-            <em>есть.</em><br>
-            Нужно знать,<br>
-            где искать.
-        </h1>
-        <p class="hero-desc">
-            15+ лет помогаю предпринимателям, НКО и консультантам 
-            находить финансирование, строить устойчивые организации 
-            и расти — в Кыргызстане и за его пределами.
-        </p>
-        <div class="hero-btns">
-            <a href="#contact" class="btn-p">Записаться на консультацию →</a>
-            <a href="#resources" class="btn-g">Изучить ресурсы</a>
-        </div>
-        <div class="hero-stats">
-            <div>
-                <div class="stat-n">15<sup>+</sup></div>
-                <div class="stat-l">лет опыта</div>
-            </div>
-            <div class="stat-sep"></div>
-            <div>
-                <div class="stat-n">$2.8M</div>
-                <div class="stat-l">привлечено финансирования</div>
-            </div>
-            <div class="stat-sep"></div>
-            <div>
-                <div class="stat-n">36</div>
-                <div class="stat-l">стран-партнёров</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- HERO GRAPHIC: Shyrdak frame + Yurt -->
-    <div class="hero-right">
-        <svg class="hero-svg" viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
-            <!-- Background -->
-            <rect width="480" height="480" fill="#F5F0E8" rx="3"/>
-
-            <!-- Shyrdak border: diamond repeats along all 4 edges -->
-            <g fill="#C41E3A">
-                <!-- Corners (solid) -->
-                <rect x="0" y="0" width="18" height="18" opacity=".65"/>
-                <rect x="462" y="0" width="18" height="18" opacity=".65"/>
-                <rect x="0" y="462" width="18" height="18" opacity=".65"/>
-                <rect x="462" y="462" width="18" height="18" opacity=".65"/>
-
-                <!-- Top edge diamonds -->
-                <polygon points="30,0 42,12 30,24 18,12" opacity=".55"/>
-                <polygon points="60,0 72,12 60,24 48,12" opacity=".35"/>
-                <polygon points="90,0 102,12 90,24 78,12" opacity=".55"/>
-                <polygon points="120,0 132,12 120,24 108,12" opacity=".35"/>
-                <polygon points="150,0 162,12 150,24 138,12" opacity=".55"/>
-                <polygon points="180,0 192,12 180,24 168,12" opacity=".35"/>
-                <polygon points="210,0 222,12 210,24 198,12" opacity=".55"/>
-                <polygon points="240,0 252,12 240,24 228,12" opacity=".35"/>
-                <polygon points="270,0 282,12 270,24 258,12" opacity=".55"/>
-                <polygon points="300,0 312,12 300,24 288,12" opacity=".35"/>
-                <polygon points="330,0 342,12 330,24 318,12" opacity=".55"/>
-                <polygon points="360,0 372,12 360,24 348,12" opacity=".35"/>
-                <polygon points="390,0 402,12 390,24 378,12" opacity=".55"/>
-                <polygon points="420,0 432,12 420,24 408,12" opacity=".35"/>
-                <polygon points="450,0 462,12 450,24 438,12" opacity=".55"/>
-
-                <!-- Bottom edge diamonds -->
-                <polygon points="30,456 42,468 30,480 18,468" opacity=".55"/>
-                <polygon points="60,456 72,468 60,480 48,468" opacity=".35"/>
-                <polygon points="90,456 102,468 90,480 78,468" opacity=".55"/>
-                <polygon points="120,456 132,468 120,480 108,468" opacity=".35"/>
-                <polygon points="150,456 162,468 150,480 138,468" opacity=".55"/>
-                <polygon points="180,456 192,468 180,480 168,468" opacity=".35"/>
-                <polygon points="210,456 222,468 210,480 198,468" opacity=".55"/>
-                <polygon points="240,456 252,468 240,480 228,468" opacity=".35"/>
-                <polygon points="270,456 282,468 270,480 258,468" opacity=".55"/>
-                <polygon points="300,456 312,468 300,480 288,468" opacity=".35"/>
-                <polygon points="330,456 342,468 330,480 318,468" opacity=".55"/>
-                <polygon points="360,456 372,468 360,480 348,468" opacity=".35"/>
-                <polygon points="390,456 402,468 390,480 378,468" opacity=".55"/>
-                <polygon points="420,456 432,468 420,480 408,468" opacity=".35"/>
-                <polygon points="450,456 462,468 450,480 438,468" opacity=".55"/>
-
-                <!-- Left edge diamonds -->
-                <polygon points="0,30 12,42 24,30 12,18" opacity=".55"/>
-                <polygon points="0,60 12,72 24,60 12,48" opacity=".35"/>
-                <polygon points="0,90 12,102 24,90 12,78" opacity=".55"/>
-                <polygon points="0,120 12,132 24,120 12,108" opacity=".35"/>
-                <polygon points="0,150 12,162 24,150 12,138" opacity=".55"/>
-                <polygon points="0,180 12,192 24,180 12,168" opacity=".35"/>
-                <polygon points="0,210 12,222 24,210 12,198" opacity=".55"/>
-                <polygon points="0,240 12,252 24,240 12,228" opacity=".35"/>
-                <polygon points="0,270 12,282 24,270 12,258" opacity=".55"/>
-                <polygon points="0,300 12,312 24,300 12,288" opacity=".35"/>
-                <polygon points="0,330 12,342 24,330 12,318" opacity=".55"/>
-                <polygon points="0,360 12,372 24,360 12,348" opacity=".35"/>
-                <polygon points="0,390 12,402 24,390 12,378" opacity=".55"/>
-                <polygon points="0,420 12,432 24,420 12,408" opacity=".35"/>
-                <polygon points="0,450 12,462 24,450 12,438" opacity=".55"/>
-
-                <!-- Right edge diamonds -->
-                <polygon points="456,30 468,42 480,30 468,18" opacity=".55"/>
-                <polygon points="456,60 468,72 480,60 468,48" opacity=".35"/>
-                <polygon points="456,90 468,102 480,90 468,78" opacity=".55"/>
-                <polygon points="456,120 468,132 480,120 468,108" opacity=".35"/>
-                <polygon points="456,150 468,162 480,150 468,138" opacity=".55"/>
-                <polygon points="456,180 468,192 480,180 468,168" opacity=".35"/>
-                <polygon points="456,210 468,222 480,210 468,198" opacity=".55"/>
-                <polygon points="456,240 468,252 480,240 468,228" opacity=".35"/>
-                <polygon points="456,270 468,282 480,270 468,258" opacity=".55"/>
-                <polygon points="456,300 468,312 480,300 468,288" opacity=".35"/>
-                <polygon points="456,330 468,342 480,330 468,318" opacity=".55"/>
-                <polygon points="456,360 468,372 480,360 468,348" opacity=".35"/>
-                <polygon points="456,390 468,402 480,390 468,378" opacity=".55"/>
-                <polygon points="456,420 468,432 480,420 468,408" opacity=".35"/>
-                <polygon points="456,450 468,462 480,450 468,438" opacity=".55"/>
-            </g>
-
-            <!-- Gold ring (like tunduk) -->
-            <circle cx="240" cy="240" r="155" fill="none" stroke="#C0832A" stroke-width="1.2" opacity=".3"/>
-            <circle cx="240" cy="240" r="142" fill="none" stroke="#C0832A" stroke-width=".5" opacity=".18"/>
-            <!-- Inner white circle -->
-            <circle cx="240" cy="240" r="136" fill="rgba(255,255,255,.65)"/>
-
-            <!-- Subtle radial spokes (tunduk metaphor) -->
-            <g stroke="#C41E3A" stroke-width=".5" opacity=".1">
-                <line x1="240" y1="104" x2="240" y2="376"/>
-                <line x1="104" y1="240" x2="376" y2="240"/>
-                <line x1="144" y1="144" x2="336" y2="336"/>
-                <line x1="336" y1="144" x2="144" y2="336"/>
-                <line x1="178" y1="112" x2="302" y2="368"/>
-                <line x1="112" y1="302" x2="368" y2="178"/>
-                <line x1="302" y1="112" x2="178" y2="368"/>
-                <line x1="112" y1="178" x2="368" y2="302"/>
-            </g>
-
-            <!-- YURT SILHOUETTE -->
-            <g transform="translate(240,245)">
-                <!-- Tunduk (crown ring) -->
-                <circle cx="0" cy="-82" r="21" fill="none" stroke="#1A1814" stroke-width="2.5"/>
-                <circle cx="0" cy="-82" r="13" fill="none" stroke="#1A1814" stroke-width="1.2" opacity=".5"/>
-                <!-- Tunduk cross bars -->
-                <line x1="-13" y1="-82" x2="13" y2="-82" stroke="#1A1814" stroke-width="1.2" opacity=".5"/>
-                <line x1="0" y1="-95" x2="0" y2="-69" stroke="#1A1814" stroke-width="1.2" opacity=".5"/>
-
-                <!-- Uuk (roof poles) -->
-                <g stroke="#1A1814" stroke-width="1.2" opacity=".45">
-                    <line x1="-8" y1="-61" x2="-108" y2="32"/>
-                    <line x1="8" y1="-61" x2="108" y2="32"/>
-                    <line x1="-5" y1="-62" x2="-78" y2="-12"/>
-                    <line x1="5" y1="-62" x2="78" y2="-12"/>
-                    <line x1="-7" y1="-62" x2="-115" y2="14"/>
-                    <line x1="7" y1="-62" x2="115" y2="14"/>
-                    <line x1="-4" y1="-63" x2="-48" y2="-38"/>
-                    <line x1="4" y1="-63" x2="48" y2="-38"/>
-                </g>
-
-                <!-- Dome -->
-                <path d="M-120,32 Q-95,-30 0,-61 Q95,-30 120,32"
-                      fill="none" stroke="#1A1814" stroke-width="2.5" stroke-linejoin="round"/>
-
-                <!-- Kerege (walls) -->
-                <rect x="-120" y="32" width="240" height="72"
-                      fill="none" stroke="#1A1814" stroke-width="2.5" rx="2"/>
-
-                <!-- Lattice lines on walls -->
-                <g stroke="#1A1814" stroke-width=".9" opacity=".28">
-                    <line x1="-90" y1="32" x2="-90" y2="104"/>
-                    <line x1="-60" y1="32" x2="-60" y2="104"/>
-                    <line x1="-30" y1="32" x2="-30" y2="104"/>
-                    <line x1="30" y1="32" x2="30" y2="104"/>
-                    <line x1="60" y1="32" x2="60" y2="104"/>
-                    <line x1="90" y1="32" x2="90" y2="104"/>
-                    <line x1="-120" y1="56" x2="-30" y2="32"/>
-                    <line x1="-120" y1="80" x2="30" y2="32"/>
-                    <line x1="-60" y1="104" x2="120" y2="44"/>
-                    <line x1="30" y1="104" x2="120" y2="68"/>
-                </g>
-
-                <!-- Door (esik) -->
-                <rect x="-28" y="46" width="56" height="58"
-                      fill="rgba(245,240,232,.85)" stroke="#1A1814" stroke-width="2" rx="2"/>
-                <path d="M-28,46 Q0,30 28,46" fill="none" stroke="#1A1814" stroke-width="1.5"/>
-            </g>
-
-            <!-- Cardinal diamonds (shyrdak accent) -->
-            <g fill="#C41E3A">
-                <polygon points="240,90 249,103 240,116 231,103"/>
-                <polygon points="240,364 249,377 240,390 231,377"/>
-                <polygon points="90,240 103,249 116,240 103,231"/>
-                <polygon points="364,240 377,249 390,240 377,231"/>
-            </g>
-
-            <!-- Diagonal gold diamonds -->
-            <g fill="#C0832A" opacity=".45">
-                <polygon points="127,127 136,136 127,145 118,136"/>
-                <polygon points="353,127 362,136 353,145 344,136"/>
-                <polygon points="127,353 136,362 127,371 118,362"/>
-                <polygon points="353,353 362,362 353,371 344,362"/>
-            </g>
-
-            <!-- Caption -->
-            <text x="240" y="450" text-anchor="middle"
-                  font-family="'Cormorant Garamond',serif"
-                  font-size="10" fill="#C41E3A" opacity=".55"
-                  letter-spacing="3.5">KYRGYZSTAN · БОЗ ҮЙ</text>
-        </svg>
-    </div>
+  <div class="h-eyebrow" data-i="eyebrow">Бишкек · Кыргызстан · Международный опыт</div>
+  <h1 class="hname">Азат<br>Исраилов</h1>
+  <div class="hrole">— <em id="rc">консультант</em></div>
+  <p class="hdesc" data-i="hero_desc">15+ лет помогаю предпринимателям, НКО и консультантам находить финансирование, строить устойчивые организации и выходить на новый уровень.</p>
+  <div class="hbtns">
+    <a href="#con" class="bp" data-i="cta_main">Записаться на консультацию →</a>
+    <a href="#res" class="bg2" data-i="cta_res">Ресурсы</a>
+  </div>
+  <div class="hstats">
+    <div><div class="stn">15<sup>+</sup></div><div class="stl" data-i="stat1">лет опыта</div></div>
+    <div class="stsep"></div>
+    <div><div class="stn">$2.8<sup>M</sup></div><div class="stl" data-i="stat2">привлечено</div></div>
+    <div class="stsep"></div>
+    <div><div class="stn">36</div><div class="stl" data-i="stat3">стран-партнёров</div></div>
+  </div>
 </section>
 
-<!-- Shyrdak Divider -->
-<div class="s-div">
-    <svg width="100%" height="36" viewBox="0 0 1200 36" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <pattern id="p1" x="0" y="0" width="48" height="36" patternUnits="userSpaceOnUse">
-                <polygon points="24,2 34,12 24,22 14,12" fill="#C41E3A" opacity=".12"/>
-                <polygon points="24,16 30,22 24,28 18,22" fill="#C41E3A" opacity=".07"/>
-                <polygon points="0,2 8,10 0,18" fill="#C41E3A" opacity=".07"/>
-                <polygon points="48,2 40,10 48,18" fill="#C41E3A" opacity=".07"/>
-            </pattern>
-        </defs>
-        <rect width="1200" height="36" fill="url(#p1)"/>
-        <line x1="0" y1="18" x2="1200" y2="18" stroke="#C41E3A" stroke-width=".5" opacity=".14"/>
-    </svg>
-</div>
-
 <!-- AUDIENCES -->
-<section class="sw audiences" id="audiences">
-    <div class="aud-head reveal">
-        <div>
-            <div class="s-tag">Для кого</div>
-            <h2 class="s-ttl">Я работаю<br>с <em>тремя</em> типами клиентов</h2>
-        </div>
-        <p class="aud-sub">У каждой аудитории свои боли и цели. Найдите себя — и давайте поговорим.</p>
+<section class="sw" id="aud">
+  <div class="aud-hd reveal">
+    <div class="sec-tag" data-i="aud_tag">Для кого</div>
+    <h2 class="sec-ttl" data-i="aud_ttl">Три типа<br><em>клиентов</em></h2>
+  </div>
+  <div class="aud-strip">
+    <div class="aud-c reveal d1">
+      <div class="aud-bg">01</div>
+      <div class="aln"></div>
+      <div class="aud-title" data-i="a1_title">Предприниматели и МСБ</div>
+      <p class="aud-desc" data-i="a1_desc">Строите бизнес, ищете инвестиции или гранты, хотите выйти на новый уровень. Нужен практик — не теоретик.</p>
+      <div class="aud-tag" data-i="a1_tag">💼 Платные консультации и тренинги</div>
     </div>
-
-    <div class="aud-grid reveal">
-        <!-- Card 1 -->
-        <div class="aud-card">
-            <div class="aud-top"></div>
-            <div class="aud-num">01</div>
-            <svg class="aud-ico" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="4" y="18" width="36" height="22" rx="2" stroke="#C41E3A" stroke-width="2"/>
-                <path d="M14 18V13C14 9.686 16.686 7 20 7H24C27.314 7 30 9.686 30 13V18" stroke="#C41E3A" stroke-width="2"/>
-                <circle cx="22" cy="29" r="3" fill="#C41E3A"/>
-                <line x1="22" y1="32" x2="22" y2="36" stroke="#C41E3A" stroke-width="1.5"/>
-            </svg>
-            <div class="aud-title">Предприниматели и МСБ</div>
-            <p class="aud-desc">Вы строите бизнес, ищете инвестиции или гранты, хотите выйти на новый уровень. Вам нужен практик — не теоретик.</p>
-            <div class="aud-note">💼 Платные консультации и тренинги</div>
-            <svg class="aud-orn" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="45,5 85,45 45,85 5,45" fill="none" stroke="#C41E3A" stroke-width="2"/>
-                <polygon points="45,22 68,45 45,68 22,45" fill="#C41E3A"/>
-                <polygon points="45,36 54,45 45,54 36,45" fill="none" stroke="#F5F0E8" stroke-width="2"/>
-            </svg>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="aud-card">
-            <div class="aud-top"></div>
-            <div class="aud-num">02</div>
-            <svg class="aud-ico" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="22" cy="13" r="6" stroke="#2B4C7E" stroke-width="2"/>
-                <path d="M8 37C8 29.268 14.268 23 22 23C29.732 23 36 29.268 36 37" stroke="#2B4C7E" stroke-width="2"/>
-                <line x1="30" y1="23" x2="36" y2="17" stroke="#2B4C7E" stroke-width="1.5" opacity=".5"/>
-                <line x1="14" y1="23" x2="8" y2="17" stroke="#2B4C7E" stroke-width="1.5" opacity=".5"/>
-                <circle cx="36" cy="15" r="4" stroke="#2B4C7E" stroke-width="1.5" opacity=".5"/>
-                <circle cx="8" cy="15" r="4" stroke="#2B4C7E" stroke-width="1.5" opacity=".5"/>
-            </svg>
-            <div class="aud-title">НКО и некоммерческие</div>
-            <p class="aud-desc">Гранты, доноры, отчётность, стратегия. Я знаю этот мир изнутри — 15 лет в международном развитии.</p>
-            <div class="aud-note">🤝 Тренинги, фасилитация, менторство</div>
-            <svg class="aud-orn" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="45,5 85,45 45,85 5,45" fill="none" stroke="#2B4C7E" stroke-width="2"/>
-                <polygon points="45,22 68,45 45,68 22,45" fill="#2B4C7E"/>
-                <polygon points="45,36 54,45 45,54 36,45" fill="none" stroke="#F5F0E8" stroke-width="2"/>
-            </svg>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="aud-card">
-            <div class="aud-top"></div>
-            <div class="aud-num">03</div>
-            <svg class="aud-ico" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22 4L38 12V22C38 30.837 30.837 38 22 38C13.163 38 6 30.837 6 22V12L22 4Z" stroke="#C0832A" stroke-width="2"/>
-                <polyline points="16,22 20,26 28,18" stroke="#C0832A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <div class="aud-title">Консультанты и эксперты</div>
-            <p class="aud-desc">Хотите запустить своё дело, углубиться в фандрайзинг или выстроить систему работы с клиентами.</p>
-            <div class="aud-note">🎓 Менторинг, курсы, коучинг</div>
-            <svg class="aud-orn" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="45,5 85,45 45,85 5,45" fill="none" stroke="#C0832A" stroke-width="2"/>
-                <polygon points="45,22 68,45 45,68 22,45" fill="#C0832A"/>
-                <polygon points="45,36 54,45 45,54 36,45" fill="none" stroke="#F5F0E8" stroke-width="2"/>
-            </svg>
-        </div>
+    <div class="aud-c reveal d2">
+      <div class="aud-bg">02</div>
+      <div class="aln"></div>
+      <div class="aud-title" data-i="a2_title">НКО и некоммерческие</div>
+      <p class="aud-desc" data-i="a2_desc">Гранты, доноры, стратегия, отчётность. 15 лет в международном развитии — знаю этот мир изнутри.</p>
+      <div class="aud-tag" data-i="a2_tag">🤝 Тренинги · фасилитация · менторство</div>
     </div>
+    <div class="aud-c reveal d3">
+      <div class="aud-bg">03</div>
+      <div class="aln"></div>
+      <div class="aud-title" data-i="a3_title">Консультанты и эксперты</div>
+      <p class="aud-desc" data-i="a3_desc">Хотите запустить своё дело, углубиться в фандрайзинг или выстроить систему работы с клиентами.</p>
+      <div class="aud-tag" data-i="a3_tag">🎓 Менторинг · курсы · коучинг</div>
+    </div>
+  </div>
 </section>
 
 <!-- SERVICES -->
-<section class="sw services" id="services">
+<section class="sw sw-alt" id="svc">
+  <div class="svc-grid">
     <div class="reveal">
-        <div class="s-tag">Что я делаю</div>
-        <h2 class="s-ttl">Форматы<br><em>работы</em></h2>
+      <div class="sec-tag" data-i="svc_tag">Что я делаю</div>
+      <h2 class="sec-ttl" data-i="svc_ttl">Форматы<br><em>работы</em></h2>
+      <p data-i="svc_desc">Работаю индивидуально и в группах — от разовой консультации до долгосрочного сопровождения. Онлайн и офлайн в Бишкеке.</p>
     </div>
-    <div class="svc-lay">
-        <div class="svc-list reveal d1">
-            <div class="svc-item"><div class="svc-n">01</div><div class="svc-info"><div class="svc-name">Бизнес-консалтинг</div><div class="svc-sub">Индивидуально · Проектно</div></div><div class="svc-arrow">→</div></div>
-            <div class="svc-item"><div class="svc-n">02</div><div class="svc-info"><div class="svc-name">Фандрайзинг и гранты</div><div class="svc-sub">Заявки · Стратегия · Доноры</div></div><div class="svc-arrow">→</div></div>
-            <div class="svc-item"><div class="svc-n">03</div><div class="svc-info"><div class="svc-name">Бизнес-тренинги</div><div class="svc-sub">Группы · Корпоративные</div></div><div class="svc-arrow">→</div></div>
-            <div class="svc-item"><div class="svc-n">04</div><div class="svc-info"><div class="svc-name">Бизнес-планирование</div><div class="svc-sub">Под инвестора · Под грант</div></div><div class="svc-arrow">→</div></div>
-            <div class="svc-item"><div class="svc-n">05</div><div class="svc-info"><div class="svc-name">Менторинг и акселерация</div><div class="svc-sub">Accelerate Prosperity · John Galt</div></div><div class="svc-arrow">→</div></div>
-            <div class="svc-item"><div class="svc-n">06</div><div class="svc-info"><div class="svc-name">Организационное развитие</div><div class="svc-sub">НКО · Стратегическое планирование</div></div><div class="svc-arrow">→</div></div>
-        </div>
-
-        <div class="callout reveal d2">
-            <div class="callout-lbl">⭐ Популярный продукт</div>
-            <h3 class="callout-ttl">Онлайн-курс<br>«Фандрайзинг с нуля до гранта»</h3>
-            <p class="callout-desc">Полная система поиска и привлечения финансирования — от понимания доноров до отправки выигрышной заявки.</p>
-            <div class="callout-feats">
-                <div class="callout-feat">6 модулей с видеоуроками</div>
-                <div class="callout-feat">База доноров и шаблоны заявок</div>
-                <div class="callout-feat">Живые разборы и Q&amp;A сессии</div>
-                <div class="callout-feat">Сертификат по завершению</div>
-            </div>
-            <a href="https://connect4funds.tilda.ws/" target="_blank" class="btn-p">Узнать подробнее →</a>
-            <svg class="callout-orn" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="90,8 172,90 90,172 8,90" fill="none" stroke="#C0832A" stroke-width="2.5"/>
-                <polygon points="90,38 142,90 90,142 38,90" fill="#C0832A"/>
-                <polygon points="90,68 112,90 90,112 68,90" fill="none" stroke="#F2EDE6" stroke-width="2.5"/>
-            </svg>
-        </div>
+    <div class="reveal d2">
+      <div class="svc-row"><span class="svc-num">01</span><div class="svc-name" data-i="s1">Бизнес-консалтинг<span class="svc-sub" data-i="s1s">Индивидуально · Проектно</span></div><span class="sarr">→</span></div>
+      <div class="svc-row"><span class="svc-num">02</span><div class="svc-name" data-i="s2">Фандрайзинг и гранты<span class="svc-sub" data-i="s2s">Заявки · Стратегия · Доноры</span></div><span class="sarr">→</span></div>
+      <div class="svc-row"><span class="svc-num">03</span><div class="svc-name" data-i="s3">Бизнес-тренинги<span class="svc-sub" data-i="s3s">Группы · Корпоративные</span></div><span class="sarr">→</span></div>
+      <div class="svc-row"><span class="svc-num">04</span><div class="svc-name" data-i="s4">Бизнес-планирование<span class="svc-sub" data-i="s4s">Под инвестора · Под грант</span></div><span class="sarr">→</span></div>
+      <div class="svc-row"><span class="svc-num">05</span><div class="svc-name" data-i="s5">Менторинг и акселерация<span class="svc-sub" data-i="s5s">Accelerate Prosperity · John Galt</span></div><span class="sarr">→</span></div>
+      <div class="svc-row"><span class="svc-num">06</span><div class="svc-name" data-i="s6">Организационное развитие<span class="svc-sub" data-i="s6s">НКО · Стратегическое планирование</span></div><span class="sarr">→</span></div>
     </div>
+  </div>
 </section>
 
-<!-- Shyrdak Divider (flipped) -->
-<div class="s-div" style="transform:scaleY(-1)">
-    <svg width="100%" height="36" viewBox="0 0 1200 36" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <pattern id="p2" x="0" y="0" width="48" height="36" patternUnits="userSpaceOnUse">
-                <polygon points="24,2 34,12 24,22 14,12" fill="#C41E3A" opacity=".12"/>
-                <polygon points="24,16 30,22 24,28 18,22" fill="#C41E3A" opacity=".07"/>
-                <polygon points="0,2 8,10 0,18" fill="#C41E3A" opacity=".07"/>
-                <polygon points="48,2 40,10 48,18" fill="#C41E3A" opacity=".07"/>
-            </pattern>
-        </defs>
-        <rect width="1200" height="36" fill="url(#p2)"/>
-        <line x1="0" y1="18" x2="1200" y2="18" stroke="#C41E3A" stroke-width=".5" opacity=".14"/>
+<!-- COURSE CALLOUT -->
+<div class="callout-wrap">
+  <div class="callout-inner reveal">
+    <div class="ci-tag" data-i="c_tag">⭐ Популярный продукт</div>
+    <h3 class="ci-ttl" data-i="c_ttl">Онлайн-курс<br>«Фандрайзинг с нуля<br>до <em>гранта</em>»</h3>
+    <p class="ci-desc" data-i="c_desc">Полная система поиска и привлечения финансирования — от понимания психологии доноров до отправки выигрышной заявки.</p>
+    <div class="ci-feats">
+      <div class="ci-feat" data-i="cf1">6 модулей с видеоуроками</div>
+      <div class="ci-feat" data-i="cf2">База доноров и шаблоны заявок</div>
+      <div class="ci-feat" data-i="cf3">Живые разборы и Q&amp;A сессии</div>
+      <div class="ci-feat" data-i="cf4">Сертификат по завершению</div>
+    </div>
+    <a href="https://connect4funds.tilda.ws/" target="_blank" class="bw" data-i="c_btn">Подробнее о курсе →</a>
+    <svg class="ci-gem" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="100,4 196,100 100,196 4,100" fill="none" stroke="white" stroke-width="1.5"/>
+      <polygon points="100,30 170,100 100,170 30,100" fill="none" stroke="white" stroke-width="1"/>
+      <polygon points="100,58 142,100 100,142 58,100" fill="none" stroke="white" stroke-width=".7"/>
+      <polygon points="100,82 118,100 100,118 82,100" fill="white"/>
     </svg>
+  </div>
 </div>
 
 <!-- RESOURCES -->
-<section class="sw resources" id="resources">
-    <div class="res-head reveal">
-        <div>
-            <div class="s-tag">Ресурсы</div>
-            <h2 class="s-ttl">Всё в<br><em>одном месте</em></h2>
-        </div>
-        <p class="res-sub">Инструменты, базы данных, курсы — собраны здесь, чтобы вы не тратили время на поиск.</p>
+<section class="sw" id="res">
+  <div class="reveal">
+    <div class="sec-tag" data-i="res_tag">Ресурсы</div>
+    <h2 class="sec-ttl" data-i="res_ttl">Всё в <em>одном месте</em></h2>
+  </div>
+  <div class="res-g">
+    <a class="rc reveal d1" href="https://connect4funds.tilda.ws/" target="_blank">
+      <div class="rc-ico">🎓</div>
+      <div class="rc-ttl" data-i="r1_ttl">Курс по фандрайзингу</div>
+      <p class="rc-desc" data-i="r1_desc">От понимания доноров до выигрышной заявки. Онлайн, на русском.</p>
+      <div class="rc-lnk" data-i="r_open">Открыть →</div>
+    </a>
+    <a class="rc reveal d2" href="https://grantmanual.tilda.ws/" target="_blank">
+      <div class="rc-ico">📖</div>
+      <div class="rc-ttl" data-i="r2_ttl">Руководство по грантам</div>
+      <p class="rc-desc" data-i="r2_desc">Пошаговый гид для тех, кто впервые ищет гранты.</p>
+      <div class="rc-lnk" data-i="r_read">Читать →</div>
+    </a>
+    <a class="rc reveal d3" href="https://connect4baza.tilda.ws/" target="_blank">
+      <div class="rc-ico">🗄️</div>
+      <div class="rc-ttl" data-i="r3_ttl">База данных доноров</div>
+      <p class="rc-desc" data-i="r3_desc">Каталог фондов и грантодателей Центральной Азии и СНГ.</p>
+      <div class="rc-lnk" data-i="r_open2">Открыть →</div>
+    </a>
+    <a class="rc reveal d1" href="https://pro4dev.tilda.ws/" target="_blank">
+      <div class="rc-ico">🚀</div>
+      <div class="rc-ttl" data-i="r4_ttl">Тренинги Pro4Dev</div>
+      <p class="rc-desc" data-i="r4_desc">Программы для НКО, предпринимателей и специалистов по развитию.</p>
+      <div class="rc-lnk" data-i="r_view">Смотреть →</div>
+    </a>
+    <a class="rc reveal d2" href="https://www.facebook.com/connect4kg" target="_blank">
+      <div class="rc-ico">💡</div>
+      <div class="rc-ttl" data-i="r5_ttl">Connect4KG</div>
+      <p class="rc-desc" data-i="r5_desc">Актуальные возможности финансирования и гранты для Кыргызстана.</p>
+      <div class="rc-lnk" data-i="r_sub">Подписаться →</div>
+    </a>
+    <div class="rc rc-soon reveal d3">
+      <div class="rc-ico">🤖</div>
+      <div class="rc-ttl" data-i="r6_ttl">ИИ-ассистент</div>
+      <p class="rc-desc" data-i="r6_desc">Умный бот для поиска доноров и проверки заявок. В разработке.</p>
+      <div class="rc-lnk" data-i="r_soon">Скоро...</div>
     </div>
-    <div class="res-grid">
-        <a class="res-card reveal d1" href="https://connect4funds.tilda.ws/" target="_blank">
-            <div class="res-emo">🎓</div>
-            <div class="res-ttl">Курс по фандрайзингу</div>
-            <p class="res-desc">Онлайн-курс о поиске и привлечении финансирования. От понимания доноров до выигрышной заявки.</p>
-            <div class="res-lnk">Открыть курс →</div>
-        </a>
-        <a class="res-card reveal d2" href="https://grantmanual.tilda.ws/" target="_blank">
-            <div class="res-emo">📖</div>
-            <div class="res-ttl">Руководство по грантам</div>
-            <p class="res-desc">Пошаговое руководство для тех, кто впервые ищет гранты. Практично, ясно, на русском.</p>
-            <div class="res-lnk">Читать руководство →</div>
-        </a>
-        <a class="res-card reveal d3" href="https://connect4baza.tilda.ws/" target="_blank">
-            <div class="res-emo">🗄️</div>
-            <div class="res-ttl">База данных доноров</div>
-            <p class="res-desc">Каталог фондов, грантодателей и инвесторов, работающих в Центральной Азии и СНГ.</p>
-            <div class="res-lnk">Перейти к базе →</div>
-        </a>
-        <a class="res-card reveal d1" href="https://pro4dev.tilda.ws/" target="_blank">
-            <div class="res-emo">🚀</div>
-            <div class="res-ttl">Тренинги Pro4Dev</div>
-            <p class="res-desc">Программы обучения для НКО, предпринимателей и специалистов в сфере развития.</p>
-            <div class="res-lnk">Смотреть тренинги →</div>
-        </a>
-        <a class="res-card reveal d2" href="https://www.facebook.com/connect4kg" target="_blank">
-            <div class="res-emo">💡</div>
-            <div class="res-ttl">Connect4KG: Возможности</div>
-            <p class="res-desc">Актуальные возможности финансирования, гранты и ресурсы для Кыргызстана — в одной ленте.</p>
-            <div class="res-lnk">Подписаться →</div>
-        </a>
-        <div class="res-card res-soon reveal d3">
-            <div class="res-emo">🤖</div>
-            <div class="res-ttl">ИИ-ассистент (скоро)</div>
-            <p class="res-desc">Умный бот, который поможет найти доноров, проверит заявку и ответит на вопросы по фандрайзингу.</p>
-            <div class="res-lnk" style="color:var(--muted)">В разработке...</div>
-        </div>
-    </div>
+  </div>
 </section>
 
-<!-- DARK: NUMBERS & PARTNERS -->
-<section class="sw dark" id="about">
-    <svg class="dark-orn" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="180,18 342,180 180,342 18,180" fill="none" stroke="white" stroke-width="2"/>
-        <polygon points="180,64 296,180 180,296 64,180" fill="none" stroke="white" stroke-width="1.5"/>
-        <polygon points="180,110 250,180 180,250 110,180" fill="none" stroke="white" stroke-width="1"/>
-        <polygon points="180,156 204,180 180,204 156,180" fill="white"/>
-    </svg>
-    <div class="reveal">
-        <div class="s-tag">Цифры и опыт</div>
-        <h2 class="s-ttl">15 лет.<br>Результаты говорят<br><em>сами за себя.</em></h2>
+<!-- NUMBERS -->
+<section class="sw numbers" id="num">
+  <div class="reveal">
+    <div class="sec-tag" data-i="num_tag">Цифры и опыт</div>
+    <h2 class="sec-ttl" data-i="num_ttl">15 лет. Результаты<br>говорят <em>сами за себя.</em></h2>
+  </div>
+  <div class="num-g">
+    <div class="reveal d1"><div class="nb2"></div><div class="nval">15<sup>+</sup></div><div class="nlbl" data-i="n1">лет в международном развитии и консалтинге</div></div>
+    <div class="reveal d2"><div class="nb2"></div><div class="nval">$2.8<sup>M</sup></div><div class="nlbl" data-i="n2">привлечено финансирования для НКО и проектов</div></div>
+    <div class="reveal d3"><div class="nb2"></div><div class="nval">550<sup>+</sup></div><div class="nlbl" data-i="n3">участников конференций из 36 стран</div></div>
+    <div class="reveal d1"><div class="nb2"></div><div class="nval">3</div><div class="nlbl" data-i="n4">собственных бизнеса: Connect4Pro, Xpat4KG и др.</div></div>
+  </div>
+  <div class="ptrow reveal">
+    <div class="ptlbl" data-i="pt_lbl">Партнёры и доноры</div>
+    <div class="ptnames">
+      <span class="ptn">USAID</span><span class="ptn">ООН</span>
+      <span class="ptn">Big Lottery Fund</span><span class="ptn">Eurasia Foundation</span>
+      <span class="ptn">Soros Foundation</span><span class="ptn">PeaceNexus</span>
+      <span class="ptn">Hans Seidel Foundation</span><span class="ptn">ICCO</span>
     </div>
-    <div class="nums">
-        <div class="reveal d1">
-            <div class="num-bar"></div>
-            <div class="num-val">15<span>+</span></div>
-            <div class="num-lbl">лет профессионального опыта в международном развитии и консалтинге</div>
-        </div>
-        <div class="reveal d2">
-            <div class="num-bar"></div>
-            <div class="num-val">$2.8<span>M</span></div>
-            <div class="num-lbl">привлечено финансирования для НКО, проектов и организаций</div>
-        </div>
-        <div class="reveal d3">
-            <div class="num-bar"></div>
-            <div class="num-val">550<span>+</span></div>
-            <div class="num-lbl">участников международных конференций из 36 стран мира</div>
-        </div>
-        <div class="reveal d1">
-            <div class="num-bar"></div>
-            <div class="num-val">3</div>
-            <div class="num-lbl">собственных бизнеса запущено + платформы Connect4Pro и Xpat4KG</div>
-        </div>
-    </div>
-    <div class="partners reveal">
-        <div class="p-lbl">Партнёры и доноры</div>
-        <div class="p-list">
-            <span class="p-name">USAID</span>
-            <span class="p-name">ООН / UN</span>
-            <span class="p-name">Big Lottery Fund</span>
-            <span class="p-name">Eurasia Foundation</span>
-            <span class="p-name">Soros Foundation</span>
-            <span class="p-name">PeaceNexus</span>
-            <span class="p-name">Hans Seidel Foundation</span>
-            <span class="p-name">ICCO</span>
-            <span class="p-name">HealthProm UK</span>
-        </div>
-    </div>
+  </div>
 </section>
 
 <!-- CONTACT -->
-<section class="sw contact" id="contact">
-    <div class="reveal">
-        <div class="s-tag">Связаться</div>
-        <h2 class="s-ttl">Начнём<br>с <em>разговора</em></h2>
+<section class="sw" id="con">
+  <div class="reveal">
+    <div class="sec-tag" data-i="con_tag">Связаться</div>
+    <h2 class="sec-ttl" data-i="con_ttl">Начнём<br>с <em>разговора</em></h2>
+  </div>
+  <div class="con-g">
+    <div class="reveal d1">
+      <p class="con-q" data-i="con_q">Расскажите о задаче — и мы найдём подходящий формат работы.</p>
+      <div class="ci-items">
+        <div class="cit"><div class="citd"></div><div><div class="citl" data-i="cl1">Телефон / WhatsApp</div><div class="citv"><a href="tel:+996702271827">+996 702 27 18 27</a></div></div></div>
+        <div class="cit"><div class="citd"></div><div><div class="citl">Email</div><div class="citv"><a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a></div></div></div>
+        <div class="cit"><div class="citd"></div><div><div class="citl">LinkedIn</div><div class="citv"><a href="https://www.linkedin.com/in/azat-israilov-6b515228/" target="_blank">azat-israilov</a></div></div></div>
+        <div class="cit"><div class="citd"></div><div><div class="citl" data-i="cl4">Локация</div><div class="citv" data-i="cl4v">Бишкек, Кыргызстан · Работаю онлайн</div></div></div>
+      </div>
     </div>
-    <div class="con-lay">
-        <div class="reveal d1">
-            <p class="con-tagline">Расскажите о своей задаче — и мы найдём подходящий формат работы.</p>
-            <div class="con-items">
-                <div class="con-item">
-                    <div class="con-dot"></div>
-                    <div>
-                        <div class="con-lbl">Телефон / WhatsApp</div>
-                        <div class="con-val"><a href="tel:+996702271827">+996 702 27 18 27</a></div>
-                    </div>
-                </div>
-                <div class="con-item">
-                    <div class="con-dot"></div>
-                    <div>
-                        <div class="con-lbl">Email</div>
-                        <div class="con-val"><a href="mailto:aisrail@gmail.com">aisrail@gmail.com</a></div>
-                    </div>
-                </div>
-                <div class="con-item">
-                    <div class="con-dot"></div>
-                    <div>
-                        <div class="con-lbl">LinkedIn</div>
-                        <div class="con-val"><a href="https://www.linkedin.com/in/azat-israilov-6b515228/" target="_blank">Азат Израилов</a></div>
-                    </div>
-                </div>
-                <div class="con-item">
-                    <div class="con-dot"></div>
-                    <div>
-                        <div class="con-lbl">Локация</div>
-                        <div class="con-val">Бишкек, Кыргызстан · Работаю онлайн</div>
-                    </div>
-                </div>
-            </div>
+    <div class="reveal d2">
+      <form class="cform" onsubmit="sendMail(event)">
+        <div class="frow">
+          <div class="fg"><label class="fl" data-i="fl_name">Имя</label><input class="fi" type="text" id="fn" data-ph="fl_name_ph" placeholder="Ваше имя"></div>
+          <div class="fg"><label class="fl" data-i="fl_org">Организация</label><input class="fi" type="text" id="fo" data-ph="fl_org_ph" placeholder="Компания / НКО"></div>
         </div>
-
-        <div class="reveal d2">
-            <form class="con-form" onsubmit="sendMail(event)">
-                <div class="f-row">
-                    <div class="f-grp">
-                        <label class="f-lbl">Имя</label>
-                        <input class="f-in" type="text" id="fname" placeholder="Ваше имя">
-                    </div>
-                    <div class="f-grp">
-                        <label class="f-lbl">Организация</label>
-                        <input class="f-in" type="text" id="forg" placeholder="Компания / НКО">
-                    </div>
-                </div>
-                <div class="f-grp">
-                    <label class="f-lbl">Email</label>
-                    <input class="f-in" type="email" id="femail" placeholder="your@email.com">
-                </div>
-                <div class="f-grp">
-                    <label class="f-lbl">Я — это...</label>
-                    <select class="f-sel" id="ftype">
-                        <option value="">Выберите тип</option>
-                        <option>Предприниматель / МСБ</option>
-                        <option>Представитель НКО</option>
-                        <option>Консультант / Эксперт</option>
-                        <option>Другое</option>
-                    </select>
-                </div>
-                <div class="f-grp">
-                    <label class="f-lbl">Ваш запрос</label>
-                    <textarea class="f-ta" id="fmsg" placeholder="Опишите кратко, с чем вам нужна помощь..."></textarea>
-                </div>
-                <button type="submit" class="btn-p btn-submit">Отправить сообщение →</button>
-                <p class="f-note">Нажимая кнопку, откроется ваш почтовый клиент. Или напишите напрямую: <a href="mailto:aisrail@gmail.com">aisrail@gmail.com</a></p>
-            </form>
+        <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="fe" placeholder="you@email.com"></div>
+        <div class="fg">
+          <label class="fl" data-i="fl_type">Я — это...</label>
+          <select class="fsl" id="ft">
+            <option value="" data-i="fopt0">Выберите тип</option>
+            <option data-i="fopt1">Предприниматель / МСБ</option>
+            <option data-i="fopt2">Представитель НКО</option>
+            <option data-i="fopt3">Консультант / Эксперт</option>
+            <option data-i="fopt4">Другое</option>
+          </select>
         </div>
+        <div class="fg"><label class="fl" data-i="fl_msg">Запрос</label><textarea class="fta" id="fm" data-ph="fl_msg_ph" placeholder="С чем нужна помощь?"></textarea></div>
+        <button type="submit" class="bp bsub" data-i="f_send">Отправить сообщение →</button>
+        <p class="fnote" data-i="f_note">Откроется почтовый клиент. Или напрямую: <a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a></p>
+      </form>
     </div>
+  </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-    <div class="f-logo">Азат <span>Израилов</span></div>
-    <ul class="f-links">
-        <li><a href="#audiences">Для кого</a></li>
-        <li><a href="#services">Услуги</a></li>
-        <li><a href="#resources">Ресурсы</a></li>
-        <li><a href="https://www.linkedin.com/in/azat-israilov-6b515228/" target="_blank">LinkedIn</a></li>
-    </ul>
-    <div class="f-copy">© 2026 Азат Израилов · Бишкек, Кыргызстан</div>
+  <div class="flogo">Азат <b>Исраилов</b></div>
+  <ul class="flinks">
+    <li><a href="#aud" data-i="nav_aud">Для кого</a></li>
+    <li><a href="#svc" data-i="nav_svc">Услуги</a></li>
+    <li><a href="#res" data-i="nav_res">Ресурсы</a></li>
+    <li><a href="https://www.linkedin.com/in/azat-israilov-6b515228/" target="_blank">LinkedIn</a></li>
+  </ul>
+  <div class="fcopy">© 2026 · Бишкек, Кыргызстан</div>
 </footer>
 
+</div><!-- /#page -->
+
 <script>
-// Nav scroll
-const nb = document.getElementById('nb');
-window.addEventListener('scroll', () => nb.classList.toggle('scrolled', scrollY > 50));
+/* ═══════════════════════════════════════════
+   TRANSLATIONS
+═══════════════════════════════════════════ */
+const T = {
+  ru: {
+    nav_aud:'Для кого', nav_svc:'Услуги', nav_res:'Ресурсы', nav_exp:'Опыт', nav_con:'Связаться',
+    eyebrow:'Бишкек · Кыргызстан · Международный опыт',
+    hero_desc:'15+ лет помогаю предпринимателям, НКО и консультантам находить финансирование, строить устойчивые организации и выходить на новый уровень.',
+    cta_main:'Записаться на консультацию →', cta_res:'Ресурсы',
+    stat1:'лет опыта', stat2:'привлечено', stat3:'стран-партнёров',
+    roles:['консультант','тренер','фандрайзер','ментор'],
+    aud_tag:'Для кого', aud_ttl:'Три типа\n<em>клиентов</em>',
+    a1_title:'Предприниматели и МСБ',
+    a1_desc:'Строите бизнес, ищете инвестиции или гранты, хотите выйти на новый уровень. Нужен практик — не теоретик.',
+    a1_tag:'💼 Платные консультации и тренинги',
+    a2_title:'НКО и некоммерческие',
+    a2_desc:'Гранты, доноры, стратегия, отчётность. 15 лет в международном развитии — знаю этот мир изнутри.',
+    a2_tag:'🤝 Тренинги · фасилитация · менторство',
+    a3_title:'Консультанты и эксперты',
+    a3_desc:'Хотите запустить своё дело, углубиться в фандрайзинг или выстроить систему работы с клиентами.',
+    a3_tag:'🎓 Менторинг · курсы · коучинг',
+    svc_tag:'Что я делаю', svc_ttl:'Форматы\n<em>работы</em>',
+    svc_desc:'Работаю индивидуально и в группах — от разовой консультации до долгосрочного сопровождения. Онлайн и офлайн в Бишкеке.',
+    s1:'Бизнес-консалтинг', s1s:'Индивидуально · Проектно',
+    s2:'Фандрайзинг и гранты', s2s:'Заявки · Стратегия · Доноры',
+    s3:'Бизнес-тренинги', s3s:'Группы · Корпоративные',
+    s4:'Бизнес-планирование', s4s:'Под инвестора · Под грант',
+    s5:'Менторинг и акселерация', s5s:'Accelerate Prosperity · John Galt',
+    s6:'Организационное развитие', s6s:'НКО · Стратегическое планирование',
+    c_tag:'⭐ Популярный продукт',
+    c_ttl:'Онлайн-курс<br>«Фандрайзинг с нуля<br>до <em>гранта</em>»',
+    c_desc:'Полная система поиска и привлечения финансирования — от понимания психологии доноров до отправки выигрышной заявки.',
+    cf1:'6 модулей с видеоуроками', cf2:'База доноров и шаблоны заявок',
+    cf3:'Живые разборы и Q&A сессии', cf4:'Сертификат по завершению',
+    c_btn:'Подробнее о курсе →',
+    res_tag:'Ресурсы', res_ttl:'Всё в <em>одном месте</em>',
+    r1_ttl:'Курс по фандрайзингу', r1_desc:'От понимания доноров до выигрышной заявки. Онлайн, на русском.',
+    r2_ttl:'Руководство по грантам', r2_desc:'Пошаговый гид для тех, кто впервые ищет гранты.',
+    r3_ttl:'База данных доноров', r3_desc:'Каталог фондов и грантодателей Центральной Азии и СНГ.',
+    r4_ttl:'Тренинги Pro4Dev', r4_desc:'Программы для НКО, предпринимателей и специалистов.',
+    r5_ttl:'Connect4KG', r5_desc:'Актуальные возможности финансирования для Кыргызстана.',
+    r6_ttl:'ИИ-ассистент', r6_desc:'Умный бот для поиска доноров и проверки заявок. В разработке.',
+    r_open:'Открыть →', r_open2:'Открыть →', r_read:'Читать →',
+    r_view:'Смотреть →', r_sub:'Подписаться →', r_soon:'Скоро...',
+    num_tag:'Цифры и опыт',
+    num_ttl:'15 лет. Результаты<br>говорят <em>сами за себя.</em>',
+    n1:'лет в международном развитии и консалтинге',
+    n2:'привлечено финансирования для НКО и проектов',
+    n3:'участников конференций из 36 стран',
+    n4:'собственных бизнеса: Connect4Pro, Xpat4KG и др.',
+    pt_lbl:'Партнёры и доноры',
+    con_tag:'Связаться', con_ttl:'Начнём<br>с <em>разговора</em>',
+    con_q:'Расскажите о задаче — и мы найдём подходящий формат работы.',
+    cl1:'Телефон / WhatsApp', cl4:'Локация', cl4v:'Бишкек, Кыргызстан · Работаю онлайн',
+    fl_name:'Имя', fl_name_ph:'Ваше имя', fl_org:'Организация', fl_org_ph:'Компания / НКО',
+    fl_type:'Я — это...', fl_msg:'Запрос', fl_msg_ph:'С чем нужна помощь?',
+    fopt0:'Выберите тип', fopt1:'Предприниматель / МСБ', fopt2:'Представитель НКО',
+    fopt3:'Консультант / Эксперт', fopt4:'Другое',
+    f_send:'Отправить сообщение →',
+    f_note:'Откроется почтовый клиент. Или напрямую: <a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a>',
+  },
+  en: {
+    nav_aud:'Who it\'s for', nav_svc:'Services', nav_res:'Resources', nav_exp:'Track record', nav_con:'Contact',
+    eyebrow:'Bishkek · Kyrgyzstan · International experience',
+    hero_desc:'15+ years helping entrepreneurs, NGOs and consultants secure funding, build resilient organizations and reach the next level.',
+    cta_main:'Book a consultation →', cta_res:'Resources',
+    stat1:'years of experience', stat2:'raised', stat3:'partner countries',
+    roles:['consultant','trainer','fundraiser','mentor'],
+    aud_tag:'Who it\'s for', aud_ttl:'Three types of\n<em>clients</em>',
+    a1_title:'Entrepreneurs & SMEs',
+    a1_desc:'Building a business, seeking investment or grants, ready for the next level. You need a practitioner — not a theorist.',
+    a1_tag:'💼 Paid consultations & trainings',
+    a2_title:'NGOs & Non-profits',
+    a2_desc:'Grants, donors, strategy, reporting. 15 years in international development — I know this world from the inside.',
+    a2_tag:'🤝 Trainings · facilitation · mentorship',
+    a3_title:'Consultants & Experts',
+    a3_desc:'Want to launch your own practice, go deeper in fundraising or build a client management system.',
+    a3_tag:'🎓 Mentoring · courses · coaching',
+    svc_tag:'What I do', svc_ttl:'Service\n<em>formats</em>',
+    svc_desc:'I work individually and in groups — from a single consultation to long-term partnership. Online and in-person in Bishkek.',
+    s1:'Business consulting', s1s:'Individual · Project-based',
+    s2:'Fundraising & grants', s2s:'Applications · Strategy · Donors',
+    s3:'Business trainings', s3s:'Groups · Corporate',
+    s4:'Business planning', s4s:'For investors · For grants',
+    s5:'Mentoring & acceleration', s5s:'Accelerate Prosperity · John Galt',
+    s6:'Organizational development', s6s:'NGOs · Strategic planning',
+    c_tag:'⭐ Popular product',
+    c_ttl:'Online course<br>«Fundraising from zero<br>to <em>grant</em>»',
+    c_desc:'A complete system for finding and securing funding — from understanding donor psychology to submitting a winning application.',
+    cf1:'6 modules with video lessons', cf2:'Donor database & application templates',
+    cf3:'Live case reviews & Q&A sessions', cf4:'Certificate upon completion',
+    c_btn:'Learn more →',
+    res_tag:'Resources', res_ttl:'Everything in <em>one place</em>',
+    r1_ttl:'Fundraising course', r1_desc:'From understanding donors to a winning grant application. Online, in Russian.',
+    r2_ttl:'Grant writing guide', r2_desc:'A step-by-step guide for first-time grant seekers.',
+    r3_ttl:'Donor database', r3_desc:'Directory of foundations and grant-makers active in Central Asia.',
+    r4_ttl:'Pro4Dev trainings', r4_desc:'Programs for NGOs, entrepreneurs and development professionals.',
+    r5_ttl:'Connect4KG', r5_desc:'Current funding opportunities and grants for Kyrgyzstan.',
+    r6_ttl:'AI assistant', r6_desc:'Smart bot for finding donors and reviewing applications. Coming soon.',
+    r_open:'Open →', r_open2:'Open →', r_read:'Read →',
+    r_view:'View →', r_sub:'Subscribe →', r_soon:'Coming soon...',
+    num_tag:'Track record',
+    num_ttl:'15 years. Results<br>speak <em>for themselves.</em>',
+    n1:'years in international development & consulting',
+    n2:'raised in funding for NGOs and projects',
+    n3:'conference participants from 36 countries',
+    n4:'own businesses: Connect4Pro, Xpat4KG and more',
+    pt_lbl:'Partners & donors',
+    con_tag:'Contact', con_ttl:'Let\'s start<br>with a <em>conversation</em>',
+    con_q:'Tell me about your challenge — and we\'ll find the right format.',
+    cl1:'Phone / WhatsApp', cl4:'Location', cl4v:'Bishkek, Kyrgyzstan · Available online',
+    fl_name:'Name', fl_name_ph:'Your name', fl_org:'Organization', fl_org_ph:'Company / NGO',
+    fl_type:'I am a...', fl_msg:'Request', fl_msg_ph:'What do you need help with?',
+    fopt0:'Select type', fopt1:'Entrepreneur / SME', fopt2:'NGO representative',
+    fopt3:'Consultant / Expert', fopt4:'Other',
+    f_send:'Send message →',
+    f_note:'This will open your mail client. Or write directly: <a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a>',
+  }
+};
 
-// Mobile nav
-function tNav() {
-    document.getElementById('nl').classList.toggle('open');
+let currentLang = 'ru';
+let roleIdx = 0;
+let roleTimer;
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.getElementById('lb-ru').classList.toggle('active', lang==='ru');
+  document.getElementById('lb-en').classList.toggle('active', lang==='en');
+
+  // Update all [data-i] elements
+  document.querySelectorAll('[data-i]').forEach(el => {
+    const key = el.dataset.i;
+    if (!t[key]) return;
+    if (key.endsWith('_ttl') || key==='f_note' || key==='c_ttl') {
+      el.innerHTML = t[key].replace(/\n/g,'<br>');
+    } else {
+      el.textContent = t[key];
+    }
+  });
+
+  // Placeholders
+  document.querySelectorAll('[data-ph]').forEach(el => {
+    const key = el.dataset.ph;
+    if (t[key]) el.placeholder = t[key];
+  });
+
+  // Role
+  clearInterval(roleTimer);
+  roleIdx = 0;
+  const rc = document.getElementById('rc');
+  rc.textContent = t.roles[0];
+  roleTimer = setInterval(() => {
+    rc.style.opacity='0'; rc.style.transform='translateY(-10px)';
+    setTimeout(() => {
+      roleIdx = (roleIdx+1) % t.roles.length;
+      rc.textContent = t.roles[roleIdx];
+      rc.style.transform='translateY(10px)';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        rc.style.opacity='1'; rc.style.transform='translateY(0)';
+      }));
+    }, 320);
+  }, 2800);
+
+  // Meta
+  document.title = lang==='ru'
+    ? 'Азат Исраилов — Консультант · Тренер · Фандрайзер'
+    : 'Azat Israilov — Consultant · Trainer · Fundraiser';
 }
-document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => {
-    document.getElementById('nl').classList.remove('open');
-}));
 
-// Scroll reveal
-const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => e.isIntersecting && e.target.classList.add('visible'));
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+// Init role cycling
+setLang('ru');
 
-// Contact form → mailto
-function sendMail(e) {
-    e.preventDefault();
-    const name  = document.getElementById('fname').value;
-    const org   = document.getElementById('forg').value;
-    const email = document.getElementById('femail').value;
-    const type  = document.getElementById('ftype').value;
-    const msg   = document.getElementById('fmsg').value;
-    const body  = `Имя: ${name}\nОрганизация: ${org}\nEmail: ${email}\nТип: ${type}\n\nСообщение:\n${msg}`;
-    window.location.href = `mailto:aisrail@gmail.com?subject=Запрос с сайта от ${encodeURIComponent(name)}&body=${encodeURIComponent(body)}`;
+/* ═══ NAV ═══ */
+const nb = document.getElementById('nb');
+window.addEventListener('scroll', ()=>nb.classList.toggle('scrolled',scrollY>50),{passive:true});
+function navToggle(){ document.getElementById('nl').classList.toggle('open') }
+document.querySelectorAll('.nl a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nl').classList.remove('open')));
+
+/* ═══ SCROLL REVEAL ═══ */
+const obs = new IntersectionObserver(
+  entries=>entries.forEach(e=>e.isIntersecting&&e.target.classList.add('vis')),
+  {threshold:0.08}
+);
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ═══ CONTACT FORM ═══ */
+function sendMail(e){
+  e.preventDefault();
+  const n=document.getElementById('fn').value;
+  const o=document.getElementById('fo').value;
+  const em=document.getElementById('fe').value;
+  const tp=document.getElementById('ft').value;
+  const m=document.getElementById('fm').value;
+  const subj = currentLang==='ru' ? `Запрос с сайта — ${n}` : `Website inquiry — ${n}`;
+  const body = currentLang==='ru'
+    ? `Имя: ${n}\nОрганизация: ${o}\nEmail: ${em}\nТип: ${tp}\n\n${m}`
+    : `Name: ${n}\nOrganization: ${o}\nEmail: ${em}\nType: ${tp}\n\n${m}`;
+  window.location.href=`mailto:prof4dev@gmail.com?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
 }
 </script>
 </body>
