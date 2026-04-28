@@ -5,448 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Азат Исраилов — Консультант · Тренер · Фандрайзер</title>
 <meta name="description" content="Азат Исраилов — бизнес-консультант, тренер, фандрайзер. 15+ лет опыта. Бишкек, Кыргызстан.">
+<link rel="canonical" href="https://azatisrail.cc/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Азат Исраилов","jobTitle":"Бизнес-консультант, тренер, фандрайзер","url":"https://azatisrail.cc","telephone":"+996702271827","email":"prof4dev@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Бишкек","addressCountry":"KG"},"sameAs":["https://www.linkedin.com/in/azat-israilov-6b515228/","https://www.youtube.com/@connect4fund"]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-<style>
-:root {
-  --cream:  #FAFAF6;
-  --white:  #FFFFFF;
-  --ink:    #14120F;
-  --mid:    #4A4744;
-  --muted:  #8C8884;
-  --border: #DDD9D2;
-  --sect:   #F3F0EA;
-  --sap:    #1B6FA8;
-  --sap2:   #0F4F7A;
-  --gold:   #B8942A;
-  --goldf:  #D4AA40;
-  --pattern-color: #C8A84B;
-}
-
-/* ── SHYRDAK PATTERN ── */
-body {
-  background-color: var(--cream);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%23C8A84B' stroke-width='0.7' opacity='0.13'%3E%3Cpolygon points='40,4 68,20 68,60 40,76 12,60 12,20'/%3E%3Cpolygon points='40,16 58,26 58,54 40,64 22,54 22,26'/%3E%3Cline x1='40' y1='4' x2='40' y2='76'/%3E%3Cline x1='12' y1='20' x2='68' y2='60'/%3E%3Cline x1='68' y1='20' x2='12' y2='60'/%3E%3Ccircle cx='40' cy='40' r='6'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 80px 80px;
-}
-
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
-html { scroll-behavior:smooth }
-
-body {
-  font-family:'DM Sans',sans-serif;
-  color: var(--ink);
-  overflow-x: hidden;
-  line-height: 1.6;
-}
-a { text-decoration:none; color:inherit }
-
-/* ── PATTERN OVERLAY: white fade at top for readability ── */
-body::before {
-  content:'';
-  position:fixed; top:0; left:0; right:0; height:120px;
-  background: linear-gradient(var(--cream), transparent);
-  z-index: 0; pointer-events:none;
-}
-
-/* ── CONTENT over pattern ── */
-#page { position:relative; z-index:1 }
-
-/* ═══ NAV ═══ */
-nav {
-  position:fixed; top:0; left:0; right:0; z-index:999;
-  height:62px; display:flex; align-items:center; justify-content:space-between;
-  padding:0 56px;
-  transition: background .35s, border-color .35s;
-  border-bottom:1px solid transparent;
-}
-nav.scrolled {
-  background: rgba(250,250,246,0.95);
-  border-color: var(--border);
-  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-}
-.logo {
-  font-family:'Cormorant Garamond',serif;
-  font-size:18px; font-weight:600; letter-spacing:.04em; color:var(--ink);
-}
-.logo b { color:var(--sap) }
-
-.nav-r { display:flex; align-items:center; gap:10px }
-.nl { display:flex; align-items:center; gap:24px; list-style:none }
-.nl a {
-  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--muted); transition:color .2s;
-}
-.nl a:hover { color:var(--sap) }
-.nl-cta {
-  background:var(--sap) !important; color:white !important;
-  padding:8px 17px; border-radius:2px; font-weight:500 !important;
-  transition:background .2s, transform .15s !important;
-}
-.nl-cta:hover { background:var(--sap2) !important; transform:translateY(-1px) !important }
-
-/* Language switcher */
-.lang-sw {
-  display:flex; align-items:center;
-  border:1.5px solid var(--border); border-radius:2px; overflow:hidden;
-}
-.lang-btn {
-  font-size:11px; letter-spacing:.1em; font-weight:500;
-  padding:5px 10px; cursor:pointer; border:none; background:transparent;
-  color:var(--muted); font-family:'DM Sans',sans-serif;
-  transition:background .2s, color .2s;
-}
-.lang-btn.active { background:var(--sap); color:white }
-.lang-sep { width:1px; background:var(--border); height:18px }
-
-.nm { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px }
-.nm span { width:21px; height:1.5px; background:var(--ink); display:block; transition:all .3s }
-
-/* ═══ HERO ═══ */
-.hero {
-  min-height:100vh;
-  display:flex; flex-direction:column; justify-content:center;
-  padding:100px 56px 80px;
-  position:relative;
-}
-/* local white backing so text pops on pattern */
-.hero::before {
-  content:'';
-  position:absolute; inset:0;
-  background: linear-gradient(105deg, rgba(250,250,246,0.97) 55%, rgba(250,250,246,0.7) 78%, rgba(250,250,246,0.1) 100%);
-  pointer-events:none;
-}
-.hero > * { position:relative }
-
-.h-eyebrow {
-  font-size:11px; letter-spacing:.22em; text-transform:uppercase;
-  color:var(--muted); margin-bottom:28px;
-  opacity:0; animation:up .6s ease forwards .1s;
-}
-h1.hname {
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(68px,10.5vw,148px);
-  font-weight:300; line-height:.9; letter-spacing:-.025em;
-  margin-bottom:20px;
-  opacity:0; animation:up .8s ease forwards .28s;
-}
-.hrole {
-  display:flex; align-items:baseline; gap:12px;
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(20px,2.8vw,34px); font-weight:300;
-  color:var(--mid); margin-bottom:42px;
-  opacity:0; animation:up .7s ease forwards .48s;
-}
-.hrole em { color:var(--sap); font-style:italic }
-#rc { transition:opacity .3s, transform .3s; display:inline-block }
-
-.hdesc {
-  font-size:15px; color:var(--mid); line-height:1.85; font-weight:300;
-  max-width:460px; margin-bottom:38px;
-  opacity:0; animation:up .7s ease forwards .65s;
-}
-.hbtns {
-  display:flex; gap:11px; flex-wrap:wrap; margin-bottom:64px;
-  opacity:0; animation:up .7s ease forwards .8s;
-}
-.bp {
-  display:inline-flex; align-items:center; gap:7px;
-  background:var(--sap); color:white;
-  padding:13px 26px; font-size:14px; font-weight:400; border-radius:2px;
-  transition:background .2s, transform .15s;
-}
-.bp:hover { background:var(--sap2); transform:translateY(-2px) }
-.bg2 {
-  display:inline-flex; align-items:center; gap:7px;
-  border:1.5px solid var(--border); color:var(--mid);
-  padding:12px 22px; font-size:14px; border-radius:2px;
-  transition:border-color .2s, color .2s, transform .15s;
-}
-.bg2:hover { border-color:var(--mid); color:var(--ink); transform:translateY(-2px) }
-
-.hstats {
-  display:flex; align-items:center; gap:32px; flex-wrap:wrap;
-  padding-top:30px; border-top:1px solid var(--border);
-  opacity:0; animation:up .7s ease forwards .95s;
-}
-.stn {
-  font-family:'Cormorant Garamond',serif;
-  font-size:36px; font-weight:600; line-height:1;
-}
-.stn sup { font-size:20px; color:var(--sap) }
-.stl { font-size:11px; color:var(--muted); margin-top:3px }
-.stsep { width:1px; height:38px; background:var(--border) }
-
-/* ═══ SECTIONS ═══ */
-.sw { padding:88px 56px; position:relative }
-
-/* White backing for content sections */
-.sw::before {
-  content:'';
-  position:absolute; inset:0;
-  background:rgba(250,250,246,0.88);
-  pointer-events:none;
-}
-.sw > * { position:relative }
-
-.sw-alt::before { background:rgba(243,240,234,0.92) }
-
-.sec-tag {
-  display:inline-flex; align-items:center; gap:9px;
-  font-size:10px; letter-spacing:.24em; text-transform:uppercase;
-  color:var(--sap); font-weight:500; margin-bottom:10px;
-}
-.sec-tag::before { content:''; width:16px; height:1.5px; background:var(--sap) }
-.sec-ttl {
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(28px,3.8vw,48px); font-weight:300; line-height:1.08;
-}
-.sec-ttl em { font-style:italic; color:var(--sap) }
-
-/* ═══ AUDIENCES ═══ */
-.aud-hd { margin-bottom:52px }
-.aud-strip {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:1px; background:var(--border);
-}
-.aud-c {
-  background:var(--white); padding:44px 34px;
-  position:relative; overflow:hidden; transition:background .3s;
-}
-.aud-c:hover { background:#FDFCF9 }
-.aln { width:24px; height:3px; margin-bottom:22px; border-radius:1px }
-.aud-c:nth-child(1) .aln { background:var(--sap) }
-.aud-c:nth-child(2) .aln { background:var(--goldf) }
-.aud-c:nth-child(3) .aln { background:#6DB5D4 }
-.aud-bg {
-  font-family:'Cormorant Garamond',serif;
-  font-size:72px; font-weight:300; line-height:1;
-  position:absolute; top:10px; right:14px;
-  color:var(--border); pointer-events:none; user-select:none;
-  transition:color .3s;
-}
-.aud-c:hover .aud-bg { color:#DDD9D4 }
-.aud-title { font-family:'Cormorant Garamond',serif; font-size:21px; font-weight:600; margin-bottom:10px }
-.aud-desc { font-size:14px; color:var(--mid); line-height:1.78; font-weight:300; margin-bottom:20px }
-.aud-tag {
-  display:inline-block; font-size:10px; letter-spacing:.1em;
-  text-transform:uppercase; color:var(--muted);
-  border:1px solid var(--border); padding:5px 9px;
-}
-
-/* ═══ SERVICES ═══ */
-.svc-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; margin-top:52px; align-items:start }
-.svc-intro p { font-size:15px; color:var(--mid); line-height:1.85; font-weight:300; margin-top:16px }
-.svc-row {
-  display:flex; align-items:baseline; gap:18px;
-  padding:19px 0; border-bottom:1px solid var(--border);
-  transition:padding-left .2s; cursor:default;
-}
-.svc-row:first-child { border-top:1px solid var(--border) }
-.svc-row:hover { padding-left:7px }
-.svc-row:hover .sarr { color:var(--sap) }
-.svc-num { font-family:'Cormorant Garamond',serif; font-size:12px; color:var(--muted); min-width:20px }
-.svc-name { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; flex:1 }
-.svc-sub { display:block; font-size:11px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin-top:2px }
-.sarr { color:var(--border); transition:color .2s; font-size:14px }
-
-/* ═══ CALLOUT ═══ */
-.callout-wrap { position:relative }
-.callout-wrap::before {
-  content:'';
-  position:absolute; inset:0;
-  background:rgba(243,240,234,0.92);
-  pointer-events:none;
-}
-.callout-wrap > * { position:relative }
-.callout-inner {
-  margin:0 56px 88px;
-  background:var(--sap); color:white;
-  padding:60px 64px; position:relative; overflow:hidden;
-}
-.ci-tag { font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.55); margin-bottom:14px }
-.ci-ttl {
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(24px,3.2vw,42px); font-weight:300; line-height:1.15;
-  margin-bottom:14px;
-}
-.ci-ttl em { font-style:italic; color:var(--goldf) }
-.ci-desc { font-size:15px; color:rgba(255,255,255,.68); line-height:1.82; font-weight:300; max-width:460px; margin-bottom:30px }
-.ci-feats { display:flex; flex-direction:column; gap:9px; margin-bottom:34px; max-width:360px }
-.ci-feat { display:flex; align-items:center; gap:9px; font-size:14px; color:rgba(255,255,255,.7); font-weight:300 }
-.ci-feat::before { content:''; width:4px; height:4px; background:var(--goldf); border-radius:50%; flex-shrink:0 }
-.bw {
-  display:inline-flex; align-items:center; gap:8px;
-  background:white; color:var(--sap);
-  padding:12px 24px; font-size:14px; font-weight:500; border-radius:2px;
-  transition:opacity .2s, transform .15s;
-}
-.bw:hover { opacity:.9; transform:translateY(-2px) }
-.ci-gem {
-  position:absolute; right:56px; top:50%; transform:translateY(-50%);
-  width:200px; opacity:.06; pointer-events:none;
-}
-
-/* ═══ RESOURCES ═══ */
-.res-g {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:1px; background:var(--border); margin-top:52px;
-}
-.rc {
-  display:flex; flex-direction:column;
-  background:var(--white); padding:32px;
-  transition:background .3s, transform .3s, box-shadow .3s;
-}
-.rc:hover { background:#FDFCF9; transform:translateY(-4px); box-shadow:0 14px 40px rgba(0,0,0,.07) }
-.rc-ico { font-size:20px; margin-bottom:14px }
-.rc-ttl { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; margin-bottom:8px }
-.rc-desc { font-size:13px; color:var(--mid); line-height:1.65; font-weight:300; flex:1; margin-bottom:18px }
-.rc-lnk {
-  display:flex; align-items:center; gap:5px;
-  font-size:10px; letter-spacing:.12em; text-transform:uppercase;
-  color:var(--sap); font-weight:500; transition:gap .2s;
-}
-.rc:hover .rc-lnk { gap:9px }
-.rc-soon { cursor:default }
-.rc-soon:hover { transform:none; box-shadow:none; background:var(--white) }
-.rc-soon .rc-lnk { color:var(--muted) }
-
-/* ═══ NUMBERS ═══ */
-.numbers { background:var(--ink) }
-.numbers::before { background:rgba(20,18,15,0.97) }
-.numbers .sec-tag { color:var(--goldf) }
-.numbers .sec-tag::before { background:var(--goldf) }
-.numbers .sec-ttl { color:white }
-.numbers .sec-ttl em { color:var(--goldf) }
-.num-g { display:grid; grid-template-columns:repeat(4,1fr); gap:48px; margin-top:64px }
-.nb2 { width:24px; height:1.5px; background:var(--sap); margin-bottom:14px; opacity:.6 }
-.nval { font-family:'Cormorant Garamond',serif; font-size:56px; font-weight:300; line-height:1; color:white; margin-bottom:8px }
-.nval sup { font-size:28px; color:var(--sap); vertical-align:top; margin-top:7px; opacity:.9 }
-.nlbl { font-size:13px; color:rgba(255,255,255,.36); line-height:1.55 }
-.ptrow { margin-top:64px; padding-top:40px; border-top:1px solid rgba(255,255,255,.07) }
-.ptlbl { font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.2); margin-bottom:18px }
-.ptnames { display:flex; gap:26px; flex-wrap:wrap }
-.ptn { font-size:13px; color:rgba(255,255,255,.26); letter-spacing:.04em; cursor:default; transition:color .2s }
-.ptn:hover { color:rgba(255,255,255,.7) }
-
-/* ═══ CONTACT ═══ */
-.con-g { display:grid; grid-template-columns:1fr 1fr; gap:80px; margin-top:52px }
-.con-q { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; line-height:1.55; margin-bottom:36px; color:var(--mid) }
-.ci-items { display:flex; flex-direction:column; gap:22px }
-.cit { display:flex; gap:12px }
-.citd { width:4px; height:4px; border-radius:50%; background:var(--sap); flex-shrink:0; margin-top:10px }
-.citl { font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-bottom:3px }
-.citv { font-size:15px }
-.citv a { border-bottom:1px solid var(--border); transition:border-color .2s, color .2s }
-.citv a:hover { border-color:var(--sap); color:var(--sap) }
-.cform { display:flex; flex-direction:column; gap:14px }
-.frow { display:grid; grid-template-columns:1fr 1fr; gap:10px }
-.fg { display:flex; flex-direction:column; gap:5px }
-.fl { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted) }
-.fi,.fsl,.fta {
-  padding:11px 14px; border:1.5px solid var(--border);
-  background:var(--white); font-family:'DM Sans',sans-serif;
-  font-size:14px; color:var(--ink); outline:none; border-radius:2px;
-  transition:border-color .2s; width:100%;
-}
-.fi:focus,.fsl:focus,.fta:focus { border-color:var(--sap) }
-.fta { resize:vertical; min-height:108px }
-.fnote { font-size:12px; color:var(--muted); line-height:1.5 }
-.fnote a { color:var(--sap) }
-.bsub { border:none; cursor:pointer; width:100%; justify-content:center; font-family:'DM Sans',sans-serif }
-
-/* ═══ FOOTER ═══ */
-footer {
-  background:var(--ink); padding:30px 56px;
-  display:flex; justify-content:space-between; align-items:center;
-  flex-wrap:wrap; gap:14px;
-  border-top:1px solid rgba(255,255,255,.05);
-  position:relative;
-}
-footer::before { background:rgba(20,18,15,.98) }
-.flogo { font-family:'Cormorant Garamond',serif; font-size:17px; color:white; font-weight:600 }
-.flogo b { color:var(--goldf) }
-.fcopy { font-size:11px; color:rgba(255,255,255,.22) }
-.flinks { display:flex; gap:20px; list-style:none }
-.flinks a { font-size:11px; color:rgba(255,255,255,.3); transition:color .2s }
-.flinks a:hover { color:rgba(255,255,255,.8) }
-
-/* ═══ ANIMATIONS ═══ */
-@keyframes up {
-  from { opacity:0; transform:translateY(20px) }
-  to   { opacity:1; transform:translateY(0) }
-}
-.reveal { opacity:0; transform:translateY(22px); transition:opacity .65s ease, transform .65s ease }
-.reveal.vis { opacity:1; transform:translateY(0) }
-.d1{transition-delay:.08s} .d2{transition-delay:.18s} .d3{transition-delay:.28s}
-
-/* ═══ RESPONSIVE ═══ */
-@media(max-width:1040px){
-  nav,.hero,.sw,footer { padding-left:32px; padding-right:32px }
-  .callout-inner { margin-left:32px; margin-right:32px; padding:40px 36px }
-  .aud-strip { grid-template-columns:1fr; gap:1px }
-  .svc-grid { grid-template-columns:1fr; gap:44px }
-  .res-g { grid-template-columns:1fr 1fr }
-  .num-g { grid-template-columns:1fr 1fr; gap:36px }
-  .con-g { grid-template-columns:1fr; gap:44px }
-  footer { padding:24px 32px }
-}
-@media(max-width:620px){
-  nav { padding:0 20px }
-  .nl { display:none }
-  .nl.open {
-    display:flex; flex-direction:column;
-    position:fixed; top:62px; left:0; right:0;
-    background:rgba(250,250,246,.97); padding:18px;
-    border-bottom:1px solid var(--border); z-index:998; gap:14px;
-    backdrop-filter:blur(10px);
-  }
-  .nm { display:flex }
-  .hero,.sw { padding-left:20px; padding-right:20px }
-  .hstats { gap:16px } .stsep { display:none }
-  .callout-inner { margin:0 0 56px; padding:30px 22px }
-  .res-g { grid-template-columns:1fr }
-  .num-g { grid-template-columns:1fr 1fr; gap:22px }
-  .frow { grid-template-columns:1fr }
-  footer { padding:20px; flex-direction:column; align-items:flex-start }
-}
-</style>
+<link rel="stylesheet" href="shared.css">
 </head>
 <body>
 <div id="page">
 
-<!-- NAV -->
 <nav id="nb">
-  <a href="#" class="logo">Азат <b>Исраилов</b></a>
+  <a href="/" class="logo">Азат <b>Исраилов</b></a>
   <div class="nav-r">
     <ul class="nl" id="nl">
       <li><a href="#aud" data-i="nav_aud">Для кого</a></li>
       <li><a href="#svc" data-i="nav_svc">Услуги</a></li>
-      <li><a href="#res" data-i="nav_res">Ресурсы</a></li>
-      <li><a href="#num" data-i="nav_exp">Опыт</a></li>
+      <li><a href="events.html" data-i="nav_ev">Мероприятия</a></li>
+      <li><a href="publications.html" data-i="nav_pub">Публикации</a></li>
+      <li><a href="https://www.youtube.com/@connect4fund" target="_blank" class="yt-link">
+        <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+        YouTube
+      </a></li>
       <li><a href="#con" class="nl-cta" data-i="nav_con">Связаться</a></li>
     </ul>
     <div class="lang-sw">
       <button class="lang-btn active" onclick="setLang('ru')" id="lb-ru">RU</button>
-      <div class="lang-sep"></div>
+      <div class="lsep"></div>
+      <button class="lang-btn" onclick="setLang('kg')" id="lb-kg">KG</button>
+      <div class="lsep"></div>
       <button class="lang-btn" onclick="setLang('en')" id="lb-en">EN</button>
     </div>
     <div class="nm" onclick="navToggle()"><span></span><span></span><span></span></div>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero" id="hero">
-  <div class="h-eyebrow" data-i="eyebrow">Бишкек · Кыргызстан · Международный опыт</div>
-  <h1 class="hname">Азат<br>Исраилов</h1>
-  <div class="hrole">— <em id="rc">консультант</em></div>
-  <p class="hdesc" data-i="hero_desc">15+ лет помогаю предпринимателям, НКО и консультантам находить финансирование, строить устойчивые организации и выходить на новый уровень.</p>
-  <div class="hbtns">
+  <div class="h-ey" data-i="eyebrow">Бишкек · Кыргызстан · Международный опыт</div>
+  <h1 class="hn">Азат<br>Исраилов</h1>
+  <div class="hrl">— <em id="rc">консультант</em></div>
+  <p class="hds" data-i="hero_desc">15+ лет помогаю предпринимателям, НКО и консультантам находить финансирование, строить устойчивые организации и выходить на новый уровень.</p>
+  <div class="hbt">
     <a href="#con" class="bp" data-i="cta_main">Записаться на консультацию →</a>
     <a href="#res" class="bg2" data-i="cta_res">Ресурсы</a>
   </div>
-  <div class="hstats">
+  <div class="hst">
     <div><div class="stn">15<sup>+</sup></div><div class="stl" data-i="stat1">лет опыта</div></div>
     <div class="stsep"></div>
     <div><div class="stn">$2.8<sup>M</sup></div><div class="stl" data-i="stat2">привлечено</div></div>
@@ -455,38 +58,30 @@ footer::before { background:rgba(20,18,15,.98) }
   </div>
 </section>
 
-<!-- AUDIENCES -->
 <section class="sw" id="aud">
   <div class="aud-hd reveal">
     <div class="sec-tag" data-i="aud_tag">Для кого</div>
     <h2 class="sec-ttl" data-i="aud_ttl">Три типа<br><em>клиентов</em></h2>
   </div>
   <div class="aud-strip">
-    <div class="aud-c reveal d1">
-      <div class="aud-bg">01</div>
-      <div class="aln"></div>
-      <div class="aud-title" data-i="a1_title">Предприниматели и МСБ</div>
-      <p class="aud-desc" data-i="a1_desc">Строите бизнес, ищете инвестиции или гранты, хотите выйти на новый уровень. Нужен практик — не теоретик.</p>
-      <div class="aud-tag" data-i="a1_tag">💼 Платные консультации и тренинги</div>
+    <div class="aud-c reveal d1"><div class="aud-bg">01</div><div class="aln"></div>
+      <div class="aud-title" data-i="a1t">Предприниматели и МСБ</div>
+      <p class="aud-desc" data-i="a1d">Строите бизнес, ищете инвестиции или гранты, хотите выйти на новый уровень. Нужен практик — не теоретик.</p>
+      <div class="aud-tag" data-i="a1g">💼 Платные консультации и тренинги</div>
     </div>
-    <div class="aud-c reveal d2">
-      <div class="aud-bg">02</div>
-      <div class="aln"></div>
-      <div class="aud-title" data-i="a2_title">НКО и некоммерческие</div>
-      <p class="aud-desc" data-i="a2_desc">Гранты, доноры, стратегия, отчётность. 15 лет в международном развитии — знаю этот мир изнутри.</p>
-      <div class="aud-tag" data-i="a2_tag">🤝 Тренинги · фасилитация · менторство</div>
+    <div class="aud-c reveal d2"><div class="aud-bg">02</div><div class="aln"></div>
+      <div class="aud-title" data-i="a2t">НКО и некоммерческие</div>
+      <p class="aud-desc" data-i="a2d">Гранты, доноры, стратегия, отчётность. 15 лет в международном развитии — знаю этот мир изнутри.</p>
+      <div class="aud-tag" data-i="a2g">🤝 Тренинги · фасилитация · менторство</div>
     </div>
-    <div class="aud-c reveal d3">
-      <div class="aud-bg">03</div>
-      <div class="aln"></div>
-      <div class="aud-title" data-i="a3_title">Консультанты и эксперты</div>
-      <p class="aud-desc" data-i="a3_desc">Хотите запустить своё дело, углубиться в фандрайзинг или выстроить систему работы с клиентами.</p>
-      <div class="aud-tag" data-i="a3_tag">🎓 Менторинг · курсы · коучинг</div>
+    <div class="aud-c reveal d3"><div class="aud-bg">03</div><div class="aln"></div>
+      <div class="aud-title" data-i="a3t">Консультанты и эксперты</div>
+      <p class="aud-desc" data-i="a3d">Хотите запустить своё дело, углубиться в фандрайзинг или выстроить систему работы с клиентами.</p>
+      <div class="aud-tag" data-i="a3g">🎓 Менторинг · курсы · коучинг</div>
     </div>
   </div>
 </section>
 
-<!-- SERVICES -->
 <section class="sw sw-alt" id="svc">
   <div class="svc-grid">
     <div class="reveal">
@@ -505,17 +100,16 @@ footer::before { background:rgba(20,18,15,.98) }
   </div>
 </section>
 
-<!-- COURSE CALLOUT -->
-<div class="callout-wrap">
-  <div class="callout-inner reveal">
+<div class="cw">
+  <div class="ci reveal">
     <div class="ci-tag" data-i="c_tag">⭐ Популярный продукт</div>
     <h3 class="ci-ttl" data-i="c_ttl">Онлайн-курс<br>«Фандрайзинг с нуля<br>до <em>гранта</em>»</h3>
-    <p class="ci-desc" data-i="c_desc">Полная система поиска и привлечения финансирования — от понимания психологии доноров до отправки выигрышной заявки.</p>
-    <div class="ci-feats">
-      <div class="ci-feat" data-i="cf1">6 модулей с видеоуроками</div>
-      <div class="ci-feat" data-i="cf2">База доноров и шаблоны заявок</div>
-      <div class="ci-feat" data-i="cf3">Живые разборы и Q&amp;A сессии</div>
-      <div class="ci-feat" data-i="cf4">Сертификат по завершению</div>
+    <p class="ci-dsc" data-i="c_dsc">Полная система поиска и привлечения финансирования — от понимания психологии доноров до отправки выигрышной заявки.</p>
+    <div class="ci-fs">
+      <div class="ci-f" data-i="cf1">6 модулей с видеоуроками</div>
+      <div class="ci-f" data-i="cf2">База доноров и шаблоны заявок</div>
+      <div class="ci-f" data-i="cf3">Живые разборы и Q&amp;A сессии</div>
+      <div class="ci-f" data-i="cf4">Сертификат по завершению</div>
     </div>
     <a href="https://connect4funds.tilda.ws/" target="_blank" class="bw" data-i="c_btn">Подробнее о курсе →</a>
     <svg class="ci-gem" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -527,59 +121,36 @@ footer::before { background:rgba(20,18,15,.98) }
   </div>
 </div>
 
-<!-- RESOURCES -->
-<section class="sw" id="res">
-  <div class="reveal">
-    <div class="sec-tag" data-i="res_tag">Ресурсы</div>
-    <h2 class="sec-ttl" data-i="res_ttl">Всё в <em>одном месте</em></h2>
+<!-- EVENTS PREVIEW — обновляй вместе с events.html -->
+<div class="preview-s" id="ev-preview">
+  <div class="preview-hd reveal">
+    <div><div class="sec-tag" data-i="pev_tag">Мероприятия</div><h2 class="sec-ttl" data-i="pev_ttl">Ближайшие<br><em>события</em></h2></div>
+    <a href="events.html" class="see-all" data-i="pev_all">Все мероприятия →</a>
   </div>
+  <div class="cards-g" id="ev-cards"></div>
+</div>
+
+<!-- PUBLICATIONS PREVIEW -->
+<div class="preview-s sw-alt" id="pub-preview">
+  <div class="preview-hd reveal">
+    <div><div class="sec-tag" data-i="ppb_tag">Публикации</div><h2 class="sec-ttl" data-i="ppb_ttl">Руководства и<br><em>материалы</em></h2></div>
+    <a href="publications.html" class="see-all" data-i="ppb_all">Все публикации →</a>
+  </div>
+  <div class="cards-g" id="pub-cards"></div>
+</div>
+
+<section class="sw" id="res">
+  <div class="reveal"><div class="sec-tag" data-i="res_tag">Ресурсы</div><h2 class="sec-ttl" data-i="res_ttl">Всё в <em>одном месте</em></h2></div>
   <div class="res-g">
-    <a class="rc reveal d1" href="https://connect4funds.tilda.ws/" target="_blank">
-      <div class="rc-ico">🎓</div>
-      <div class="rc-ttl" data-i="r1_ttl">Курс по фандрайзингу</div>
-      <p class="rc-desc" data-i="r1_desc">От понимания доноров до выигрышной заявки. Онлайн, на русском.</p>
-      <div class="rc-lnk" data-i="r_open">Открыть →</div>
-    </a>
-    <a class="rc reveal d2" href="https://grantmanual.tilda.ws/" target="_blank">
-      <div class="rc-ico">📖</div>
-      <div class="rc-ttl" data-i="r2_ttl">Руководство по грантам</div>
-      <p class="rc-desc" data-i="r2_desc">Пошаговый гид для тех, кто впервые ищет гранты.</p>
-      <div class="rc-lnk" data-i="r_read">Читать →</div>
-    </a>
-    <a class="rc reveal d3" href="https://connect4baza.tilda.ws/" target="_blank">
-      <div class="rc-ico">🗄️</div>
-      <div class="rc-ttl" data-i="r3_ttl">База данных доноров</div>
-      <p class="rc-desc" data-i="r3_desc">Каталог фондов и грантодателей Центральной Азии и СНГ.</p>
-      <div class="rc-lnk" data-i="r_open2">Открыть →</div>
-    </a>
-    <a class="rc reveal d1" href="https://pro4dev.tilda.ws/" target="_blank">
-      <div class="rc-ico">🚀</div>
-      <div class="rc-ttl" data-i="r4_ttl">Тренинги Pro4Dev</div>
-      <p class="rc-desc" data-i="r4_desc">Программы для НКО, предпринимателей и специалистов по развитию.</p>
-      <div class="rc-lnk" data-i="r_view">Смотреть →</div>
-    </a>
-    <a class="rc reveal d2" href="https://www.facebook.com/connect4kg" target="_blank">
-      <div class="rc-ico">💡</div>
-      <div class="rc-ttl" data-i="r5_ttl">Connect4KG</div>
-      <p class="rc-desc" data-i="r5_desc">Актуальные возможности финансирования и гранты для Кыргызстана.</p>
-      <div class="rc-lnk" data-i="r_sub">Подписаться →</div>
-    </a>
-    <a class="rc reveal d2" href="/freelance-rate.html">
-      <div class="rc-ico">🧮</div>
-      <div class="rc-ttl" data-i="r7_ttl">Калькулятор ставки фрилансера</div>
-      <p class="rc-desc" data-i="r7_desc">Рассчитайте минимальную почасовую ставку исходя из ваших целей по доходу. Бесплатно.</p>
-      <div class="rc-lnk" data-i="r7_lnk">Открыть →</div>
-    </a>
-    <div class="rc rc-soon reveal d3">
-      <div class="rc-ico">🤖</div>
-      <div class="rc-ttl" data-i="r6_ttl">ИИ-ассистент</div>
-      <p class="rc-desc" data-i="r6_desc">Умный бот для поиска доноров и проверки заявок. В разработке.</p>
-      <div class="rc-lnk" data-i="r_soon">Скоро...</div>
-    </div>
+    <a class="rc reveal d1" href="https://connect4funds.tilda.ws/" target="_blank"><div class="rc-ico">🎓</div><div class="rc-ttl" data-i="r1t">Курс по фандрайзингу</div><p class="rc-dsc" data-i="r1d">От понимания доноров до выигрышной заявки.</p><div class="rc-lnk" data-i="r_open">Открыть →</div></a>
+    <a class="rc reveal d2" href="https://grantmanual.tilda.ws/" target="_blank"><div class="rc-ico">📖</div><div class="rc-ttl" data-i="r2t">Руководство по грантам</div><p class="rc-dsc" data-i="r2d">Пошаговый гид для тех, кто впервые ищет гранты.</p><div class="rc-lnk" data-i="r_read">Читать →</div></a>
+    <a class="rc reveal d3" href="https://connect4baza.tilda.ws/" target="_blank"><div class="rc-ico">🗄️</div><div class="rc-ttl" data-i="r3t">База данных доноров</div><p class="rc-dsc" data-i="r3d">Каталог фондов Центральной Азии и СНГ.</p><div class="rc-lnk" data-i="r_open">Открыть →</div></a>
+    <a class="rc reveal d1" href="https://pro4dev.tilda.ws/" target="_blank"><div class="rc-ico">🚀</div><div class="rc-ttl" data-i="r4t">Тренинги Pro4Dev</div><p class="rc-dsc" data-i="r4d">Программы для НКО и предпринимателей.</p><div class="rc-lnk" data-i="r_view">Смотреть →</div></a>
+    <a class="rc reveal d2" href="https://www.facebook.com/connect4kg" target="_blank"><div class="rc-ico">💡</div><div class="rc-ttl" data-i="r5t">Connect4KG</div><p class="rc-dsc" data-i="r5d">Возможности финансирования для Кыргызстана.</p><div class="rc-lnk" data-i="r_sub">Подписаться →</div></a>
+    <div class="rc rc-soon reveal d3"><div class="rc-ico">🤖</div><div class="rc-ttl" data-i="r6t">ИИ-ассистент</div><p class="rc-dsc" data-i="r6d">Умный бот для поиска доноров. В разработке.</p><div class="rc-lnk" data-i="r_soon">Скоро...</div></div>
   </div>
 </section>
 
-<!-- NUMBERS -->
 <section class="sw numbers" id="num">
   <div class="reveal">
     <div class="sec-tag" data-i="num_tag">Цифры и опыт</div>
@@ -587,27 +158,22 @@ footer::before { background:rgba(20,18,15,.98) }
   </div>
   <div class="num-g">
     <div class="reveal d1"><div class="nb2"></div><div class="nval">15<sup>+</sup></div><div class="nlbl" data-i="n1">лет в международном развитии и консалтинге</div></div>
-    <div class="reveal d2"><div class="nb2"></div><div class="nval">$2.8<sup>M</sup></div><div class="nlbl" data-i="n2">привлечено финансирования для НКО и проектов</div></div>
+    <div class="reveal d2"><div class="nb2"></div><div class="nval">$2.8<sup>M</sup></div><div class="nlbl" data-i="n2">привлечено финансирования</div></div>
     <div class="reveal d3"><div class="nb2"></div><div class="nval">550<sup>+</sup></div><div class="nlbl" data-i="n3">участников конференций из 36 стран</div></div>
-    <div class="reveal d1"><div class="nb2"></div><div class="nval">3</div><div class="nlbl" data-i="n4">собственных бизнеса: Connect4Pro, Xpat4KG и др.</div></div>
+    <div class="reveal d1"><div class="nb2"></div><div class="nval">3</div><div class="nlbl" data-i="n4">собственных бизнеса</div></div>
   </div>
   <div class="ptrow reveal">
     <div class="ptlbl" data-i="pt_lbl">Партнёры и доноры</div>
     <div class="ptnames">
-      <span class="ptn">USAID</span><span class="ptn">ООН</span>
-      <span class="ptn">Big Lottery Fund</span><span class="ptn">Eurasia Foundation</span>
-      <span class="ptn">Soros Foundation</span><span class="ptn">PeaceNexus</span>
-      <span class="ptn">Hans Seidel Foundation</span><span class="ptn">ICCO</span>
+      <span class="ptn">USAID</span><span class="ptn">ООН</span><span class="ptn">Big Lottery Fund</span>
+      <span class="ptn">Eurasia Foundation</span><span class="ptn">Soros Foundation</span>
+      <span class="ptn">PeaceNexus</span><span class="ptn">Hans Seidel Foundation</span><span class="ptn">ICCO</span>
     </div>
   </div>
 </section>
 
-<!-- CONTACT -->
 <section class="sw" id="con">
-  <div class="reveal">
-    <div class="sec-tag" data-i="con_tag">Связаться</div>
-    <h2 class="sec-ttl" data-i="con_ttl">Начнём<br>с <em>разговора</em></h2>
-  </div>
+  <div class="reveal"><div class="sec-tag" data-i="con_tag">Связаться</div><h2 class="sec-ttl" data-i="con_ttl">Начнём<br>с <em>разговора</em></h2></div>
   <div class="con-g">
     <div class="reveal d1">
       <p class="con-q" data-i="con_q">Расскажите о задаче — и мы найдём подходящий формат работы.</p>
@@ -615,7 +181,8 @@ footer::before { background:rgba(20,18,15,.98) }
         <div class="cit"><div class="citd"></div><div><div class="citl" data-i="cl1">Телефон / WhatsApp</div><div class="citv"><a href="tel:+996702271827">+996 702 27 18 27</a></div></div></div>
         <div class="cit"><div class="citd"></div><div><div class="citl">Email</div><div class="citv"><a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a></div></div></div>
         <div class="cit"><div class="citd"></div><div><div class="citl">LinkedIn</div><div class="citv"><a href="https://www.linkedin.com/in/azat-israilov-6b515228/" target="_blank">azat-israilov</a></div></div></div>
-        <div class="cit"><div class="citd"></div><div><div class="citl" data-i="cl4">Локация</div><div class="citv" data-i="cl4v">Бишкек, Кыргызстан · Работаю онлайн</div></div></div>
+        <div class="cit"><div class="citd"></div><div><div class="citl">YouTube</div><div class="citv"><a href="https://www.youtube.com/@connect4fund" target="_blank">@connect4fund</a></div></div></div>
+        <div class="cit"><div class="citd"></div><div><div class="citl" data-i="cl4">Локация</div><div class="citv" data-i="cl4v">Бишкек · Работаю онлайн</div></div></div>
       </div>
     </div>
     <div class="reveal d2">
@@ -628,239 +195,71 @@ footer::before { background:rgba(20,18,15,.98) }
         <div class="fg">
           <label class="fl" data-i="fl_type">Я — это...</label>
           <select class="fsl" id="ft">
-            <option value="" data-i="fopt0">Выберите тип</option>
-            <option data-i="fopt1">Предприниматель / МСБ</option>
-            <option data-i="fopt2">Представитель НКО</option>
-            <option data-i="fopt3">Консультант / Эксперт</option>
-            <option data-i="fopt4">Другое</option>
+            <option value="" data-i="fo0">Выберите тип</option>
+            <option data-i="fo1">Предприниматель / МСБ</option>
+            <option data-i="fo2">Представитель НКО</option>
+            <option data-i="fo3">Консультант / Эксперт</option>
+            <option data-i="fo4">Другое</option>
           </select>
         </div>
         <div class="fg"><label class="fl" data-i="fl_msg">Запрос</label><textarea class="fta" id="fm" data-ph="fl_msg_ph" placeholder="С чем нужна помощь?"></textarea></div>
         <button type="submit" class="bp bsub" data-i="f_send">Отправить сообщение →</button>
-        <p class="fnote" data-i="f_note">Откроется почтовый клиент. Или напрямую: <a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a></p>
+        <p class="fnote" data-i="f_note">Откроется почтовый клиент. Или: <a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a></p>
       </form>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <div class="flogo">Азат <b>Исраилов</b></div>
   <ul class="flinks">
-    <li><a href="#aud" data-i="nav_aud">Для кого</a></li>
-    <li><a href="#svc" data-i="nav_svc">Услуги</a></li>
-    <li><a href="#res" data-i="nav_res">Ресурсы</a></li>
+    <li><a href="events.html" data-i="nav_ev">Мероприятия</a></li>
+    <li><a href="publications.html" data-i="nav_pub">Публикации</a></li>
+    <li><a href="https://www.youtube.com/@connect4fund" target="_blank">YouTube</a></li>
     <li><a href="https://www.linkedin.com/in/azat-israilov-6b515228/" target="_blank">LinkedIn</a></li>
   </ul>
-  <div class="fcopy">© 2026 · Бишкек, Кыргызстан</div>
+  <div class="fcopy">© 2026 · azatisrail.cc</div>
 </footer>
-
-</div><!-- /#page -->
-
+</div>
+<script src="shared.js"></script>
 <script>
-/* ═══════════════════════════════════════════
-   TRANSLATIONS
-═══════════════════════════════════════════ */
-const T = {
-  ru: {
-    nav_aud:'Для кого', nav_svc:'Услуги', nav_res:'Ресурсы', nav_exp:'Опыт', nav_con:'Связаться',
-    eyebrow:'Бишкек · Кыргызстан · Международный опыт',
-    hero_desc:'15+ лет помогаю предпринимателям, НКО и консультантам находить финансирование, строить устойчивые организации и выходить на новый уровень.',
-    cta_main:'Записаться на консультацию →', cta_res:'Ресурсы',
-    stat1:'лет опыта', stat2:'привлечено', stat3:'стран-партнёров',
-    roles:['консультант','тренер','фандрайзер','ментор'],
-    aud_tag:'Для кого', aud_ttl:'Три типа\n<em>клиентов</em>',
-    a1_title:'Предприниматели и МСБ',
-    a1_desc:'Строите бизнес, ищете инвестиции или гранты, хотите выйти на новый уровень. Нужен практик — не теоретик.',
-    a1_tag:'💼 Платные консультации и тренинги',
-    a2_title:'НКО и некоммерческие',
-    a2_desc:'Гранты, доноры, стратегия, отчётность. 15 лет в международном развитии — знаю этот мир изнутри.',
-    a2_tag:'🤝 Тренинги · фасилитация · менторство',
-    a3_title:'Консультанты и эксперты',
-    a3_desc:'Хотите запустить своё дело, углубиться в фандрайзинг или выстроить систему работы с клиентами.',
-    a3_tag:'🎓 Менторинг · курсы · коучинг',
-    svc_tag:'Что я делаю', svc_ttl:'Форматы\n<em>работы</em>',
-    svc_desc:'Работаю индивидуально и в группах — от разовой консультации до долгосрочного сопровождения. Онлайн и офлайн в Бишкеке.',
-    s1:'Бизнес-консалтинг', s1s:'Индивидуально · Проектно',
-    s2:'Фандрайзинг и гранты', s2s:'Заявки · Стратегия · Доноры',
-    s3:'Бизнес-тренинги', s3s:'Группы · Корпоративные',
-    s4:'Бизнес-планирование', s4s:'Под инвестора · Под грант',
-    s5:'Менторинг и акселерация', s5s:'Accelerate Prosperity · John Galt',
-    s6:'Организационное развитие', s6s:'НКО · Стратегическое планирование',
-    c_tag:'⭐ Популярный продукт',
-    c_ttl:'Онлайн-курс<br>«Фандрайзинг с нуля<br>до <em>гранта</em>»',
-    c_desc:'Полная система поиска и привлечения финансирования — от понимания психологии доноров до отправки выигрышной заявки.',
-    cf1:'6 модулей с видеоуроками', cf2:'База доноров и шаблоны заявок',
-    cf3:'Живые разборы и Q&A сессии', cf4:'Сертификат по завершению',
-    c_btn:'Подробнее о курсе →',
-    res_tag:'Ресурсы', res_ttl:'Всё в <em>одном месте</em>',
-    r1_ttl:'Курс по фандрайзингу', r1_desc:'От понимания доноров до выигрышной заявки. Онлайн, на русском.',
-    r2_ttl:'Руководство по грантам', r2_desc:'Пошаговый гид для тех, кто впервые ищет гранты.',
-    r3_ttl:'База данных доноров', r3_desc:'Каталог фондов и грантодателей Центральной Азии и СНГ.',
-    r4_ttl:'Тренинги Pro4Dev', r4_desc:'Программы для НКО, предпринимателей и специалистов.',
-    r5_ttl:'Connect4KG', r5_desc:'Актуальные возможности финансирования для Кыргызстана.',
-    r6_ttl:'ИИ-ассистент', r6_desc:'Умный бот для поиска доноров и проверки заявок. В разработке.',
-    r7_ttl:'Калькулятор ставки фрилансера', r7_desc:'Рассчитайте минимальную почасовую ставку исходя из ваших целей по доходу. Бесплатно.', r7_lnk:'Открыть →',
-    r_open:'Открыть →', r_open2:'Открыть →', r_read:'Читать →',
-    r_view:'Смотреть →', r_sub:'Подписаться →', r_soon:'Скоро...',
-    num_tag:'Цифры и опыт',
-    num_ttl:'15 лет. Результаты<br>говорят <em>сами за себя.</em>',
-    n1:'лет в международном развитии и консалтинге',
-    n2:'привлечено финансирования для НКО и проектов',
-    n3:'участников конференций из 36 стран',
-    n4:'собственных бизнеса: Connect4Pro, Xpat4KG и др.',
-    pt_lbl:'Партнёры и доноры',
-    con_tag:'Связаться', con_ttl:'Начнём<br>с <em>разговора</em>',
-    con_q:'Расскажите о задаче — и мы найдём подходящий формат работы.',
-    cl1:'Телефон / WhatsApp', cl4:'Локация', cl4v:'Бишкек, Кыргызстан · Работаю онлайн',
-    fl_name:'Имя', fl_name_ph:'Ваше имя', fl_org:'Организация', fl_org_ph:'Компания / НКО',
-    fl_type:'Я — это...', fl_msg:'Запрос', fl_msg_ph:'С чем нужна помощь?',
-    fopt0:'Выберите тип', fopt1:'Предприниматель / МСБ', fopt2:'Представитель НКО',
-    fopt3:'Консультант / Эксперт', fopt4:'Другое',
-    f_send:'Отправить сообщение →',
-    f_note:'Откроется почтовый клиент. Или напрямую: <a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a>',
-  },
-  en: {
-    nav_aud:'Who it\'s for', nav_svc:'Services', nav_res:'Resources', nav_exp:'Track record', nav_con:'Contact',
-    eyebrow:'Bishkek · Kyrgyzstan · International experience',
-    hero_desc:'15+ years helping entrepreneurs, NGOs and consultants secure funding, build resilient organizations and reach the next level.',
-    cta_main:'Book a consultation →', cta_res:'Resources',
-    stat1:'years of experience', stat2:'raised', stat3:'partner countries',
-    roles:['consultant','trainer','fundraiser','mentor'],
-    aud_tag:'Who it\'s for', aud_ttl:'Three types of\n<em>clients</em>',
-    a1_title:'Entrepreneurs & SMEs',
-    a1_desc:'Building a business, seeking investment or grants, ready for the next level. You need a practitioner — not a theorist.',
-    a1_tag:'💼 Paid consultations & trainings',
-    a2_title:'NGOs & Non-profits',
-    a2_desc:'Grants, donors, strategy, reporting. 15 years in international development — I know this world from the inside.',
-    a2_tag:'🤝 Trainings · facilitation · mentorship',
-    a3_title:'Consultants & Experts',
-    a3_desc:'Want to launch your own practice, go deeper in fundraising or build a client management system.',
-    a3_tag:'🎓 Mentoring · courses · coaching',
-    svc_tag:'What I do', svc_ttl:'Service\n<em>formats</em>',
-    svc_desc:'I work individually and in groups — from a single consultation to long-term partnership. Online and in-person in Bishkek.',
-    s1:'Business consulting', s1s:'Individual · Project-based',
-    s2:'Fundraising & grants', s2s:'Applications · Strategy · Donors',
-    s3:'Business trainings', s3s:'Groups · Corporate',
-    s4:'Business planning', s4s:'For investors · For grants',
-    s5:'Mentoring & acceleration', s5s:'Accelerate Prosperity · John Galt',
-    s6:'Organizational development', s6s:'NGOs · Strategic planning',
-    c_tag:'⭐ Popular product',
-    c_ttl:'Online course<br>«Fundraising from zero<br>to <em>grant</em>»',
-    c_desc:'A complete system for finding and securing funding — from understanding donor psychology to submitting a winning application.',
-    cf1:'6 modules with video lessons', cf2:'Donor database & application templates',
-    cf3:'Live case reviews & Q&A sessions', cf4:'Certificate upon completion',
-    c_btn:'Learn more →',
-    res_tag:'Resources', res_ttl:'Everything in <em>one place</em>',
-    r1_ttl:'Fundraising course', r1_desc:'From understanding donors to a winning grant application. Online, in Russian.',
-    r2_ttl:'Grant writing guide', r2_desc:'A step-by-step guide for first-time grant seekers.',
-    r3_ttl:'Donor database', r3_desc:'Directory of foundations and grant-makers active in Central Asia.',
-    r4_ttl:'Pro4Dev trainings', r4_desc:'Programs for NGOs, entrepreneurs and development professionals.',
-    r5_ttl:'Connect4KG', r5_desc:'Current funding opportunities and grants for Kyrgyzstan.',
-    r6_ttl:'AI assistant', r6_desc:'Smart bot for finding donors and reviewing applications. Coming soon.',
-    r7_ttl:'Freelance Rate Calculator', r7_desc:'Calculate your minimum hourly rate based on your income goals. Free tool.', r7_lnk:'Open →',
-    r_open:'Open →', r_open2:'Open →', r_read:'Read →',
-    r_view:'View →', r_sub:'Subscribe →', r_soon:'Coming soon...',
-    num_tag:'Track record',
-    num_ttl:'15 years. Results<br>speak <em>for themselves.</em>',
-    n1:'years in international development & consulting',
-    n2:'raised in funding for NGOs and projects',
-    n3:'conference participants from 36 countries',
-    n4:'own businesses: Connect4Pro, Xpat4KG and more',
-    pt_lbl:'Partners & donors',
-    con_tag:'Contact', con_ttl:'Let\'s start<br>with a <em>conversation</em>',
-    con_q:'Tell me about your challenge — and we\'ll find the right format.',
-    cl1:'Phone / WhatsApp', cl4:'Location', cl4v:'Bishkek, Kyrgyzstan · Available online',
-    fl_name:'Name', fl_name_ph:'Your name', fl_org:'Organization', fl_org_ph:'Company / NGO',
-    fl_type:'I am a...', fl_msg:'Request', fl_msg_ph:'What do you need help with?',
-    fopt0:'Select type', fopt1:'Entrepreneur / SME', fopt2:'NGO representative',
-    fopt3:'Consultant / Expert', fopt4:'Other',
-    f_send:'Send message →',
-    f_note:'This will open your mail client. Or write directly: <a href="mailto:prof4dev@gmail.com">prof4dev@gmail.com</a>',
+// ═══ ДАННЫЕ ГЛАВНОЙ СТРАНИЦЫ ═══
+// Обновляй EVENTS_PREVIEW когда добавляешь мероприятия в events.html
+
+const EVENTS_PREVIEW = [
+  {
+    date:'22–23 мая 2025', date_kg:'2025-жылдын 22–23-майы', date_en:'May 22–23, 2025',
+    status:'upcoming',
+    title:{ru:'Тренинг по фандрайзингу (на кыргызском)',kg:'Фандрайзинг боюнча тренинг (кыргызча)',en:'Fundraising Training (in Kyrgyz)'},
+    desc:{ru:'Практический тренинг: как искать гранты и привлекать финансирование для проекта или НКО.',kg:'Практикалык тренинг: долбоор же ЭКУ үчүн грант кантип издөө жана каржылоону кантип тартуу.',en:'Practical training: how to find grants and attract funding for your project or NGO.'},
+    location:{ru:'Бишкек, очно',kg:'Бишкек, жекеме-жеке',en:'Bishkek, in-person'},
+    register:'https://wa.me/996702271827'
   }
-};
+  // ← Добавляй следующие мероприятия сюда
+];
 
-let currentLang = 'ru';
-let roleIdx = 0;
-let roleTimer;
+const PUBS_PREVIEW = [
+  {
+    title:{ru:'Как привлечь денежный грант в бизнес или проект',kg:'Бизнеске же долбоорго акча гранты кантип тартуу',en:'How to Attract a Grant for Business or Project'},
+    desc:{ru:'Практическое руководство по поиску и привлечению грантового финансирования.',kg:'Грант каржылоосун табуу боюнча практикалык колдонмо.',en:'Practical guide to finding and attracting grant funding.'},
+    year:2024, langs:['ru','kg'],
+    files:{ru:'/files/grant-guide-ru.pdf',kg:'/files/grant-guide-kg.pdf'}
+  },
+  {
+    title:{ru:'Введение в работу с ИИ',kg:'ЖИ менен иштөөгө киришүү',en:'Introduction to Working with AI'},
+    desc:{ru:'Руководство для начинающих по использованию ИИ в работе.',kg:'Жумушта жасалма интеллектти колдонуу боюнча колдонмо.',en:"Beginner's guide to using AI in your work."},
+    year:2024, langs:['ru','kg','en'],
+    files:{ru:'/files/ai-guide-ru.pdf',kg:'/files/ai-guide-kg.pdf',en:'/files/ai-guide-en.pdf'}
+  },
+  {
+    title:{ru:'Руководство по работе с волонтёрами',kg:'Волонтёрлор менен иштөө боюнча колдонмо',en:'Volunteer Management Guide'},
+    desc:{ru:'Как привлекать, мотивировать и удерживать волонтёров в организации.',kg:'Уюмуңузга волонтёрлорду кантип тартуу жана мотивациялоо.',en:'How to attract, motivate and retain volunteers.'},
+    year:2023, langs:['ru','kg'],
+    files:{ru:'/files/volunteer-guide-ru.pdf',kg:'/files/volunteer-guide-kg.pdf'}
+  }
+];
 
-function setLang(lang) {
-  currentLang = lang;
-  const t = T[lang];
-  document.documentElement.lang = lang;
-  document.getElementById('lb-ru').classList.toggle('active', lang==='ru');
-  document.getElementById('lb-en').classList.toggle('active', lang==='en');
-
-  // Update all [data-i] elements
-  document.querySelectorAll('[data-i]').forEach(el => {
-    const key = el.dataset.i;
-    if (!t[key]) return;
-    if (key.endsWith('_ttl') || key==='f_note' || key==='c_ttl') {
-      el.innerHTML = t[key].replace(/\n/g,'<br>');
-    } else {
-      el.textContent = t[key];
-    }
-  });
-
-  // Placeholders
-  document.querySelectorAll('[data-ph]').forEach(el => {
-    const key = el.dataset.ph;
-    if (t[key]) el.placeholder = t[key];
-  });
-
-  // Role
-  clearInterval(roleTimer);
-  roleIdx = 0;
-  const rc = document.getElementById('rc');
-  rc.textContent = t.roles[0];
-  roleTimer = setInterval(() => {
-    rc.style.opacity='0'; rc.style.transform='translateY(-10px)';
-    setTimeout(() => {
-      roleIdx = (roleIdx+1) % t.roles.length;
-      rc.textContent = t.roles[roleIdx];
-      rc.style.transform='translateY(10px)';
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        rc.style.opacity='1'; rc.style.transform='translateY(0)';
-      }));
-    }, 320);
-  }, 2800);
-
-  // Meta
-  document.title = lang==='ru'
-    ? 'Азат Исраилов — Консультант · Тренер · Фандрайзер'
-    : 'Azat Israilov — Consultant · Trainer · Fundraiser';
-}
-
-// Init role cycling
-setLang('ru');
-
-/* ═══ NAV ═══ */
-const nb = document.getElementById('nb');
-window.addEventListener('scroll', ()=>nb.classList.toggle('scrolled',scrollY>50),{passive:true});
-function navToggle(){ document.getElementById('nl').classList.toggle('open') }
-document.querySelectorAll('.nl a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nl').classList.remove('open')));
-
-/* ═══ SCROLL REVEAL ═══ */
-const obs = new IntersectionObserver(
-  entries=>entries.forEach(e=>e.isIntersecting&&e.target.classList.add('vis')),
-  {threshold:0.08}
-);
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-
-/* ═══ CONTACT FORM ═══ */
-function sendMail(e){
-  e.preventDefault();
-  const n=document.getElementById('fn').value;
-  const o=document.getElementById('fo').value;
-  const em=document.getElementById('fe').value;
-  const tp=document.getElementById('ft').value;
-  const m=document.getElementById('fm').value;
-  const subj = currentLang==='ru' ? `Запрос с сайта — ${n}` : `Website inquiry — ${n}`;
-  const body = currentLang==='ru'
-    ? `Имя: ${n}\nОрганизация: ${o}\nEmail: ${em}\nТип: ${tp}\n\n${m}`
-    : `Name: ${n}\nOrganization: ${o}\nEmail: ${em}\nType: ${tp}\n\n${m}`;
-  window.location.href=`mailto:prof4dev@gmail.com?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
-}
+initPage({eventsData: EVENTS_PREVIEW, pubsData: PUBS_PREVIEW});
 </script>
 </body>
 </html>

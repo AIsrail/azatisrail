@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мероприятия — Азат Исраилов</title>
+<meta name="description" content="Тренинги, семинары и конференции Азата Исраилова. Бишкек, Кыргызстан.">
+<link rel="canonical" href="https://azatisrail.cc/events.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:36px 0 40px}
+.f-btn{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:7px 16px;border:1.5px solid var(--border);background:transparent;color:var(--muted);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.f-btn:hover{border-color:var(--mid);color:var(--ink)}
+.f-btn.active{background:var(--sap);color:white;border-color:var(--sap)}
+.ev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.ev-card{background:var(--white);padding:36px;display:flex;flex-direction:column;transition:background .3s}
+.ev-card:hover{background:#FDFCF9}
+.ev-card.hidden{display:none}
+.ev-badge{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:2px;margin-bottom:14px;font-weight:500}
+.badge-up{background:rgba(27,111,168,.1);color:var(--sap)}
+.badge-past{background:var(--sect);color:var(--muted)}
+.ev-date{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;line-height:1;margin-bottom:14px;color:var(--ink)}
+.ev-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin-bottom:10px;line-height:1.3}
+.ev-desc{font-size:14px;color:var(--mid);line-height:1.72;font-weight:300;flex:1;margin-bottom:20px}
+.ev-meta{display:flex;flex-direction:column;gap:7px;margin-bottom:22px}
+.ev-meta-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.ev-reg{display:inline-flex;align-items:center;gap:6px;background:var(--sap);color:white;padding:11px 22px;font-size:13px;font-weight:500;border-radius:2px;transition:background .2s,transform .15s;width:fit-content}
+.ev-reg:hover{background:var(--sap2);transform:translateY(-2px)}
+.ev-reg-past{background:transparent;color:var(--muted);border:1.5px solid var(--border);cursor:default}
+.ev-reg-past:hover{background:transparent;transform:none}
+.no-events{grid-column:1/-1;padding:60px;text-align:center;color:var(--muted);font-size:15px;font-weight:300}
+@media(max-width:1100px){.ev-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.ev-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="page">
+
+<nav id="nb">
+  <a href="/" class="logo">Азат <b>Исраилов</b></a>
+  <div class="nav-r">
+    <ul class="nl" id="nl">
+      <li><a href="/#aud" data-i="nav_aud">Для кого</a></li>
+      <li><a href="/#svc" data-i="nav_svc">Услуги</a></li>
+      <li><a href="events.html" class="active" data-i="nav_ev">Мероприятия</a></li>
+      <li><a href="publications.html" data-i="nav_pub">Публикации</a></li>
+      <li><a href="https://www.youtube.com/@connect4fund" target="_blank" class="yt-link">
+        <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+        YouTube
+      </a></li>
+      <li><a href="/#con" class="nl-cta" data-i="nav_con">Связаться</a></li>
+    </ul>
+    <div class="lang-sw">
+      <button class="lang-btn active" onclick="setLang('ru')" id="lb-ru">RU</button>
+      <div class="lsep"></div>
+      <button class="lang-btn" onclick="setLang('kg')" id="lb-kg">KG</button>
+      <div class="lsep"></div>
+      <button class="lang-btn" onclick="setLang('en')" id="lb-en">EN</button>
+    </div>
+    <div class="nm" onclick="navToggle()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="ph-tag" data-i="ev_page_tag">Мероприятия</div>
+  <h1 class="ph-ttl" data-i="ev_page_ttl">Все<br><em>события</em></h1>
+  <p class="ph-desc" data-i="ev_page_desc">Тренинги, семинары и конференции. Присоединяйтесь очно или онлайн.</p>
+</div>
+
+<section class="sw">
+  <div class="filter-bar" id="filter-bar">
+    <button class="f-btn active" data-filter="all" data-i="ev_filter_all" onclick="filterEv(this,'all')">Все</button>
+    <button class="f-btn" data-filter="upcoming" data-i="ev_filter_up" onclick="filterEv(this,'upcoming')">Предстоящие</button>
+    <button class="f-btn" data-filter="past" data-i="ev_filter_past" onclick="filterEv(this,'past')">Прошедшие</button>
+  </div>
+  <div class="ev-grid" id="ev-grid"></div>
+</section>
+
+<footer>
+  <div class="flogo">Азат <b>Исраилов</b></div>
+  <ul class="flinks">
+    <li><a href="/" >Главная</a></li>
+    <li><a href="events.html" data-i="nav_ev">Мероприятия</a></li>
+    <li><a href="publications.html" data-i="nav_pub">Публикации</a></li>
+    <li><a href="https://www.youtube.com/@connect4fund" target="_blank">YouTube</a></li>
+  </ul>
+  <div class="fcopy">© 2026 · azatisrail.cc</div>
+</footer>
+</div>
+<script src="shared.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   ДАННЫЕ МЕРОПРИЯТИЙ
+   Чтобы добавить новое мероприятие — скопируй блок ниже,
+   заполни поля и вставь в массив. Статус: 'upcoming' или 'past'
+   ══════════════════════════════════════════════════════════ */
+const EVENTS = [
+  {
+    status: 'upcoming',
+    date:    '22–23 мая 2025',
+    date_kg: '2025-жылдын 22–23-майы',
+    date_en: 'May 22–23, 2025',
+    title: {
+      ru: 'Тренинг по фандрайзингу на кыргызском языке',
+      kg: 'Кыргыз тилинде фандрайзинг боюнча тренинг',
+      en: 'Fundraising Training in Kyrgyz Language'
+    },
+    desc: {
+      ru: 'Двухдневный практический тренинг: как искать гранты, работать с донорами и привлекать финансирование для проекта или НКО. Весь тренинг на кыргызском языке.',
+      kg: 'Эки күндүк практикалык тренинг: грант кантип издөө, донорлор менен кантип иштөө жана долбоор же ЭКУ үчүн каржылоону кантип тартуу. Тренинг кыргыз тилинде.',
+      en: 'Two-day practical training: how to find grants, work with donors and attract funding for your project or NGO. The entire training is conducted in the Kyrgyz language.'
+    },
+    location: {ru: 'Бишкек, очно', kg: 'Бишкек, жекеме-жеке', en: 'Bishkek, in-person'},
+    lang_event: {ru: 'Кыргызский язык', kg: 'Кыргыз тили', en: 'Kyrgyz language'},
+    format: {ru: 'Очно · 2 дня', kg: 'Жекеме-жеке · 2 күн', en: 'In-person · 2 days'},
+    register: 'https://wa.me/996702271827'
+  }
+  /* ← ДОБАВЬ СЛЕДУЮЩЕЕ МЕРОПРИЯТИЕ СЮДА:
+  ,{
+    status: 'upcoming',
+    date:    'дата RU',
+    date_kg: 'дата KG',
+    date_en: 'date EN',
+    title: {ru:'', kg:'', en:''},
+    desc:  {ru:'', kg:'', en:''},
+    location: {ru:'', kg:'', en:''},
+    lang_event: {ru:'', kg:'', en:''},
+    format: {ru:'', kg:'', en:''},
+    register: 'https://wa.me/996702271827'
+  }
+  */
+];
+
+let _filter = 'all';
+
+function filterEv(btn, filter){
+  _filter = filter;
+  document.querySelectorAll('.f-btn').forEach(b=>b.classList.toggle('active',b===btn));
+  renderGrid(window._currentLang||'ru');
+}
+
+function renderGrid(lang){
+  const t = T[lang];
+  const grid = document.getElementById('ev-grid');
+  if(!grid) return;
+  const filtered = _filter==='all' ? EVENTS : EVENTS.filter(e=>e.status===_filter);
+  if(!filtered.length){
+    grid.innerHTML=`<div class="no-events">${t.ev_no_events}</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(ev=>{
+    const badge = ev.status==='upcoming'
+      ? `<span class="ev-badge badge-up">${t.ev_up}</span>`
+      : `<span class="ev-badge badge-past">${t.ev_past}</span>`;
+    const dateStr = lang==='kg' ? ev.date_kg : lang==='en' ? ev.date_en : ev.date;
+    const regBtn = ev.status==='upcoming'
+      ? `<a href="${ev.register}" target="_blank" class="ev-reg">${t.ev_reg}</a>`
+      : `<span class="ev-reg ev-reg-past">${t.ev_past}</span>`;
+    return `<div class="ev-card">
+      ${badge}
+      <div class="ev-date">${dateStr}</div>
+      <div class="ev-title">${ev.title[lang]||ev.title.ru}</div>
+      <div class="ev-desc">${ev.desc[lang]||ev.desc.ru}</div>
+      <div class="ev-meta">
+        <div class="ev-meta-row">📍 ${ev.location[lang]||ev.location.ru}</div>
+        <div class="ev-meta-row">🗣 ${ev.lang_event[lang]||ev.lang_event.ru}</div>
+        <div class="ev-meta-row">📋 ${ev.format[lang]||ev.format.ru}</div>
+      </div>
+      ${regBtn}
+    </div>`;
+  }).join('');
+}
+
+initPage({
+  onLang: function(l){
+    window._currentLang = l;
+    // Update filter buttons text
+    const t = T[l];
+    document.querySelectorAll('.f-btn[data-filter]').forEach(b=>{
+      const key = b.dataset.i; if(t[key]) b.textContent=t[key];
+    });
+    renderGrid(l);
+  }
+});
+window._currentLang = 'ru';
+renderGrid('ru');
+</script>
+</body>
+</html>
