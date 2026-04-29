@@ -97,83 +97,36 @@
 </div>
 <script src="shared.js"></script>
 <script>
-/* ══════════════════════════════════════════════════════════
-   ДАННЫЕ ПУБЛИКАЦИЙ
-   Чтобы добавить новую публикацию:
-   1. Загрузи PDF в папку /files/ репозитория GitHub
-   2. Скопируй блок ниже, заполни и вставь в массив
-   ══════════════════════════════════════════════════════════ */
-const PUBLICATIONS = [
-  {
-    title: {
-      ru: 'Как привлечь денежный грант в бизнес или проект',
-      kg: 'Бизнеске же долбоорго акча гранты кантип тартуу',
-      en: 'How to Attract a Grant for Business or Project'
-    },
-    desc: {
-      ru: 'Практическое руководство: где искать гранты, как составить заявку, какие ошибки допускают начинающие — и как их избежать.',
-      kg: 'Практикалык колдонмо: грантты кайдан издөө, арызды кантип жазуу, жаңы баштагандар кандай каталарга жол коёт — жана аларды кантип болтурбоо.',
-      en: 'Practical guide: where to find grants, how to write an application, what mistakes beginners make — and how to avoid them.'
-    },
-    year: 2024,
-    langs: ['ru', 'kg'],
-    files: {
-      ru: '/files/grant-guide-ru.pdf',
-      kg: '/files/grant-guide-kg.pdf'
-    }
-  },
-  {
-    title: {
-      ru: 'Введение в работу с ИИ',
-      kg: 'ЖИ менен иштөөгө киришүү',
-      en: 'Introduction to Working with AI'
-    },
-    desc: {
-      ru: 'Руководство для начинающих: как использовать ChatGPT, Claude и другие ИИ-инструменты в работе консультанта, менеджера и НКО.',
-      kg: 'Жаңы баштагандарга колдонмо: консультанттын, менеджердин жана ЭКУнун жумушунда ChatGPT, Claude жана башка ЖИ куралдарды кантип колдонуу.',
-      en: "Beginner's guide: how to use ChatGPT, Claude and other AI tools in the work of a consultant, manager and NGO."
-    },
-    year: 2024,
-    langs: ['ru', 'kg', 'en'],
-    files: {
-      ru: '/files/ai-guide-ru.pdf',
-      kg: '/files/ai-guide-kg.pdf',
-      en: '/files/ai-guide-en.pdf'
-    }
-  },
-  {
-    title: {
-      ru: 'Руководство по работе с волонтёрами',
-      kg: 'Волонтёрлор менен иштөө боюнча колдонмо',
-      en: 'Volunteer Management Guide'
-    },
-    desc: {
-      ru: 'Как привлекать, мотивировать и удерживать волонтёров. Практические инструменты для НКО и социальных проектов.',
-      kg: 'Волонтёрлорду кантип тартуу, мотивациялоо жана кармап туруу. ЭКУлар жана социалдык долбоорлор үчүн практикалык куралдар.',
-      en: 'How to attract, motivate and retain volunteers. Practical tools for NGOs and social projects.'
-    },
-    year: 2023,
-    langs: ['ru', 'kg'],
-    files: {
-      ru: '/files/volunteer-guide-ru.pdf',
-      kg: '/files/volunteer-guide-kg.pdf'
-    }
-  }
-  /* ← ДОБАВЬ СЛЕДУЮЩУЮ ПУБЛИКАЦИЮ СЮДА:
-  ,{
-    title: {ru:'', kg:'', en:''},
-    desc:  {ru:'', kg:'', en:''},
-    year: 2025,
-    langs: ['ru','kg'],   // языки доступные для скачивания
-    files: {
-      ru: '/files/filename-ru.pdf',
-      kg: '/files/filename-kg.pdf'
-    }
-  }
-  */
-];
-
+let PUBLICATIONS = [];
 let _pubFilter = 'all';
+
+const NOTE = {
+  ru: '📌 PDF-файлы появятся здесь как только будут загружены. Чтобы получить руководство сейчас — <a href="mailto:prof4dev@gmail.com">напишите напрямую</a>.',
+  kg: '📌 PDF-файлдар жүктөлгөндөн кийин пайда болот. Азыр алуу үчүн — <a href="mailto:prof4dev@gmail.com">түз жазыңыз</a>.',
+  en: '📌 PDF files will appear here once uploaded. To get a guide now — <a href="mailto:prof4dev@gmail.com">write directly</a>.'
+};
+
+async function loadAndInit() {
+  try {
+    const res = await fetch('publications.json?_=' + Date.now());
+    PUBLICATIONS = await res.json();
+  } catch(e) { PUBLICATIONS = []; }
+
+  initPage({
+    onLang: function(l){
+      window._currentLang = l;
+      const t = T[l];
+      document.querySelectorAll('.f-btn[data-filter]').forEach(b=>{
+        const key = b.dataset.i; if(t[key]) b.textContent=t[key];
+      });
+      const nb = document.getElementById('note-bar');
+      if(nb) nb.innerHTML = NOTE[l];
+      renderPubs(l);
+    }
+  });
+  window._currentLang = 'ru';
+  renderPubs('ru');
+}
 
 function filterPub(btn, filter){
   _pubFilter = filter;
@@ -185,57 +138,36 @@ function renderPubs(lang){
   const t = T[lang];
   const grid = document.getElementById('pub-grid');
   if(!grid) return;
+  const langKey = { ru:'lang_ru', kg:'lang_kg', en:'lang_en' };
   const filtered = _pubFilter==='all'
     ? PUBLICATIONS
-    : PUBLICATIONS.filter(p=>p.langs.includes(_pubFilter));
+    : PUBLICATIONS.filter(p => p[langKey[_pubFilter]]);
   if(!filtered.length){
     grid.innerHTML=`<div class="no-pubs">${t.pub_no}</div>`;
     return;
   }
+  const LANG_LABEL = {ru:'RU',kg:'КЫР',en:'EN'};
   grid.innerHTML = filtered.map(p=>{
-    const pills = p.langs.map(lg=>`<span class="pub-lang-pill">${LANG_LABEL[lg]}</span>`).join('');
-    const btns = p.langs.map(lg=>{
-      const f = p.files[lg];
-      if(!f) return '';
+    const pills = ['ru','kg','en'].filter(lg=>p['lang_'+lg])
+      .map(lg=>`<span class="pub-lang-pill">${LANG_LABEL[lg]}</span>`).join('');
+    const btns = ['ru','kg','en'].filter(lg=>p['lang_'+lg] && p['file_'+lg]).map(lg=>{
       const isPrimary = lg===lang ? ' primary' : '';
-      return `<a href="${f}" class="pub-dl-btn${isPrimary}" download>
-        ↓ ${t.pb_dl} ${LANG_LABEL[lg]}
-      </a>`;
-    }).filter(Boolean).join('');
+      return `<a href="${p['file_'+lg]}" class="pub-dl-btn${isPrimary}" download>↓ ${t.pb_dl} ${LANG_LABEL[lg]}</a>`;
+    }).join('');
+    const title = p['title_'+lang] || p.title_ru;
+    const desc = p['desc_'+lang] || p.desc_ru;
     return `<div class="pub-card">
       <div class="pub-year">${p.year}</div>
       <div class="pub-langs-row">${pills}</div>
-      <div class="pub-title">${p.title[lang]||p.title.ru}</div>
-      <div class="pub-desc">${p.desc[lang]||p.desc.ru}</div>
+      <div class="pub-title">${title}</div>
+      <div class="pub-desc">${desc}</div>
       <div class="pub-available">${t.pub_available}</div>
       <div class="pub-dl-btns">${btns}</div>
     </div>`;
   }).join('');
 }
 
-// Note bar translations
-const NOTE = {
-  ru: '📌 PDF-файлы появятся здесь как только будут загружены. Чтобы получить руководство сейчас — <a href="mailto:prof4dev@gmail.com">напишите напрямую</a>.',
-  kg: '📌 PDF-файлдар жүктөлгөндөн кийин пайда болот. Азыр алуу үчүн — <a href="mailto:prof4dev@gmail.com">түз жазыңыз</a>.',
-  en: '📌 PDF files will appear here once uploaded. To get a guide now — <a href="mailto:prof4dev@gmail.com">write directly</a>.'
-};
-
-initPage({
-  onLang: function(l){
-    window._currentLang = l;
-    // Update filter button labels
-    const t = T[l];
-    document.querySelectorAll('.f-btn[data-filter]').forEach(b=>{
-      const key = b.dataset.i; if(t[key]) b.textContent=t[key];
-    });
-    // Note bar
-    const nb = document.getElementById('note-bar');
-    if(nb) nb.innerHTML = NOTE[l];
-    renderPubs(l);
-  }
-});
-window._currentLang = 'ru';
-renderPubs('ru');
+loadAndInit();
 </script>
 </body>
 </html>

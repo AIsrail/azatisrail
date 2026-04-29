@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админ — azatisrail.cc</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#FAFAF6;--white:#fff;--ink:#14120F;--mid:#4A4744;--muted:#8C8884;
+  --border:#DDD9D2;--sect:#F3F0EA;--sap:#1B6FA8;--sap2:#0F4F7A;
+  --gold:#B8942A;--red:#C0392B;--red-light:#FEF3F2;
+  --green:#2d6a4f;--green-light:#e8f5ee;
+}
+body{font-family:'DM Sans',sans-serif;background:#F0EDE8;color:var(--ink);min-height:100vh}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--white);border:1px solid var(--border);padding:52px 48px;width:360px;text-align:center}
+.login-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-bottom:4px}
+.login-logo b{color:var(--sap)}
+.login-sub{font-size:11px;color:var(--muted);margin-bottom:32px;letter-spacing:.1em;text-transform:uppercase}
+.login-box input{width:100%;border:1.5px solid var(--border);border-radius:2px;padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;transition:border-color .2s}
+.login-box input:focus{border-color:var(--sap)}
+.login-btn{width:100%;background:var(--sap);color:#fff;border:none;padding:12px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border-radius:2px;cursor:pointer;transition:opacity .2s}
+.login-btn:hover{opacity:.88}
+.login-error{font-size:12px;color:var(--red);margin-top:10px;display:none}
+.login-hint{margin-top:18px;font-size:11px;color:var(--muted);line-height:1.6}
+.login-hint code{background:var(--sect);padding:2px 6px;border-radius:2px}
+
+/* GITHUB MODAL */
+#gh-modal{display:none;position:fixed;inset:0;background:rgba(20,18,15,.7);z-index:200;align-items:center;justify-content:center}
+#gh-modal.show{display:flex}
+.modal-box{background:var(--white);border:1px solid var(--border);padding:44px 40px;width:460px;border-radius:2px}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:8px}
+.modal-sub{font-size:13px;color:var(--mid);margin-bottom:24px;line-height:1.65}
+.modal-sub a{color:var(--sap)}
+.modal-sub code{background:var(--sect);padding:2px 5px;border-radius:2px;font-size:11px}
+.modal-box input{width:100%;border:1.5px solid var(--border);border-radius:2px;padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:12px;transition:border-color .2s}
+.modal-box input:focus{border-color:var(--sap)}
+.modal-btn{width:100%;background:var(--sap);color:#fff;border:none;padding:12px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;border-radius:2px;cursor:pointer;transition:opacity .2s}
+.modal-btn:hover{opacity:.88}
+.modal-skip{display:block;text-align:center;margin-top:12px;font-size:12px;color:var(--muted);cursor:pointer}
+.modal-skip:hover{color:var(--ink)}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:50;background:var(--ink);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:54px;gap:12px}
+.topbar-logo{font-family:'Cormorant Garamond',serif;font-size:19px;color:#fff;font-weight:600;white-space:nowrap}
+.topbar-logo b{color:var(--gold)}
+.topbar-center{display:flex;align-items:center;gap:6px}
+.tab-btn{color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);background:transparent;padding:6px 16px;border-radius:2px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+.tab-btn.active{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.28)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.logout-btn{font-size:11px;color:rgba(255,255,255,.4);background:none;border:1px solid rgba(255,255,255,.12);padding:5px 12px;border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.logout-btn:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+
+/* LAYOUT */
+#app{display:none}
+.layout{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 54px)}
+
+/* SIDEBAR */
+.sidebar{background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.sidebar-hd{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sidebar-title{font-size:13px;font-weight:500}
+.sidebar-count{font-size:11px;color:var(--muted);background:var(--sect);padding:3px 9px;border-radius:100px}
+.add-btn{margin:14px;background:var(--sap);color:#fff;border:none;padding:10px 16px;border-radius:2px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;gap:8px;width:calc(100% - 28px)}
+.add-btn:hover{opacity:.88}
+.item-list{flex:1;overflow-y:auto;padding:8px 0}
+.list-item{padding:13px 18px;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
+.list-item:hover{background:var(--sect)}
+.list-item.active{background:#EEF5FB;border-left-color:var(--sap)}
+.item-title{font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.badge-up{display:inline-block;font-size:9px;letter-spacing:.06em;text-transform:uppercase;background:rgba(27,111,168,.1);color:var(--sap);padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:500}
+.badge-past{display:inline-block;font-size:9px;letter-spacing:.06em;text-transform:uppercase;background:var(--sect);color:var(--muted);padding:2px 7px;border-radius:100px;margin-left:6px}
+.list-empty{padding:28px 18px;text-align:center;color:var(--muted);font-size:13px}
+
+/* EXPORT PANEL */
+.export-panel{padding:18px;border-top:1px solid var(--border)}
+.export-title{font-size:11px;font-weight:500;margin-bottom:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
+.btn-publish{width:100%;background:var(--green);color:#fff;border:none;padding:10px;border-radius:2px;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-publish:hover{opacity:.85}
+.btn-publish:disabled{opacity:.5;cursor:not-allowed}
+.btn-dl{width:100%;background:none;color:var(--mid);border:1px solid var(--border);padding:9px;border-radius:2px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;margin-bottom:6px}
+.btn-dl:hover{border-color:var(--ink);color:var(--ink)}
+.gh-connected{font-size:11px;color:var(--green);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.gh-reset{font-size:10px;color:var(--muted);cursor:pointer;text-decoration:underline}
+.gh-reset:hover{color:var(--ink)}
+.btn-gh-connect{width:100%;background:none;color:var(--sap);border:1px solid var(--sap);padding:9px;border-radius:2px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-bottom:6px;transition:all .2s}
+.btn-gh-connect:hover{background:var(--sap);color:#fff}
+.gh-status{font-size:11px;margin-top:6px;line-height:1.5;color:var(--muted)}
+.gh-status.ok{color:var(--green)}
+.gh-status.err{color:var(--red)}
+
+/* MAIN */
+.main{padding:32px 40px;overflow-y:auto}
+.form-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300}
+.form-actions{display:flex;gap:10px;align-items:center}
+.btn-save{background:var(--sap);color:#fff;border:none;padding:10px 22px;border-radius:2px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s}
+.btn-save:hover{opacity:.88}
+.btn-del{background:none;color:var(--red);border:1px solid rgba(192,57,43,.25);padding:9px 16px;border-radius:2px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s}
+.btn-del:hover{background:var(--red-light)}
+
+.section-label{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:24px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.full{grid-column:1/-1}
+label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.flag{font-style:normal;opacity:.55;margin-left:3px}
+input[type=text],input[type=url],input[type=number],textarea,select{
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;color:var(--ink);
+  background:var(--white);border:1.5px solid var(--border);border-radius:2px;
+  padding:10px 13px;outline:none;transition:border-color .2s;width:100%
+}
+input:focus,textarea:focus,select:focus{border-color:var(--sap)}
+textarea{min-height:72px;resize:vertical}
+.radio-row{display:flex;gap:10px;margin-top:4px}
+.radio-opt{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--mid)}
+.radio-opt input{accent-color:var(--sap);width:15px;height:15px}
+.check-row{display:flex;gap:14px;margin-top:6px;flex-wrap:wrap}
+.check-opt{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;color:var(--mid);font-weight:400}
+.check-opt input{accent-color:var(--sap);width:15px;height:15px}
+
+/* EMPTY */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;text-align:center;color:var(--muted)}
+.empty-icon{font-size:44px;margin-bottom:14px}
+.empty-text{font-size:15px;font-weight:300}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:3px;font-size:13px;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;z-index:999}
+#toast.show{opacity:1;transform:none}
+#toast.ok{background:var(--green)}
+#toast.err{background:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Азат <b>Исраилов</b></div>
+    <div class="login-sub">Панель управления</div>
+    <input type="password" id="pwd" placeholder="Пароль" onkeydown="if(event.key==='Enter')login()">
+    <button class="login-btn" onclick="login()">Войти</button>
+    <div class="login-error" id="login-err">Неверный пароль</div>
+    <div class="login-hint">Пароль по умолчанию: <code>azat2026</code><br>Измените в коде: строка <code>ADMIN_PASSWORD</code></div>
+  </div>
+</div>
+
+<!-- GITHUB TOKEN MODAL -->
+<div id="gh-modal">
+  <div class="modal-box">
+    <div class="modal-title">🔑 Подключить GitHub</div>
+    <div class="modal-sub">
+      Токен хранится только в этом браузере — в коде сайта его нет.<br><br>
+      1. Перейди на <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a><br>
+      2. <strong>Generate new token (classic)</strong><br>
+      3. Поставь галочку <code>repo</code> → Generate token<br>
+      4. Скопируй и вставь ниже
+    </div>
+    <input type="password" id="gh-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <button class="modal-btn" onclick="saveGhToken()">Сохранить токен</button>
+    <span class="modal-skip" onclick="closeGhModal()">Пропустить — буду скачивать JSON вручную</span>
+  </div>
+</div>
+
+<div id="app">
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">Азат <b>Исраилов</b></div>
+  <div class="topbar-center">
+    <button class="tab-btn active" id="tab-ev" onclick="switchTab('events')">📅 Мероприятия</button>
+    <button class="tab-btn" id="tab-pub" onclick="switchTab('publications')">📄 Публикации</button>
+  </div>
+  <div class="topbar-right">
+    <button class="logout-btn" onclick="logout()">Выйти</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-hd">
+      <span class="sidebar-title" id="sidebar-title">Мероприятия</span>
+      <span class="sidebar-count" id="sidebar-count">0</span>
+    </div>
+    <button class="add-btn" onclick="addNew()">+ Добавить</button>
+    <div class="item-list" id="item-list"></div>
+    <div class="export-panel" id="export-panel"></div>
+  </div>
+  <div class="main" id="main-panel">
+    <div class="empty-state"><div class="empty-icon">←</div><div class="empty-text">Выбери элемент или нажми «Добавить»</div></div>
+  </div>
+</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════
+   CONFIG — измени пароль здесь
+═══════════════════════════════ */
+const ADMIN_PASSWORD = 'azat2026';
+const GH_REPO = 'AIsrail/azatisrail'; // репозиторий GitHub
+
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let currentTab = 'events';
+let events = [];
+let publications = [];
+let editingId = null;
+let hasChanges = false;
+
+/* ═══════════════════════════════
+   LOGIN
+═══════════════════════════════ */
+function login() {
+  const pwd = document.getElementById('pwd').value;
+  if (pwd === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadData();
+    renderExport();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+function logout() {
+  if (hasChanges && !confirm('Есть несохранённые изменения. Выйти?')) return;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('pwd').value = '';
+}
+
+/* ═══════════════════════════════
+   LOAD DATA
+═══════════════════════════════ */
+async function loadData() {
+  try {
+    const [evRes, pubRes] = await Promise.all([
+      fetch('events.json?_=' + Date.now()),
+      fetch('publications.json?_=' + Date.now())
+    ]);
+    events = await evRes.json();
+    publications = await pubRes.json();
+  } catch(e) {
+    events = [];
+    publications = [];
+  }
+  renderSidebar();
+}
+
+/* ═══════════════════════════════
+   TABS
+═══════════════════════════════ */
+function switchTab(tab) {
+  currentTab = tab;
+  editingId = null;
+  document.getElementById('tab-ev').classList.toggle('active', tab === 'events');
+  document.getElementById('tab-pub').classList.toggle('active', tab === 'publications');
+  renderSidebar();
+  renderMain();
+  renderExport();
+}
+
+/* ═══════════════════════════════
+   SIDEBAR
+═══════════════════════════════ */
+function renderSidebar() {
+  const items = currentTab === 'events' ? events : publications;
+  document.getElementById('sidebar-title').textContent = currentTab === 'events' ? 'Мероприятия' : 'Публикации';
+  document.getElementById('sidebar-count').textContent = items.length;
+  const list = document.getElementById('item-list');
+  if (!items.length) {
+    list.innerHTML = '<div class="list-empty">Пусто — нажми «Добавить»</div>';
+    return;
+  }
+  list.innerHTML = items.map(item => {
+    const active = item.id === editingId ? ' active' : '';
+    if (currentTab === 'events') {
+      const badge = item.status === 'upcoming'
+        ? '<span class="badge-up">Скоро</span>'
+        : '<span class="badge-past">Прошло</span>';
+      return `<div class="list-item${active}" onclick="editItem(${item.id})">
+        <div class="item-title">${item.title_ru}${badge}</div>
+        <div class="item-meta">${item.date}</div>
+      </div>`;
+    } else {
+      const langs = [item.lang_ru&&'RU', item.lang_kg&&'KG', item.lang_en&&'EN'].filter(Boolean).join(' · ');
+      return `<div class="list-item${active}" onclick="editItem(${item.id})">
+        <div class="item-title">${item.title_ru}</div>
+        <div class="item-meta">${item.year} · ${langs}</div>
+      </div>`;
+    }
+  }).join('');
+}
+
+/* ═══════════════════════════════
+   ADD / EDIT
+═══════════════════════════════ */
+function addNew() {
+  editingId = null;
+  renderSidebar();
+  renderMain();
+}
+
+function editItem(id) {
+  editingId = id;
+  renderSidebar();
+  renderMain();
+}
+
+function nextId(arr) {
+  return arr.length ? Math.max(...arr.map(x => x.id)) + 1 : 1;
+}
+
+/* ═══════════════════════════════
+   RENDER FORM
+═══════════════════════════════ */
+function renderMain() {
+  const panel = document.getElementById('main-panel');
+  if (currentTab === 'events') renderEventForm(panel);
+  else renderPubForm(panel);
+}
+
+function renderEventForm(panel) {
+  const ev = editingId ? events.find(e => e.id === editingId) : null;
+  const title = ev ? 'Редактировать мероприятие' : 'Новое мероприятие';
+  panel.innerHTML = `
+    <div class="form-hd">
+      <div class="form-title">${title}</div>
+      <div class="form-actions">
+        ${ev ? `<button class="btn-del" onclick="deleteItem(${ev.id})">Удалить</button>` : ''}
+        <button class="btn-save" onclick="saveEvent()">Сохранить</button>
+      </div>
+    </div>
+
+    <div class="section-label">Основное</div>
+    <div class="form-grid">
+      <div class="fg">
+        <label>Дата <span class="flag">🇷🇺</span></label>
+        <input type="text" id="f-date" value="${ev?.date||''}" placeholder="22–23 мая 2025">
+      </div>
+      <div class="fg">
+        <label>Статус</label>
+        <select id="f-status">
+          <option value="upcoming" ${(!ev||ev.status==='upcoming')?'selected':''}>Предстоящее</option>
+          <option value="past" ${ev?.status==='past'?'selected':''}>Прошедшее</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Дата <span class="flag">🇰🇬</span></label>
+        <input type="text" id="f-date-kg" value="${ev?.date_kg||''}" placeholder="2025-жылдын 22–23-майы">
+      </div>
+      <div class="fg">
+        <label>Дата <span class="flag">🇬🇧</span></label>
+        <input type="text" id="f-date-en" value="${ev?.date_en||''}" placeholder="May 22–23, 2025">
+      </div>
+    </div>
+
+    <div class="section-label">Название</div>
+    <div class="form-grid">
+      <div class="fg full">
+        <label>Название <span class="flag">🇷🇺</span></label>
+        <input type="text" id="f-title-ru" value="${ev?.title_ru||''}" placeholder="Тренинг по фандрайзингу">
+      </div>
+      <div class="fg full">
+        <label>Название <span class="flag">🇰🇬</span></label>
+        <input type="text" id="f-title-kg" value="${ev?.title_kg||''}" placeholder="Фандрайзинг боюнча тренинг">
+      </div>
+      <div class="fg full">
+        <label>Название <span class="flag">🇬🇧</span></label>
+        <input type="text" id="f-title-en" value="${ev?.title_en||''}" placeholder="Fundraising Training">
+      </div>
+    </div>
+
+    <div class="section-label">Описание</div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Описание <span class="flag">🇷🇺</span></label>
+      <textarea id="f-desc-ru" placeholder="Подробное описание мероприятия...">${ev?.desc_ru||''}</textarea>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Описание <span class="flag">🇰🇬</span></label>
+      <textarea id="f-desc-kg" placeholder="Иш-чаранын сүрөттөмөсү...">${ev?.desc_kg||''}</textarea>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Описание <span class="flag">🇬🇧</span></label>
+      <textarea id="f-desc-en" placeholder="Event description...">${ev?.desc_en||''}</textarea>
+    </div>
+
+    <div class="section-label">Детали</div>
+    <div class="form-grid">
+      <div class="fg">
+        <label>Место <span class="flag">🇷🇺</span></label>
+        <input type="text" id="f-loc-ru" value="${ev?.location_ru||''}" placeholder="Бишкек, очно">
+      </div>
+      <div class="fg">
+        <label>Язык мероприятия <span class="flag">🇷🇺</span></label>
+        <input type="text" id="f-lang-ru" value="${ev?.lang_ru||''}" placeholder="Русский язык">
+      </div>
+      <div class="fg">
+        <label>Место <span class="flag">🇰🇬</span></label>
+        <input type="text" id="f-loc-kg" value="${ev?.location_kg||''}" placeholder="Бишкек, жекеме-жеке">
+      </div>
+      <div class="fg">
+        <label>Язык мероприятия <span class="flag">🇰🇬</span></label>
+        <input type="text" id="f-lang-kg" value="${ev?.lang_kg||''}" placeholder="Орус тили">
+      </div>
+      <div class="fg">
+        <label>Место <span class="flag">🇬🇧</span></label>
+        <input type="text" id="f-loc-en" value="${ev?.location_en||''}" placeholder="Bishkek, in-person">
+      </div>
+      <div class="fg">
+        <label>Язык мероприятия <span class="flag">🇬🇧</span></label>
+        <input type="text" id="f-lang-en" value="${ev?.lang_en||''}" placeholder="Russian language">
+      </div>
+      <div class="fg">
+        <label>Формат <span class="flag">🇷🇺</span></label>
+        <input type="text" id="f-fmt-ru" value="${ev?.format_ru||''}" placeholder="Очно · 2 дня">
+      </div>
+      <div class="fg">
+        <label>Формат <span class="flag">🇰🇬</span></label>
+        <input type="text" id="f-fmt-kg" value="${ev?.format_kg||''}" placeholder="Жекеме-жеке · 2 күн">
+      </div>
+      <div class="fg full">
+        <label>Формат <span class="flag">🇬🇧</span></label>
+        <input type="text" id="f-fmt-en" value="${ev?.format_en||''}" placeholder="In-person · 2 days">
+      </div>
+      <div class="fg full">
+        <label>Ссылка для регистрации</label>
+        <input type="url" id="f-register" value="${ev?.register||'https://wa.me/996702271827'}" placeholder="https://wa.me/996702271827">
+      </div>
+    </div>
+    <div style="margin-top:24px;text-align:right">
+      <button class="btn-save" onclick="saveEvent()">Сохранить мероприятие</button>
+    </div>
+  `;
+}
+
+function renderPubForm(panel) {
+  const pub = editingId ? publications.find(p => p.id === editingId) : null;
+  const title = pub ? 'Редактировать публикацию' : 'Новая публикация';
+  panel.innerHTML = `
+    <div class="form-hd">
+      <div class="form-title">${title}</div>
+      <div class="form-actions">
+        ${pub ? `<button class="btn-del" onclick="deleteItem(${pub.id})">Удалить</button>` : ''}
+        <button class="btn-save" onclick="savePub()">Сохранить</button>
+      </div>
+    </div>
+
+    <div class="section-label">Название</div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Название <span class="flag">🇷🇺</span></label>
+      <input type="text" id="f-title-ru" value="${pub?.title_ru||''}" placeholder="Название руководства">
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Название <span class="flag">🇰🇬</span></label>
+      <input type="text" id="f-title-kg" value="${pub?.title_kg||''}" placeholder="Колдонмонун аталышы">
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Название <span class="flag">🇬🇧</span></label>
+      <input type="text" id="f-title-en" value="${pub?.title_en||''}" placeholder="Guide title">
+    </div>
+
+    <div class="section-label">Описание</div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Описание <span class="flag">🇷🇺</span></label>
+      <textarea id="f-desc-ru" placeholder="Краткое описание...">${pub?.desc_ru||''}</textarea>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Описание <span class="flag">🇰🇬</span></label>
+      <textarea id="f-desc-kg" placeholder="Кыскача сүрөттөмө...">${pub?.desc_kg||''}</textarea>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>Описание <span class="flag">🇬🇧</span></label>
+      <textarea id="f-desc-en" placeholder="Brief description...">${pub?.desc_en||''}</textarea>
+    </div>
+
+    <div class="section-label">Файлы и доступность</div>
+    <div class="form-grid">
+      <div class="fg">
+        <label>Год публикации</label>
+        <input type="number" id="f-year" value="${pub?.year||new Date().getFullYear()}" min="2000" max="2099">
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <label style="display:block;margin-bottom:8px">Доступные языки</label>
+      <div class="check-row">
+        <label class="check-opt"><input type="checkbox" id="f-lang-ru" ${pub?.lang_ru?'checked':''}> 🇷🇺 Русский</label>
+        <label class="check-opt"><input type="checkbox" id="f-lang-kg" ${pub?.lang_kg?'checked':''}> 🇰🇬 Кыргызский</label>
+        <label class="check-opt"><input type="checkbox" id="f-lang-en" ${pub?.lang_en?'checked':''}> 🇬🇧 English</label>
+      </div>
+    </div>
+    <div class="form-grid" style="margin-top:14px">
+      <div class="fg">
+        <label>Файл RU (путь в /files/)</label>
+        <input type="text" id="f-file-ru" value="${pub?.file_ru||''}" placeholder="/files/guide-ru.pdf">
+      </div>
+      <div class="fg">
+        <label>Файл KG (путь в /files/)</label>
+        <input type="text" id="f-file-kg" value="${pub?.file_kg||''}" placeholder="/files/guide-kg.pdf">
+      </div>
+      <div class="fg full">
+        <label>Файл EN (путь в /files/)</label>
+        <input type="text" id="f-file-en" value="${pub?.file_en||''}" placeholder="/files/guide-en.pdf">
+      </div>
+    </div>
+    <div style="margin-top:24px;text-align:right">
+      <button class="btn-save" onclick="savePub()">Сохранить публикацию</button>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════
+   SAVE
+═══════════════════════════════ */
+function g(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function cb(id) { return document.getElementById(id)?.checked || false; }
+
+function saveEvent() {
+  const data = {
+    id: editingId || nextId(events),
+    status: g('f-status'),
+    date: g('f-date'), date_kg: g('f-date-kg'), date_en: g('f-date-en'),
+    title_ru: g('f-title-ru'), title_kg: g('f-title-kg'), title_en: g('f-title-en'),
+    desc_ru: g('f-desc-ru'), desc_kg: g('f-desc-kg'), desc_en: g('f-desc-en'),
+    location_ru: g('f-loc-ru'), location_kg: g('f-loc-kg'), location_en: g('f-loc-en'),
+    lang_ru: g('f-lang-ru'), lang_kg: g('f-lang-kg'), lang_en: g('f-lang-en'),
+    format_ru: g('f-fmt-ru'), format_kg: g('f-fmt-kg'), format_en: g('f-fmt-en'),
+    register: g('f-register')
+  };
+  if (!data.title_ru) { toast('Введите название на русском', 'err'); return; }
+  if (editingId) events = events.map(e => e.id === editingId ? data : e);
+  else { events.push(data); editingId = data.id; }
+  hasChanges = true;
+  renderSidebar();
+  renderExport();
+  toast('Мероприятие сохранено ✓', 'ok');
+}
+
+function savePub() {
+  const data = {
+    id: editingId || nextId(publications),
+    title_ru: g('f-title-ru'), title_kg: g('f-title-kg'), title_en: g('f-title-en'),
+    desc_ru: g('f-desc-ru'), desc_kg: g('f-desc-kg'), desc_en: g('f-desc-en'),
+    year: parseInt(g('f-year')) || new Date().getFullYear(),
+    lang_ru: cb('f-lang-ru'), lang_kg: cb('f-lang-kg'), lang_en: cb('f-lang-en'),
+    file_ru: g('f-file-ru'), file_kg: g('f-file-kg'), file_en: g('f-file-en')
+  };
+  if (!data.title_ru) { toast('Введите название на русском', 'err'); return; }
+  if (editingId) publications = publications.map(p => p.id === editingId ? data : p);
+  else { publications.push(data); editingId = data.id; }
+  hasChanges = true;
+  renderSidebar();
+  renderExport();
+  toast('Публикация сохранена ✓', 'ok');
+}
+
+function deleteItem(id) {
+  if (!confirm('Удалить?')) return;
+  if (currentTab === 'events') events = events.filter(e => e.id !== id);
+  else publications = publications.filter(p => p.id !== id);
+  editingId = null;
+  hasChanges = true;
+  renderSidebar();
+  renderMain();
+  renderExport();
+  toast('Удалено');
+}
+
+/* ═══════════════════════════════
+   EXPORT / GITHUB
+═══════════════════════════════ */
+function renderExport() {
+  const token = localStorage.getItem('azat-gh-token');
+  const panel = document.getElementById('export-panel');
+  const file = currentTab === 'events' ? 'events.json' : 'publications.json';
+  panel.innerHTML = `
+    <div class="export-title">Публикация</div>
+    ${token ? `
+      <div class="gh-connected">✓ GitHub подключён <span class="gh-reset" onclick="resetGhToken()">Сменить</span></div>
+      <button class="btn-publish" id="pub-btn" onclick="publishToGitHub()">🌐 Опубликовать на сайте</button>
+    ` : `
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Подключи GitHub — одна кнопка обновит сайт.</div>
+      <button class="btn-gh-connect" onclick="document.getElementById('gh-modal').classList.add('show')">🔑 Подключить GitHub</button>
+    `}
+    <button class="btn-dl" onclick="downloadJSON()">↓ Скачать ${file}</button>
+    <div class="gh-status" id="gh-status"></div>
+  `;
+}
+
+function downloadJSON() {
+  const data = currentTab === 'events' ? events : publications;
+  const file = currentTab === 'events' ? 'events.json' : 'publications.json';
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = file;
+  a.click();
+  toast('Файл скачан — загрузи в GitHub');
+}
+
+async function publishToGitHub() {
+  const token = localStorage.getItem('azat-gh-token');
+  if (!token) { document.getElementById('gh-modal').classList.add('show'); return; }
+  const data = currentTab === 'events' ? events : publications;
+  const file = currentTab === 'events' ? 'events.json' : 'publications.json';
+  const btn = document.getElementById('pub-btn');
+  if (btn) btn.disabled = true;
+  setGhStatus('Публикую...', '');
+
+  try {
+    // Get current SHA
+    const infoRes = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${file}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    let sha = '';
+    if (infoRes.ok) { const info = await infoRes.json(); sha = info.sha; }
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const body = { message: `Update ${file} via admin panel`, content, ...(sha ? { sha } : {}) };
+
+    const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${file}`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (res.ok) {
+      hasChanges = false;
+      setGhStatus('✓ Опубликовано! Сайт обновится за ~1 мин.', 'ok');
+      toast('Опубликовано ✓', 'ok');
+    } else {
+      const err = await res.json();
+      setGhStatus('Ошибка: ' + (err.message || res.status), 'err');
+      toast('Ошибка публикации', 'err');
+    }
+  } catch(e) {
+    setGhStatus('Ошибка сети: ' + e.message, 'err');
+    toast('Ошибка сети', 'err');
+  }
+  if (btn) btn.disabled = false;
+}
+
+function setGhStatus(msg, cls) {
+  const el = document.getElementById('gh-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'gh-status' + (cls ? ' ' + cls : '');
+}
+
+function saveGhToken() {
+  const t = document.getElementById('gh-token-input').value.trim();
+  if (!t) return;
+  localStorage.setItem('azat-gh-token', t);
+  closeGhModal();
+  renderExport();
+  toast('GitHub подключён ✓', 'ok');
+}
+
+function resetGhToken() {
+  localStorage.removeItem('azat-gh-token');
+  renderExport();
+}
+
+function closeGhModal() {
+  document.getElementById('gh-modal').classList.remove('show');
+}
+
+/* ═══════════════════════════════
+   TOAST
+═══════════════════════════════ */
+function toast(msg, cls) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show' + (cls ? ' ' + cls : '');
+  setTimeout(() => el.className = '', 3000);
+}
+
+/* close modal on backdrop click */
+document.getElementById('gh-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeGhModal();
+});
+</script>
+</body>
+</html>

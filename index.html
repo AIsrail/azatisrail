@@ -224,42 +224,42 @@
 <script src="shared.js"></script>
 <script>
 // ═══ ДАННЫЕ ГЛАВНОЙ СТРАНИЦЫ ═══
-// Обновляй EVENTS_PREVIEW когда добавляешь мероприятия в events.html
+// Данные загружаются из events.json и publications.json
+// Редактируй через admin.html — не нужно менять этот файл вручную
 
-const EVENTS_PREVIEW = [
-  {
-    date:'22–23 мая 2025', date_kg:'2025-жылдын 22–23-майы', date_en:'May 22–23, 2025',
-    status:'upcoming',
-    title:{ru:'Тренинг по фандрайзингу (на кыргызском)',kg:'Фандрайзинг боюнча тренинг (кыргызча)',en:'Fundraising Training (in Kyrgyz)'},
-    desc:{ru:'Практический тренинг: как искать гранты и привлекать финансирование для проекта или НКО.',kg:'Практикалык тренинг: долбоор же ЭКУ үчүн грант кантип издөө жана каржылоону кантип тартуу.',en:'Practical training: how to find grants and attract funding for your project or NGO.'},
-    location:{ru:'Бишкек, очно',kg:'Бишкек, жекеме-жеке',en:'Bishkek, in-person'},
-    register:'https://wa.me/996702271827'
-  }
-  // ← Добавляй следующие мероприятия сюда
-];
+async function loadAndInit() {
+  let evData = [], pubData = [];
+  try {
+    const [evRes, pubRes] = await Promise.all([
+      fetch('events.json?_=' + Date.now()),
+      fetch('publications.json?_=' + Date.now())
+    ]);
+    evData = await evRes.json();
+    pubData = await pubRes.json();
+  } catch(e) {}
 
-const PUBS_PREVIEW = [
-  {
-    title:{ru:'Как привлечь денежный грант в бизнес или проект',kg:'Бизнеске же долбоорго акча гранты кантип тартуу',en:'How to Attract a Grant for Business or Project'},
-    desc:{ru:'Практическое руководство по поиску и привлечению грантового финансирования.',kg:'Грант каржылоосун табуу боюнча практикалык колдонмо.',en:'Practical guide to finding and attracting grant funding.'},
-    year:2024, langs:['ru','kg'],
-    files:{ru:'/files/grant-guide-ru.pdf',kg:'/files/grant-guide-kg.pdf'}
-  },
-  {
-    title:{ru:'Введение в работу с ИИ',kg:'ЖИ менен иштөөгө киришүү',en:'Introduction to Working with AI'},
-    desc:{ru:'Руководство для начинающих по использованию ИИ в работе.',kg:'Жумушта жасалма интеллектти колдонуу боюнча колдонмо.',en:"Beginner's guide to using AI in your work."},
-    year:2024, langs:['ru','kg','en'],
-    files:{ru:'/files/ai-guide-ru.pdf',kg:'/files/ai-guide-kg.pdf',en:'/files/ai-guide-en.pdf'}
-  },
-  {
-    title:{ru:'Руководство по работе с волонтёрами',kg:'Волонтёрлор менен иштөө боюнча колдонмо',en:'Volunteer Management Guide'},
-    desc:{ru:'Как привлекать, мотивировать и удерживать волонтёров в организации.',kg:'Уюмуңузга волонтёрлорду кантип тартуу жана мотивациялоо.',en:'How to attract, motivate and retain volunteers.'},
-    year:2023, langs:['ru','kg'],
-    files:{ru:'/files/volunteer-guide-ru.pdf',kg:'/files/volunteer-guide-kg.pdf'}
-  }
-];
+  // Convert flat JSON to card format for shared.js renderEvCards/renderPubCards
+  const evCards = evData.slice(0,3).map(ev=>({
+    status: ev.status,
+    date: ev.date, date_kg: ev.date_kg, date_en: ev.date_en,
+    title: {ru:ev.title_ru, kg:ev.title_kg, en:ev.title_en},
+    desc:  {ru:ev.desc_ru,  kg:ev.desc_kg,  en:ev.desc_en},
+    location: {ru:ev.location_ru, kg:ev.location_kg, en:ev.location_en},
+    register: ev.register
+  }));
 
-initPage({eventsData: EVENTS_PREVIEW, pubsData: PUBS_PREVIEW});
+  const pubCards = pubData.slice(0,3).map(p=>({
+    title: {ru:p.title_ru, kg:p.title_kg, en:p.title_en},
+    desc:  {ru:p.desc_ru,  kg:p.desc_kg,  en:p.desc_en},
+    year: p.year,
+    langs: ['ru','kg','en'].filter(l=>p['lang_'+l]),
+    files: {ru:p.file_ru, kg:p.file_kg, en:p.file_en}
+  }));
+
+  initPage({eventsData: evCards, pubsData: pubCards});
+}
+
+loadAndInit();
 </script>
 </body>
 </html>

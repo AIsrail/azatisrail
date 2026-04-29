@@ -1,0 +1,25 @@
+[
+  {
+    "id": 1,
+    "status": "upcoming",
+    "date": "22–23 мая 2025",
+    "date_kg": "2025-жылдын 22–23-майы",
+    "date_en": "May 22–23, 2025",
+    "title_ru": "Тренинг по фандрайзингу на кыргызском языке",
+    "title_kg": "Кыргыз тилинде фандрайзинг боюнча тренинг",
+    "title_en": "Fundraising Training in Kyrgyz Language",
+    "desc_ru": "Двухдневный практический тренинг: как искать гранты, работать с донорами и привлекать финансирование для проекта или НКО. Весь тренинг на кыргызском языке.",
+    "desc_kg": "Эки күндүк практикалык тренинг: грант кантип издөө, донорлор менен кантип иштөө жана долбоор же ЭКУ үчүн каржылоону кантип тартуу. Тренинг кыргыз тилинде.",
+    "desc_en": "Two-day practical training: how to find grants, work with donors and attract funding for your project or NGO. The entire training is conducted in the Kyrgyz language.",
+    "location_ru": "Бишкек, очно",
+    "location_kg": "Бишкек, жекеме-жеке",
+    "location_en": "Bishkek, in-person",
+    "lang_ru": "Кыргызский язык",
+    "lang_kg": "Кыргыз тили",
+    "lang_en": "Kyrgyz language",
+    "format_ru": "Очно · 2 дня",
+    "format_kg": "Жекеме-жеке · 2 күн",
+    "format_en": "In-person · 2 days",
+    "register": "https://wa.me/996702271827"
+  }
+]

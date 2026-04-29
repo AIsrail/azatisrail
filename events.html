@@ -92,49 +92,28 @@
 </div>
 <script src="shared.js"></script>
 <script>
-/* ══════════════════════════════════════════════════════════
-   ДАННЫЕ МЕРОПРИЯТИЙ
-   Чтобы добавить новое мероприятие — скопируй блок ниже,
-   заполни поля и вставь в массив. Статус: 'upcoming' или 'past'
-   ══════════════════════════════════════════════════════════ */
-const EVENTS = [
-  {
-    status: 'upcoming',
-    date:    '22–23 мая 2025',
-    date_kg: '2025-жылдын 22–23-майы',
-    date_en: 'May 22–23, 2025',
-    title: {
-      ru: 'Тренинг по фандрайзингу на кыргызском языке',
-      kg: 'Кыргыз тилинде фандрайзинг боюнча тренинг',
-      en: 'Fundraising Training in Kyrgyz Language'
-    },
-    desc: {
-      ru: 'Двухдневный практический тренинг: как искать гранты, работать с донорами и привлекать финансирование для проекта или НКО. Весь тренинг на кыргызском языке.',
-      kg: 'Эки күндүк практикалык тренинг: грант кантип издөө, донорлор менен кантип иштөө жана долбоор же ЭКУ үчүн каржылоону кантип тартуу. Тренинг кыргыз тилинде.',
-      en: 'Two-day practical training: how to find grants, work with donors and attract funding for your project or NGO. The entire training is conducted in the Kyrgyz language.'
-    },
-    location: {ru: 'Бишкек, очно', kg: 'Бишкек, жекеме-жеке', en: 'Bishkek, in-person'},
-    lang_event: {ru: 'Кыргызский язык', kg: 'Кыргыз тили', en: 'Kyrgyz language'},
-    format: {ru: 'Очно · 2 дня', kg: 'Жекеме-жеке · 2 күн', en: 'In-person · 2 days'},
-    register: 'https://wa.me/996702271827'
-  }
-  /* ← ДОБАВЬ СЛЕДУЮЩЕЕ МЕРОПРИЯТИЕ СЮДА:
-  ,{
-    status: 'upcoming',
-    date:    'дата RU',
-    date_kg: 'дата KG',
-    date_en: 'date EN',
-    title: {ru:'', kg:'', en:''},
-    desc:  {ru:'', kg:'', en:''},
-    location: {ru:'', kg:'', en:''},
-    lang_event: {ru:'', kg:'', en:''},
-    format: {ru:'', kg:'', en:''},
-    register: 'https://wa.me/996702271827'
-  }
-  */
-];
-
+let EVENTS = [];
 let _filter = 'all';
+
+async function loadAndInit() {
+  try {
+    const res = await fetch('events.json?_=' + Date.now());
+    EVENTS = await res.json();
+  } catch(e) { EVENTS = []; }
+
+  initPage({
+    onLang: function(l){
+      window._currentLang = l;
+      const t = T[l];
+      document.querySelectorAll('.f-btn[data-filter]').forEach(b=>{
+        const key = b.dataset.i; if(t[key]) b.textContent=t[key];
+      });
+      renderGrid(l);
+    }
+  });
+  window._currentLang = 'ru';
+  renderGrid('ru');
+}
 
 function filterEv(btn, filter){
   _filter = filter;
@@ -156,37 +135,30 @@ function renderGrid(lang){
       ? `<span class="ev-badge badge-up">${t.ev_up}</span>`
       : `<span class="ev-badge badge-past">${t.ev_past}</span>`;
     const dateStr = lang==='kg' ? ev.date_kg : lang==='en' ? ev.date_en : ev.date;
+    const title = ev['title_'+lang] || ev.title_ru;
+    const desc = ev['desc_'+lang] || ev.desc_ru;
+    const loc = ev['location_'+lang] || ev.location_ru;
+    const langEv = ev['lang_'+lang] || ev.lang_ru;
+    const fmt = ev['format_'+lang] || ev.format_ru;
     const regBtn = ev.status==='upcoming'
       ? `<a href="${ev.register}" target="_blank" class="ev-reg">${t.ev_reg}</a>`
       : `<span class="ev-reg ev-reg-past">${t.ev_past}</span>`;
     return `<div class="ev-card">
       ${badge}
       <div class="ev-date">${dateStr}</div>
-      <div class="ev-title">${ev.title[lang]||ev.title.ru}</div>
-      <div class="ev-desc">${ev.desc[lang]||ev.desc.ru}</div>
+      <div class="ev-title">${title}</div>
+      <div class="ev-desc">${desc}</div>
       <div class="ev-meta">
-        <div class="ev-meta-row">📍 ${ev.location[lang]||ev.location.ru}</div>
-        <div class="ev-meta-row">🗣 ${ev.lang_event[lang]||ev.lang_event.ru}</div>
-        <div class="ev-meta-row">📋 ${ev.format[lang]||ev.format.ru}</div>
+        <div class="ev-meta-row">📍 ${loc}</div>
+        <div class="ev-meta-row">🗣 ${langEv}</div>
+        <div class="ev-meta-row">📋 ${fmt}</div>
       </div>
       ${regBtn}
     </div>`;
   }).join('');
 }
 
-initPage({
-  onLang: function(l){
-    window._currentLang = l;
-    // Update filter buttons text
-    const t = T[l];
-    document.querySelectorAll('.f-btn[data-filter]').forEach(b=>{
-      const key = b.dataset.i; if(t[key]) b.textContent=t[key];
-    });
-    renderGrid(l);
-  }
-});
-window._currentLang = 'ru';
-renderGrid('ru');
+loadAndInit();
 </script>
 </body>
 </html>

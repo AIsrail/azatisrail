@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title_ru": "Как привлечь денежный грант в бизнес или проект",
+    "title_kg": "Бизнеске же долбоорго акча гранты кантип тартуу",
+    "title_en": "How to Attract a Grant for Business or Project",
+    "desc_ru": "Практическое руководство: где искать гранты, как составить заявку, какие ошибки допускают начинающие — и как их избежать.",
+    "desc_kg": "Практикалык колдонмо: грантты кайдан издөө, арызды кантип жазуу, жаңы баштагандар кандай каталарга жол коёт — жана аларды кантип болтурбоо.",
+    "desc_en": "Practical guide: where to find grants, how to write an application, what mistakes beginners make — and how to avoid them.",
+    "year": 2024,
+    "lang_ru": true,
+    "lang_kg": true,
+    "lang_en": false,
+    "file_ru": "/files/grant-guide-ru.pdf",
+    "file_kg": "/files/grant-guide-kg.pdf",
+    "file_en": ""
+  },
+  {
+    "id": 2,
+    "title_ru": "Введение в работу с ИИ",
+    "title_kg": "ЖИ менен иштөөгө киришүү",
+    "title_en": "Introduction to Working with AI",
+    "desc_ru": "Руководство для начинающих: как использовать ChatGPT, Claude и другие ИИ-инструменты в работе консультанта, менеджера и НКО.",
+    "desc_kg": "Жаңы баштагандарга колдонмо: консультанттын, менеджердин жана ЭКУнун жумушунда ChatGPT, Claude жана башка ЖИ куралдарды кантип колдонуу.",
+    "desc_en": "Beginner's guide: how to use ChatGPT, Claude and other AI tools in the work of a consultant, manager and NGO.",
+    "year": 2024,
+    "lang_ru": true,
+    "lang_kg": true,
+    "lang_en": true,
+    "file_ru": "/files/ai-guide-ru.pdf",
+    "file_kg": "/files/ai-guide-kg.pdf",
+    "file_en": "/files/ai-guide-en.pdf"
+  },
+  {
+    "id": 3,
+    "title_ru": "Руководство по работе с волонтёрами",
+    "title_kg": "Волонтёрлор менен иштөө боюнча колдонмо",
+    "title_en": "Volunteer Management Guide",
+    "desc_ru": "Как привлекать, мотивировать и удерживать волонтёров. Практические инструменты для НКО и социальных проектов.",
+    "desc_kg": "Волонтёрлорду кантип тартуу, мотивациялоо жана кармап туруу. ЭКУлар жана социалдык долбоорлор үчүн практикалык куралдар.",
+    "desc_en": "How to attract, motivate and retain volunteers. Practical tools for NGOs and social projects.",
+    "year": 2023,
+    "lang_ru": true,
+    "lang_kg": true,
+    "lang_en": false,
+    "file_ru": "/files/volunteer-guide-ru.pdf",
+    "file_kg": "/files/volunteer-guide-kg.pdf",
+    "file_en": ""
+  }
+]
