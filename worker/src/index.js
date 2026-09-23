@@ -3,7 +3,9 @@
  * Полный массив записей никогда не уходит клиенту целиком — только отфильтрованная страница.
  *
  * Доступ (tier):
- *  - teaser — без токена или истёкший токен: первые PAGE_SIZE_TEASER совпадений.
+ *  - teaser — без токена или истёкший токен: до PAGE_SIZE_TEASER совпадений за запрос,
+ *             и не больше TEASER_DAILY_CAP штук суммарно за день на один IP (иначе можно
+ *             было бы обойти лимит, просто перебирая разные ключевые слова).
  *  - full   — обычный оплаченный токен: весь массив, постранично.
  *  - single — разовый токен, привязанный к одному разделу (scope.sheet):
  *             весь раздел, но запрос по другим разделам игнорируется (форсится scope.sheet).
@@ -13,6 +15,7 @@ import { handleTelegramWebhook } from "./telegram.js";
 
 const PAGE_SIZE_FULL = 15;
 const PAGE_SIZE_TEASER = 6;
+const TEASER_DAILY_CAP = 18;
 
 export default {
   async fetch(request, env) {
@@ -40,7 +43,7 @@ function json(obj, status = 200) {
 async function handleApi(request, env, url) {
   try {
     if (url.pathname === "/api/search" && request.method === "GET") {
-      return await search(env, url);
+      return await search(env, url, request);
     }
     if (url.pathname === "/api/admin/tokens" && request.method === "GET") {
       const denied = requireAdmin(request, env);
@@ -77,7 +80,22 @@ async function resolveAccess(env, token) {
   return { tier: "full", scope: null };
 }
 
-async function search(env, url) {
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+async function getTeaserQuotaUsed(env, ip) {
+  const n = await env.TOKENS_KV.get(`quota:${ip}:${todayKey()}`);
+  return n ? parseInt(n, 10) || 0 : 0;
+}
+
+async function addTeaserQuotaUsed(env, ip, n) {
+  if (n <= 0) return;
+  const used = await getTeaserQuotaUsed(env, ip);
+  await env.TOKENS_KV.put(`quota:${ip}:${todayKey()}`, String(used + n), { expirationTtl: 90000 });
+}
+
+async function search(env, url, request) {
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
   const category = url.searchParams.get("category") || "";
   const token = url.searchParams.get("token") || "";
@@ -100,13 +118,38 @@ async function search(env, url) {
   }
 
   const total = filtered.length;
-  const visibleTotal = tier === "teaser" ? Math.min(total, pageSize) : total;
+
+  if (tier !== "teaser") {
+    const start = (page - 1) * pageSize;
+    const end = Math.min(start + pageSize, total);
+    const results = start < total ? filtered.slice(start, end) : [];
+    return json({ total, visibleTotal: total, tier, scope, page, pageSize, hasMore: end < total, results });
+  }
+
+  // Тизер: лимит и на запрос, и суммарно на IP за день — иначе платный доступ
+  // обходится перебором разных ключевых слов.
+  const ip = (request && request.headers.get("cf-connecting-ip")) || "unknown";
+  const quotaUsed = await getTeaserQuotaUsed(env, ip);
+  const quotaLeft = Math.max(0, TEASER_DAILY_CAP - quotaUsed);
+  const visibleTotal = Math.min(total, pageSize, quotaLeft);
   const start = (page - 1) * pageSize;
   const end = Math.min(start + pageSize, visibleTotal);
   const results = start < visibleTotal ? filtered.slice(start, end) : [];
   const hasMore = end < visibleTotal;
 
-  return json({ total, visibleTotal, tier, scope, page, pageSize, hasMore, results });
+  if (results.length) await addTeaserQuotaUsed(env, ip, results.length);
+
+  return json({
+    total,
+    visibleTotal,
+    tier,
+    scope,
+    page,
+    pageSize,
+    hasMore,
+    results,
+    quotaExhausted: quotaLeft === 0 && total > 0,
+  });
 }
 
 function genToken() {

@@ -835,7 +835,7 @@ function renderTokenMain() {
       <div class="form-title">Токен доступа</div>
       <div class="form-actions"><button class="btn-del" onclick="revokeTokenNow('${t.token}')">Отозвать</button></div>
     </div>
-    <div class="section-label">Код (отправь владельцу доступа в WhatsApp)</div>
+    <div class="section-label">Код (обычно бот выдаёт его сам — это для ручной выдачи)</div>
     <div class="fg full"><input type="text" readonly value="${t.token}" onclick="this.select()" style="font-family:monospace;font-size:15px;letter-spacing:.05em"></div>
     <div class="section-label">Детали</div>
     <div class="form-grid">

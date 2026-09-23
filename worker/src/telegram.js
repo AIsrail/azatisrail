@@ -1,6 +1,7 @@
 /**
  * @c4faq_bot — приём оплаты за доступ к базе доноров.
- * Флоу: /start -> выбор тарифа -> (для разового: выбор раздела) -> реквизиты ->
+ * Флоу: /start (или диплинк /start <tariff_id> с сайта) -> выбор тарифа ->
+ *       (для разового: выбор раздела) -> приветствие + реквизиты ->
  *       покупатель шлёт фото чека -> бот форвардит его владельцу с кнопками ✅/❌ ->
  *       владелец подтверждает -> бот сам выдаёт код доступа и присылает покупателю.
  *
@@ -12,7 +13,7 @@
 
 import { issueTokenRecord } from "./index.js";
 
-const PAY_REQUISITES = "О!Деньги или Мбанк: 0996 702 271827";
+const PAY_REQUISITES = "MBank или О!Деньги: 0702 271 827";
 
 const TARIFFS = [
   { id: "basic", label: "Базовая", price: "1900 сом" },
@@ -82,36 +83,49 @@ function sheetKeyboard() {
   };
 }
 
+function greeting() {
+  return "Здравствуйте! 🙏 Спасибо за интерес к базе доноров, инвесторов и грантов Connect4Pro.\n\n";
+}
+
+function paymentText(tariffLabel, price, sheet) {
+  const sheetLine = sheet ? `Раздел: «${sheet}»\n` : "";
+  return (
+    greeting() +
+    `Тариф: «${tariffLabel}» — ${price}\n${sheetLine}\n` +
+    `Оплатите переводом на ${PAY_REQUISITES}\n\n` +
+    `После оплаты пришлите сюда фото или скриншот чека — как только увижу, сразу пришлю код доступа.`
+  );
+}
+
 async function handleStart(env, chatId) {
   await clearPending(env, chatId);
   await tg(env, "sendMessage", {
     chat_id: chatId,
-    text:
-      "База доноров, инвесторов и грантов Connect4Pro — 468 возможностей для бизнеса и НКО.\n\nВыберите тариф, чтобы получить код полного доступа:",
+    text: greeting() + "468 возможностей для бизнеса и НКО. Выберите тариф, чтобы получить код доступа:",
     reply_markup: tariffKeyboard(),
   });
 }
 
-async function handleTariffChoice(env, chatId, tariffId, callbackQueryId) {
-  const tariff = TARIFFS.find((t) => t.id === tariffId);
-  if (!tariff) return;
-  await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId });
-
+async function startTariffFlow(env, chatId, tariff) {
+  await clearPending(env, chatId);
   if (tariff.id === "single") {
     await setPending(env, chatId, { step: "choose_sheet", tariffId: tariff.id, tariffLabel: tariff.label, price: tariff.price });
     await tg(env, "sendMessage", {
       chat_id: chatId,
-      text: "Выберите раздел базы, к которому нужен доступ:",
+      text: greeting() + "Выберите раздел базы, к которому нужен доступ:",
       reply_markup: sheetKeyboard(),
     });
     return;
   }
-
   await setPending(env, chatId, { step: "await_receipt", tariffId: tariff.id, tariffLabel: tariff.label, price: tariff.price });
-  await tg(env, "sendMessage", {
-    chat_id: chatId,
-    text: `Тариф «${tariff.label}» — ${tariff.price}.\n\nОплатите на:\n${PAY_REQUISITES}\n\nЗатем пришлите сюда фото или скриншот чека — я перешлю его на подтверждение.`,
-  });
+  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(tariff.label, tariff.price) });
+}
+
+async function handleTariffChoice(env, chatId, tariffId, callbackQueryId) {
+  const tariff = TARIFFS.find((t) => t.id === tariffId);
+  await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId });
+  if (!tariff) return;
+  await startTariffFlow(env, chatId, tariff);
 }
 
 async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
@@ -122,10 +136,7 @@ async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
   const price = (pending && pending.price) || "200 сом";
   const tariffLabel = (pending && pending.tariffLabel) || "Разовый доступ (1 раздел)";
   await setPending(env, chatId, { step: "await_receipt", tariffId: "single", tariffLabel, price, sheet });
-  await tg(env, "sendMessage", {
-    chat_id: chatId,
-    text: `Раздел «${sheet}», тариф ${price}.\n\nОплатите на:\n${PAY_REQUISITES}\n\nЗатем пришлите сюда фото или скриншот чека — я перешлю его на подтверждение.`,
-  });
+  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(tariffLabel, price, sheet) });
 }
 
 async function handleReceiptPhoto(env, message) {
@@ -251,8 +262,15 @@ export async function handleTelegramWebhook(request, env) {
     const chatId = message.chat.id;
     const text = (message.text || "").trim();
 
-    if (text === "/start") {
-      await handleStart(env, chatId);
+    if (text.startsWith("/start")) {
+      // Диплинк с сайта: t.me/c4faq_bot?start=basic -> Telegram шлёт "/start basic"
+      const payload = text.slice(6).trim();
+      const tariff = payload ? TARIFFS.find((t) => t.id === payload) : null;
+      if (tariff) {
+        await startTariffFlow(env, chatId, tariff);
+      } else {
+        await handleStart(env, chatId);
+      }
     } else if (text.startsWith("/admin_init")) {
       const secret = text.replace("/admin_init", "").trim();
       if (secret && env.BOT_ADMIN_SECRET && secret === env.BOT_ADMIN_SECRET) {
