@@ -1,0 +1,11 @@
+worker/
+node_modules/
+.git/
+.wrangler/
+.dev.vars
+.dev.vars.example
+wrangler.jsonc
+DEPLOY.md
+package.json
+package-lock.json
+scripts/

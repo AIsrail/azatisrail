@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "azatisrail",
+  "main": "worker/src/index.js",
+  "compatibility_date": "2026-04-29",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  // Реальные id создаются владельцем один раз командой:
+  //   npx wrangler kv namespace create FUNDING_KV
+  //   npx wrangler kv namespace create TOKENS_KV
+  // и id из вывода команды вписываются сюда вместо REPLACE_ME.
+  // Подробности — DEPLOY.md.
+  "kv_namespaces": [
+    { "binding": "FUNDING_KV", "id": "REPLACE_ME_FUNDING_KV_ID" },
+    { "binding": "TOKENS_KV", "id": "REPLACE_ME_TOKENS_KV_ID" }
+  ]
+}

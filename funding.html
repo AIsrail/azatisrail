@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>База данных доноров — Азат Исраилов</title>
+<meta name="description" content="Поиск по базе доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии.">
+<link rel="canonical" href="https://azatisrail.cc/funding.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+.fs-bar{display:flex;gap:10px;flex-wrap:wrap;margin:36px 0 18px;align-items:center}
+.fs-input,.fs-select{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);border:1.5px solid var(--border);border-radius:2px;padding:10px 12px;transition:border-color .2s}
+.fs-input:focus,.fs-select:focus{outline:none;border-color:var(--sap)}
+.fs-input{flex:1;min-width:220px}
+.fs-select{min-width:170px}
+.fs-go{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;background:var(--sap);color:white;border:none;padding:11px 22px;border-radius:2px;cursor:pointer;transition:background .2s,transform .15s}
+.fs-go:hover{background:var(--sap2);transform:translateY(-1px)}
+.note-bar{background:var(--sect);border-left:3px solid var(--sap);padding:16px 20px;margin-bottom:28px;font-size:13px;color:var(--mid);line-height:1.6;border-radius:0 2px 2px 0}
+.note-bar a{color:var(--sap)}
+.token-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.token-row input{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--white);border:1.5px solid var(--border);border-radius:2px;padding:8px 10px;width:200px}
+.token-row button{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;background:transparent;color:var(--sap);border:1.5px solid var(--sap);padding:8px 14px;border-radius:2px;cursor:pointer;transition:all .2s}
+.token-row button:hover{background:var(--sap);color:white}
+.token-status{font-size:12px;color:var(--muted)}
+.token-status.unlocked{color:var(--sap)}
+.fs-count{font-size:12px;color:var(--muted);margin-bottom:18px}
+.fs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border)}
+.fs-card{background:var(--white);padding:30px;display:flex;flex-direction:column}
+.fs-card:hover{background:#FDFCF9}
+.fs-top-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+.fs-section{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--sap);font-weight:500}
+.fs-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;line-height:1.3;margin-bottom:10px}
+.fs-meta-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--mid);margin-bottom:12px;min-width:0}
+.fs-meta-row span{word-break:break-word;max-width:100%}
+.fs-card{min-width:0}
+.fs-desc{font-size:13.5px;color:var(--mid);line-height:1.7;font-weight:300;flex:1;margin-bottom:16px}
+.fs-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.fs-tag{font-size:10px;padding:3px 8px;border:1px solid var(--border);color:var(--muted);border-radius:1px}
+.fs-link{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sap);font-weight:500;width:fit-content}
+.fs-link:hover{color:var(--sap2)}
+.fs-more-row{text-align:center;padding:34px 0}
+.fs-more-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;background:transparent;border:1.5px solid var(--border);color:var(--mid);padding:12px 26px;border-radius:2px;cursor:pointer;transition:all .2s}
+.fs-more-btn:hover{border-color:var(--sap);color:var(--sap)}
+.no-results{grid-column:1/-1;padding:60px;text-align:center;color:var(--muted);font-size:15px;font-weight:300}
+.pricing-g{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:20px}
+.price-card{background:var(--white);padding:32px;display:flex;flex-direction:column;text-align:left}
+.price-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:8px}
+.price-val{font-size:26px;font-weight:500;color:var(--sap);margin-bottom:14px}
+.price-desc{font-size:13.5px;color:var(--mid);line-height:1.6;font-weight:300;flex:1;margin-bottom:20px}
+.price-btn{font-size:12px;letter-spacing:.06em;text-transform:uppercase;background:var(--sap);color:white;padding:11px 18px;border-radius:2px;width:fit-content;transition:background .2s,transform .15s}
+.price-btn:hover{background:var(--sap2);transform:translateY(-2px)}
+@media(max-width:1100px){.fs-grid{grid-template-columns:1fr}.pricing-g{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="page">
+
+<nav id="nb">
+  <a href="/" class="logo">Азат <b>Исраилов</b></a>
+  <div class="nav-r">
+    <ul class="nl" id="nl">
+      <li><a href="/#aud" data-i="nav_aud">Для кого</a></li>
+      <li><a href="/#svc" data-i="nav_svc">Услуги</a></li>
+      <li><a href="events.html" data-i="nav_ev">Мероприятия</a></li>
+      <li><a href="publications.html" data-i="nav_pub">Публикации</a></li>
+      <li><a href="funding.html" class="active" data-i="nav_fund">База доноров</a></li>
+      <li><a href="/#con" class="nl-cta" data-i="nav_con">Связаться</a></li>
+    </ul>
+    <div class="lang-sw">
+      <button class="lang-btn active" onclick="setLang('ru')" id="lb-ru">RU</button>
+      <div class="lsep"></div>
+      <button class="lang-btn" onclick="setLang('kg')" id="lb-kg">KG</button>
+      <div class="lsep"></div>
+      <button class="lang-btn" onclick="setLang('en')" id="lb-en">EN</button>
+    </div>
+    <div class="nm" onclick="navToggle()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="ph-tag">База данных</div>
+  <h1 class="ph-ttl">Доноры,<br><em>инвесторы и гранты</em></h1>
+  <p class="ph-desc">Поиск по 400+ источникам финансирования для бизнеса, НКО и специалистов в Кыргызстане и за рубежом.</p>
+</div>
+
+<section class="sw">
+  <div class="fs-bar">
+    <input class="fs-input" id="fs-q" type="text" placeholder="Поиск по названию, теме, ключевому слову…">
+    <select class="fs-select" id="fs-category">
+      <option value="">Любая категория</option>
+      <option value="business">Бизнес / МСБ</option>
+      <option value="ngo">НКО</option>
+      <option value="individual">Для физлиц</option>
+    </select>
+    <select class="fs-select" id="fs-sheet">
+      <option value="">Любой тип</option>
+      <option value="Доноры">Доноры / гранты</option>
+      <option value="Инвесторы межд">Инвесторы (международные)</option>
+      <option value="Инвесторы КР">Инвесторы (КР)</option>
+      <option value="Финансы МСБ КР">Финансы МСБ (КР)</option>
+      <option value="Акселераторы и др.">Акселераторы</option>
+      <option value="Социальные доноры">Социальные доноры</option>
+      <option value="Стажировки и стипендии">Стажировки и стипендии</option>
+    </select>
+    <button class="fs-go" onclick="runSearch(true)">Найти</button>
+  </div>
+
+  <div id="access-note" class="note-bar" style="display:none"></div>
+
+  <div class="token-row">
+    <span class="token-status" id="token-status">Бесплатный доступ — показываем ограниченную выборку.</span>
+    <input type="text" id="fs-token" placeholder="Код доступа">
+    <button onclick="applyToken()">Активировать</button>
+  </div>
+
+  <div class="fs-count" id="fs-count"></div>
+  <div class="fs-grid" id="fs-grid"></div>
+  <div class="fs-more-row" id="fs-more-row" style="display:none">
+    <button class="fs-more-btn" id="fs-more-btn" onclick="loadMore()">Показать ещё</button>
+  </div>
+</section>
+
+<section class="sw sw-alt" id="pricing">
+  <div class="reveal"><div class="sec-tag">Полный доступ</div><h2 class="sec-ttl">Как открыть<br><em>всю базу</em></h2></div>
+  <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:560px;margin-top:16px;line-height:1.8">
+    Бесплатно доступна ограниченная выборка результатов. Чтобы снять ограничение и видеть все совпадения
+    по каждому запросу — оплатите один из вариантов ниже и получите код доступа в WhatsApp.
+  </p>
+  <div class="pricing-g">
+    <div class="price-card">
+      <div class="price-name">Базовая</div>
+      <div class="price-val">1900 сом</div>
+      <div class="price-desc">Полный поиск по каталогу доноров, инвесторов, бизнес-ассоциаций и консультантов.</div>
+      <a class="price-btn" target="_blank" href="https://wa.me/996702271827?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C%20%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%20%D0%BA%20%D0%B1%D0%B0%D0%B7%D0%B5%20%D0%B4%D0%BE%D0%BD%D0%BE%D1%80%D0%BE%D0%B2%20%28%D1%82%D0%B0%D1%80%D0%B8%D1%84%20%D0%91%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D1%8F%29.">Написать в WhatsApp →</a>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Стандартная</div>
+      <div class="price-val">4900 сом</div>
+      <div class="price-desc">Всё из Базовой + пособия по грантам, ИИ и бизнесу.</div>
+      <a class="price-btn" target="_blank" href="https://wa.me/996702271827?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C%20%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%20%D0%BA%20%D0%B1%D0%B0%D0%B7%D0%B5%20%D0%B4%D0%BE%D0%BD%D0%BE%D1%80%D0%BE%D0%B2%20%28%D1%82%D0%B0%D1%80%D0%B8%D1%84%20%D0%A1%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D0%B0%D1%8F%29.">Написать в WhatsApp →</a>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Полноценная</div>
+      <div class="price-val">8900 сом</div>
+      <div class="price-desc">Всё вышеуказанное без ограничений + устная консультация.</div>
+      <a class="price-btn" target="_blank" href="https://wa.me/996702271827?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C%20%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%20%D0%BA%20%D0%B1%D0%B0%D0%B7%D0%B5%20%D0%B4%D0%BE%D0%BD%D0%BE%D1%80%D0%BE%D0%B2%20%28%D1%82%D0%B0%D1%80%D0%B8%D1%84%20%D0%9F%D0%BE%D0%BB%D0%BD%D0%BE%D1%86%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F%29.">Написать в WhatsApp →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="flogo">Азат <b>Исраилов</b></div>
+  <ul class="flinks">
+    <li><a href="/">Главная</a></li>
+    <li><a href="events.html" data-i="nav_ev">Мероприятия</a></li>
+    <li><a href="publications.html" data-i="nav_pub">Публикации</a></li>
+    <li><a href="funding.html" data-i="nav_fund">База доноров</a></li>
+    <li><a href="https://www.youtube.com/@connect4fund" target="_blank">YouTube</a></li>
+  </ul>
+  <div class="fcopy">© 2026 · azatisrail.cc</div>
+</footer>
+</div>
+<script src="shared.js"></script>
+<script>
+let TOKEN = localStorage.getItem('azat-funding-token') || '';
+let PAGE = 1;
+let ALL_LOADED = [];
+
+function initToken(){
+  document.getElementById('fs-token').value = TOKEN;
+  updateTokenStatus('teaser');
+}
+
+function updateTokenStatus(tier){
+  const el = document.getElementById('token-status');
+  if(tier === 'full'){
+    el.textContent = 'Полный доступ активен.';
+    el.classList.add('unlocked');
+  } else {
+    el.textContent = 'Бесплатный доступ — показываем ограниченную выборку.';
+    el.classList.remove('unlocked');
+    if(TOKEN){
+      el.textContent = 'Код не найден или истёк — показываем бесплатную выборку.';
+    }
+  }
+}
+
+function applyToken(){
+  TOKEN = document.getElementById('fs-token').value.trim();
+  localStorage.setItem('azat-funding-token', TOKEN);
+  runSearch(true);
+}
+
+async function runSearch(reset){
+  if(reset){ PAGE = 1; ALL_LOADED = []; }
+  const q = document.getElementById('fs-q').value.trim();
+  const category = document.getElementById('fs-category').value;
+  const sheet = document.getElementById('fs-sheet').value;
+  const params = new URLSearchParams({ page: String(PAGE) });
+  if(q) params.set('q', q);
+  if(category) params.set('category', category);
+  if(sheet) params.set('sheet', sheet);
+  if(TOKEN) params.set('token', TOKEN);
+
+  const grid = document.getElementById('fs-grid');
+  if(reset) grid.innerHTML = '<div class="no-results">Ищем…</div>';
+
+  let data;
+  try{
+    const res = await fetch('/api/search?' + params.toString());
+    data = await res.json();
+  }catch(e){
+    grid.innerHTML = '<div class="no-results">API базы пока не подключён (funding.html работает только после деплоя Worker). См. DEPLOY.md.</div>';
+    document.getElementById('fs-more-row').style.display = 'none';
+    return;
+  }
+
+  updateTokenStatus(data.tier);
+  ALL_LOADED = reset ? data.results : ALL_LOADED.concat(data.results);
+  renderGrid();
+
+  const note = document.getElementById('access-note');
+  if(data.tier !== 'full' && data.total > data.visibleTotal){
+    note.style.display = 'block';
+    note.innerHTML = `Показано ${data.visibleTotal} из ${data.total} совпадений. <a href="#pricing">Открыть полный доступ →</a>`;
+  } else {
+    note.style.display = 'none';
+  }
+
+  document.getElementById('fs-count').textContent = data.total
+    ? `Совпадений: ${data.total}`
+    : '';
+
+  document.getElementById('fs-more-row').style.display = data.hasMore ? 'block' : 'none';
+}
+
+function loadMore(){
+  PAGE += 1;
+  runSearch(false);
+}
+
+function renderGrid(){
+  const grid = document.getElementById('fs-grid');
+  if(!ALL_LOADED.length){
+    grid.innerHTML = '<div class="no-results">Ничего не найдено. Попробуйте другой запрос или снимите фильтры.</div>';
+    return;
+  }
+  grid.innerHTML = ALL_LOADED.map(r => {
+    const tags = (r.sectors||[]).map(s=>`<span class="fs-tag">${escapeHtml(s)}</span>`).join('');
+    const meta = [];
+    if(r.amount) meta.push(`<span>💰 ${escapeHtml(r.amount)}</span>`);
+    if(r.deadline) meta.push(`<span>📅 ${escapeHtml(r.deadline)}</span>`);
+    const link = r.url ? `<a class="fs-link" href="${escapeAttr(r.url)}" target="_blank" rel="noopener">Подробнее →</a>` : '';
+    return `<div class="fs-card">
+      <div class="fs-top-row"><span class="fs-section">${escapeHtml(r.section||'')}</span></div>
+      <div class="fs-title">${escapeHtml(r.name||'')}</div>
+      <div class="fs-meta-row">${meta.join('')}</div>
+      <div class="fs-desc">${escapeHtml((r.description||'').slice(0,220))}${(r.description||'').length>220?'…':''}</div>
+      <div class="fs-tags">${tags}</div>
+      ${link}
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return escapeHtml(s); }
+
+document.getElementById('fs-q').addEventListener('keydown', e => { if(e.key === 'Enter') runSearch(true); });
+
+initPage({});
+initToken();
+runSearch(true);
+</script>
+</body>
+</html>

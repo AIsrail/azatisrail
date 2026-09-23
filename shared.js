@@ -5,7 +5,7 @@
 ═══════════════════════════════ */
 const T = {
 ru:{
-  nav_aud:'Для кого',nav_svc:'Услуги',nav_ev:'Мероприятия',nav_pub:'Публикации',nav_con:'Связаться',
+  nav_aud:'Для кого',nav_svc:'Услуги',nav_ev:'Мероприятия',nav_pub:'Публикации',nav_fund:'База доноров',nav_con:'Связаться',
   eyebrow:'Бишкек · Кыргызстан · Международный опыт',
   hero_desc:'15+ лет помогаю предпринимателям, НКО и консультантам находить финансирование, строить устойчивые организации и выходить на новый уровень.',
   cta_main:'Записаться на консультацию →',cta_res:'Ресурсы',
@@ -69,7 +69,7 @@ ru:{
   pub_year:'Год',pub_available:'Доступно на:',pub_no:'Публикации скоро появятся'
 },
 kg:{
-  nav_aud:'Кимдер үчүн',nav_svc:'Кызматтар',nav_ev:'Иш-чаралар',nav_pub:'Жарыялоолор',nav_con:'Байланыш',
+  nav_aud:'Кимдер үчүн',nav_svc:'Кызматтар',nav_ev:'Иш-чаралар',nav_pub:'Жарыялоолор',nav_fund:'Донорлор базасы',nav_con:'Байланыш',
   eyebrow:'Бишкек · Кыргызстан · Эл аралык тажрыйба',
   hero_desc:'15+ жыл бою ишкерлерге, ЭКУларга жана консультанттарга каржылоо табууга, туруктуу уюмдарды куруuga жана жаңы деңгээлге чыгуу үчүн жардам берип келем.',
   cta_main:'Консультацияга жазылуу →',cta_res:'Ресурстар',
@@ -130,7 +130,7 @@ kg:{
   pub_year:'Жыл',pub_available:'Жеткиликтүү:',pub_no:'Жарыялоолор жакында болот'
 },
 en:{
-  nav_aud:"Who it's for",nav_svc:'Services',nav_ev:'Events',nav_pub:'Publications',nav_con:'Contact',
+  nav_aud:"Who it's for",nav_svc:'Services',nav_ev:'Events',nav_pub:'Publications',nav_fund:'Donor Database',nav_con:'Contact',
   eyebrow:'Bishkek · Kyrgyzstan · International experience',
   hero_desc:'15+ years helping entrepreneurs, NGOs and consultants secure funding, build resilient organizations and reach the next level.',
   cta_main:'Book a consultation →',cta_res:'Resources',

@@ -174,6 +174,7 @@ textarea{min-height:72px;resize:vertical}
   <div class="topbar-center">
     <button class="tab-btn active" id="tab-ev" onclick="switchTab('events')">📅 Мероприятия</button>
     <button class="tab-btn" id="tab-pub" onclick="switchTab('publications')">📄 Публикации</button>
+    <button class="tab-btn" id="tab-tok" onclick="switchTab('tokens')">🔑 Токены доступа</button>
   </div>
   <div class="topbar-right">
     <button class="logout-btn" onclick="logout()">Выйти</button>
@@ -187,7 +188,7 @@ textarea{min-height:72px;resize:vertical}
       <span class="sidebar-title" id="sidebar-title">Мероприятия</span>
       <span class="sidebar-count" id="sidebar-count">0</span>
     </div>
-    <button class="add-btn" onclick="addNew()">+ Добавить</button>
+    <button class="add-btn" id="add-btn" onclick="handleAddClick()"><span id="add-btn-label">+ Добавить</span></button>
     <div class="item-list" id="item-list"></div>
     <div class="export-panel" id="export-panel"></div>
   </div>
@@ -262,6 +263,16 @@ function switchTab(tab) {
   editingId = null;
   document.getElementById('tab-ev').classList.toggle('active', tab === 'events');
   document.getElementById('tab-pub').classList.toggle('active', tab === 'publications');
+  document.getElementById('tab-tok').classList.toggle('active', tab === 'tokens');
+  if (tab === 'tokens') {
+    document.getElementById('add-btn-label').textContent = '+ Выдать токен';
+    tokenEditingId = null;
+    document.getElementById('main-panel').innerHTML = '<div class="empty-state"><div class="empty-icon">←</div><div class="empty-text">Выбери токен слева или выдай новый</div></div>';
+    renderTokenExportPanel();
+    loadTokens();
+    return;
+  }
+  document.getElementById('add-btn-label').textContent = '+ Добавить';
   renderSidebar();
   renderMain();
   renderExport();
@@ -302,6 +313,11 @@ function renderSidebar() {
 /* ═══════════════════════════════
    ADD / EDIT
 ═══════════════════════════════ */
+function handleAddClick() {
+  if (currentTab === 'tokens') { newTokenForm(); return; }
+  addNew();
+}
+
 function addNew() {
   editingId = null;
   renderSidebar();
@@ -670,6 +686,179 @@ function resetGhToken() {
 
 function closeGhModal() {
   document.getElementById('gh-modal').classList.remove('show');
+}
+
+/* ═══════════════════════════════
+   TOKENS (Worker API — /api/admin/tokens)
+═══════════════════════════════ */
+let tokensCache = [];
+let tokenEditingId = null; // 'NEW' или строка токена
+
+function getAdminApiToken() {
+  return localStorage.getItem('azat-admin-api-token') || '';
+}
+
+async function adminApiFetch(path, opts) {
+  opts = opts || {};
+  opts.headers = Object.assign({}, opts.headers, { 'X-Admin-Token': getAdminApiToken() });
+  const res = await fetch(path, opts);
+  if (res.status === 401) throw new Error('Неверный или отсутствует API-токен администратора (см. ниже слева).');
+  if (!res.ok) throw new Error('Ошибка запроса: ' + res.status);
+  return res.json();
+}
+
+function renderTokenExportPanel() {
+  const saved = getAdminApiToken();
+  const panel = document.getElementById('export-panel');
+  panel.innerHTML = `
+    <div class="export-title">API-токен админки</div>
+    ${saved ? `
+      <div class="gh-connected">✓ Токен сохранён <span class="gh-reset" onclick="resetAdminApiToken()">Сменить</span></div>
+    ` : `
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Задаётся владельцем в Cloudflare: <code>wrangler secret put ADMIN_TOKEN</code>. Вставь то же значение здесь.</div>
+      <input type="password" id="admin-api-token-input" placeholder="ADMIN_TOKEN" style="width:100%;margin-bottom:8px;">
+      <button class="btn-gh-connect" onclick="saveAdminApiToken()">🔑 Сохранить токен</button>
+    `}
+  `;
+}
+
+function saveAdminApiToken() {
+  const v = document.getElementById('admin-api-token-input').value.trim();
+  if (!v) return;
+  localStorage.setItem('azat-admin-api-token', v);
+  renderTokenExportPanel();
+  loadTokens();
+}
+
+function resetAdminApiToken() {
+  localStorage.removeItem('azat-admin-api-token');
+  renderTokenExportPanel();
+  tokensCache = [];
+  renderTokensSidebar();
+}
+
+async function loadTokens() {
+  const list = document.getElementById('item-list');
+  if (!getAdminApiToken()) {
+    list.innerHTML = '<div class="list-empty">Сначала сохрани API-токен слева внизу</div>';
+    document.getElementById('sidebar-title').textContent = 'Токены доступа';
+    document.getElementById('sidebar-count').textContent = '0';
+    return;
+  }
+  list.innerHTML = '<div class="list-empty">Загрузка…</div>';
+  try {
+    const data = await adminApiFetch('/api/admin/tokens');
+    tokensCache = data.tokens || [];
+  } catch (e) {
+    tokensCache = [];
+    list.innerHTML = `<div class="list-empty">${escapeHtmlAdm(e.message)}</div>`;
+    return;
+  }
+  renderTokensSidebar();
+}
+
+function renderTokensSidebar() {
+  document.getElementById('sidebar-title').textContent = 'Токены доступа';
+  document.getElementById('sidebar-count').textContent = tokensCache.length;
+  const list = document.getElementById('item-list');
+  if (!tokensCache.length) {
+    list.innerHTML = '<div class="list-empty">Пока нет выданных токенов</div>';
+    return;
+  }
+  list.innerHTML = tokensCache.map(t => {
+    const active = t.token === tokenEditingId ? ' active' : '';
+    const exp = t.expires_at ? new Date(t.expires_at).toLocaleDateString('ru-RU') : 'бессрочно';
+    return `<div class="list-item${active}" onclick="selectToken('${t.token}')">
+      <div class="item-title">${t.note ? escapeHtmlAdm(t.note) : t.token}</div>
+      <div class="item-meta">до: ${exp}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectToken(tok) {
+  tokenEditingId = tok;
+  renderTokensSidebar();
+  renderTokenMain();
+}
+
+function newTokenForm() {
+  tokenEditingId = 'NEW';
+  renderTokensSidebar();
+  renderTokenMain();
+}
+
+function renderTokenMain() {
+  const panel = document.getElementById('main-panel');
+  if (tokenEditingId === 'NEW') {
+    panel.innerHTML = `
+      <div class="form-hd">
+        <div class="form-title">Выдать новый токен</div>
+        <div class="form-actions"><button class="btn-save" onclick="issueTokenFromForm()">Выдать</button></div>
+      </div>
+      <div class="section-label">Кому и на сколько</div>
+      <div class="form-grid">
+        <div class="fg full">
+          <label>Заметка (для кого / за что)</label>
+          <input type="text" id="tok-note" placeholder="Напр.: Иванова А., оплата 23.09, тариф Полноценная">
+        </div>
+        <div class="fg">
+          <label>Действует до (пусто = бессрочно)</label>
+          <input type="date" id="tok-expires">
+        </div>
+      </div>`;
+    return;
+  }
+  const t = tokensCache.find(x => x.token === tokenEditingId);
+  if (!t) { panel.innerHTML = '<div class="empty-state"><div class="empty-icon">←</div><div class="empty-text">Выбери токен слева или выдай новый</div></div>'; return; }
+  const exp = t.expires_at ? new Date(t.expires_at).toLocaleString('ru-RU') : 'бессрочно';
+  panel.innerHTML = `
+    <div class="form-hd">
+      <div class="form-title">Токен доступа</div>
+      <div class="form-actions"><button class="btn-del" onclick="revokeTokenNow('${t.token}')">Отозвать</button></div>
+    </div>
+    <div class="section-label">Код (отправь владельцу доступа в WhatsApp)</div>
+    <div class="fg full"><input type="text" readonly value="${t.token}" onclick="this.select()" style="font-family:monospace;font-size:15px;letter-spacing:.05em"></div>
+    <div class="section-label">Детали</div>
+    <div class="form-grid">
+      <div class="fg full"><label>Заметка</label><input type="text" readonly value="${t.note ? escapeHtmlAdm(t.note) : '—'}"></div>
+      <div class="fg"><label>Выдан</label><input type="text" readonly value="${new Date(t.issued_at).toLocaleString('ru-RU')}"></div>
+      <div class="fg"><label>Истекает</label><input type="text" readonly value="${exp}"></div>
+    </div>`;
+}
+
+async function issueTokenFromForm() {
+  const note = document.getElementById('tok-note').value.trim();
+  const expiresDate = document.getElementById('tok-expires').value;
+  const expires_at = expiresDate ? new Date(expiresDate + 'T23:59:59').toISOString() : null;
+  try {
+    const data = await adminApiFetch('/api/admin/tokens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier: 'full', note, expires_at }),
+    });
+    toast('Токен выдан ✓', 'ok');
+    await loadTokens();
+    selectToken(data.token.token);
+  } catch (e) {
+    toast(e.message, 'err');
+  }
+}
+
+async function revokeTokenNow(tok) {
+  if (!confirm('Отозвать этот токен? Доступ по нему сразу перестанет работать.')) return;
+  try {
+    await adminApiFetch('/api/admin/tokens?token=' + encodeURIComponent(tok), { method: 'DELETE' });
+    toast('Токен отозван');
+    tokenEditingId = null;
+    await loadTokens();
+    renderTokenMain();
+  } catch (e) {
+    toast(e.message, 'err');
+  }
+}
+
+function escapeHtmlAdm(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 /* ═══════════════════════════════

@@ -1,0 +1,10 @@
+# wrangler
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+node_modules/
+
+# сессионные настройки Claude Code (лаунчер dev-сервера для превью)
+.claude/
