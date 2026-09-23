@@ -22,9 +22,12 @@
     { "binding": "FUNDING_KV", "id": "6f4f8b9a4ff941f0af07c6abe484f949" },
     { "binding": "TOKENS_KV", "id": "f26fc1fd267b471290f0c5fbed2f6a65" }
   ],
-  // Подключает сам домен к этому Worker'у (вместо GitHub Pages) — работает только если
-  // зона azatisrail.cc находится в том же Cloudflare-аккаунте, под которым сделан "wrangler login".
+  // Оставляем *.workers.dev как запасной адрес для проверки/отладки.
+  "workers_dev": true,
+  // Route (не Custom Domain!) — домен уже проксируется через Cloudflare с внешним DNS
+  // (CNAME на GitHub Pages), Custom Domain пытается сам завести DNS-запись и конфликтует
+  // с существующей. Route просто перехватывает запросы на уровне прокси, DNS не трогает.
   "routes": [
-    { "pattern": "azatisrail.cc", "custom_domain": true }
+    { "pattern": "azatisrail.cc/*", "zone_name": "azatisrail.cc" }
   ]
 }
