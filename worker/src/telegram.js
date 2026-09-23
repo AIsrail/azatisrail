@@ -22,14 +22,15 @@ const TARIFFS = [
   { id: "single", label: "Разовый доступ (1 раздел)", price: "200 сом" },
 ];
 
+// value — как хранится в базе (r.sheet), label — понятный текст для покупателя.
 const SHEETS = [
-  "Доноры",
-  "Инвесторы межд",
-  "Инвесторы КР",
-  "Финансы МСБ КР",
-  "Акселераторы и др.",
-  "Социальные доноры",
-  "Стажировки и стипендии",
+  { value: "Доноры", label: "Доноры и гранты" },
+  { value: "Инвесторы межд", label: "Инвесторы — международные и региональные" },
+  { value: "Инвесторы КР", label: "Инвесторы — в Кыргызстане" },
+  { value: "Финансы МСБ КР", label: "Финансирование для МСБ в Кыргызстане (кредиты, льготы)" },
+  { value: "Акселераторы и др.", label: "Акселераторы и центры поддержки бизнеса" },
+  { value: "Социальные доноры", label: "Доноры социальных и НКО-проектов" },
+  { value: "Стажировки и стипендии", label: "Стажировки и стипендии (для специалистов)" },
 ];
 
 function tgApi(env) {
@@ -79,7 +80,7 @@ function tariffKeyboard() {
 
 function sheetKeyboard() {
   return {
-    inline_keyboard: SHEETS.map((s, i) => [{ text: s, callback_data: `sheet:${i}` }]),
+    inline_keyboard: SHEETS.map((s, i) => [{ text: s.label, callback_data: `sheet:${i}` }]),
   };
 }
 
@@ -135,8 +136,8 @@ async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
   const pending = await getPending(env, chatId);
   const price = (pending && pending.price) || "200 сом";
   const tariffLabel = (pending && pending.tariffLabel) || "Разовый доступ (1 раздел)";
-  await setPending(env, chatId, { step: "await_receipt", tariffId: "single", tariffLabel, price, sheet });
-  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(tariffLabel, price, sheet) });
+  await setPending(env, chatId, { step: "await_receipt", tariffId: "single", tariffLabel, price, sheet: sheet.value, sheetLabel: sheet.label });
+  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(tariffLabel, price, sheet.label) });
 }
 
 async function handleReceiptPhoto(env, message) {
@@ -165,6 +166,7 @@ async function handleReceiptPhoto(env, message) {
       tariffLabel: pending.tariffLabel,
       price: pending.price,
       sheet: pending.sheet || null,
+      sheetLabel: pending.sheetLabel || null,
       created_at: new Date().toISOString(),
     }),
     { expirationTtl: 86400 }
@@ -173,7 +175,7 @@ async function handleReceiptPhoto(env, message) {
   await tg(env, "forwardMessage", { chat_id: admin.chat_id, from_chat_id: chatId, message_id: message.message_id });
   await tg(env, "sendMessage", {
     chat_id: admin.chat_id,
-    text: `Новый чек от ${buyerLabel}\nТариф: ${pending.tariffLabel} — ${pending.price}${pending.sheet ? "\nРаздел: " + pending.sheet : ""}\nЗаявка: ${requestId}`,
+    text: `Новый чек от ${buyerLabel}\nТариф: ${pending.tariffLabel} — ${pending.price}${pending.sheetLabel ? "\nРаздел: " + pending.sheetLabel : ""}\nЗаявка: ${requestId}`,
     reply_markup: {
       inline_keyboard: [
         [

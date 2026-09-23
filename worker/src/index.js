@@ -15,7 +15,7 @@ import { handleTelegramWebhook } from "./telegram.js";
 
 const PAGE_SIZE_FULL = 15;
 const PAGE_SIZE_TEASER = 6;
-const TEASER_DAILY_CAP = 18;
+const TEASER_DAILY_CAP = 1;
 
 export default {
   async fetch(request, env) {
