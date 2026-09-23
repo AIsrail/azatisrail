@@ -1,6 +1,12 @@
 /**
  * azatisrail.cc — единый Worker: отдаёт статику сайта (env.ASSETS) и API базы доноров (/api/*).
  * Полный массив записей никогда не уходит клиенту целиком — только отфильтрованная страница.
+ *
+ * Доступ (tier):
+ *  - teaser — без токена или истёкший токен: первые PAGE_SIZE_TEASER совпадений.
+ *  - full   — обычный оплаченный токен: весь массив, постранично.
+ *  - single — разовый токен, привязанный к одному разделу (scope.sheet):
+ *             весь раздел, но запрос по другим разделам игнорируется (форсится scope.sheet).
  */
 
 const PAGE_SIZE_FULL = 15;
@@ -9,6 +15,9 @@ const PAGE_SIZE_TEASER = 6;
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === "/funding" || url.pathname === "/funding.html") {
+      return Response.redirect(url.origin + "/", 301);
+    }
     if (url.pathname.startsWith("/api/")) {
       return handleApi(request, env, url);
     }
@@ -54,28 +63,30 @@ function requireAdmin(request, env) {
   return null;
 }
 
-async function getTier(env, token) {
-  if (!token) return "teaser";
+async function resolveAccess(env, token) {
+  if (!token) return { tier: "teaser", scope: null };
   const rec = await env.TOKENS_KV.get(token, "json");
-  if (!rec) return "teaser";
-  if (rec.expires_at && new Date(rec.expires_at).getTime() < Date.now()) return "teaser";
-  return "full";
+  if (!rec) return { tier: "teaser", scope: null };
+  if (rec.expires_at && new Date(rec.expires_at).getTime() < Date.now()) return { tier: "teaser", scope: null };
+  if (rec.scope && rec.scope.sheet) return { tier: "single", scope: rec.scope };
+  return { tier: "full", scope: null };
 }
 
 async function search(env, url) {
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
   const category = url.searchParams.get("category") || "";
-  const sheet = url.searchParams.get("sheet") || "";
   const token = url.searchParams.get("token") || "";
   const page = Math.max(1, parseInt(url.searchParams.get("page") || "1", 10) || 1);
 
-  const tier = await getTier(env, token);
-  const pageSize = tier === "full" ? PAGE_SIZE_FULL : PAGE_SIZE_TEASER;
+  const { tier, scope } = await resolveAccess(env, token);
+  // Разовый токен форсит свой раздел — запрос клиента по sheet игнорируется.
+  const sheet = tier === "single" ? scope.sheet : url.searchParams.get("sheet") || "";
+  const pageSize = tier === "teaser" ? PAGE_SIZE_TEASER : PAGE_SIZE_FULL;
 
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
   let filtered = all;
-  if (category) filtered = filtered.filter((r) => Array.isArray(r.categories) && r.categories.includes(category));
   if (sheet) filtered = filtered.filter((r) => r.sheet === sheet);
+  if (category) filtered = filtered.filter((r) => Array.isArray(r.categories) && r.categories.includes(category));
   if (q) {
     filtered = filtered.filter((r) => {
       const hay = [r.name, r.description, r.amount, (r.sectors || []).join(" ")].filter(Boolean).join(" ").toLowerCase();
@@ -84,13 +95,13 @@ async function search(env, url) {
   }
 
   const total = filtered.length;
-  const visibleTotal = tier === "full" ? total : Math.min(total, pageSize);
+  const visibleTotal = tier === "teaser" ? Math.min(total, pageSize) : total;
   const start = (page - 1) * pageSize;
   const end = Math.min(start + pageSize, visibleTotal);
   const results = start < visibleTotal ? filtered.slice(start, end) : [];
   const hasMore = end < visibleTotal;
 
-  return json({ total, visibleTotal, tier, page, pageSize, hasMore, results });
+  return json({ total, visibleTotal, tier, scope, page, pageSize, hasMore, results });
 }
 
 function genToken() {
@@ -104,9 +115,11 @@ function genToken() {
 async function issueToken(request, env) {
   const body = await request.json().catch(() => ({}));
   const token = genToken();
+  const scope = body.scope && body.scope.sheet ? { sheet: String(body.scope.sheet) } : null;
   const rec = {
     token,
     tier: body.tier || "full",
+    scope,
     note: body.note || "",
     issued_at: new Date().toISOString(),
     expires_at: body.expires_at || null,

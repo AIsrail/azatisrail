@@ -802,8 +802,27 @@ function renderTokenMain() {
           <input type="text" id="tok-note" placeholder="Напр.: Иванова А., оплата 23.09, тариф Полноценная">
         </div>
         <div class="fg">
+          <label>Тип доступа</label>
+          <select id="tok-scope-type" onchange="document.getElementById('tok-sheet-row').style.display=this.value==='single'?'block':'none'">
+            <option value="full">Полный доступ</option>
+            <option value="single">Один раздел (разовый, 200 сом)</option>
+          </select>
+        </div>
+        <div class="fg">
           <label>Действует до (пусто = бессрочно)</label>
           <input type="date" id="tok-expires">
+        </div>
+        <div class="fg full" id="tok-sheet-row" style="display:none">
+          <label>Раздел</label>
+          <select id="tok-sheet">
+            <option value="Доноры">Доноры / гранты</option>
+            <option value="Инвесторы межд">Инвесторы (международные)</option>
+            <option value="Инвесторы КР">Инвесторы (КР)</option>
+            <option value="Финансы МСБ КР">Финансы МСБ (КР)</option>
+            <option value="Акселераторы и др.">Акселераторы</option>
+            <option value="Социальные доноры">Социальные доноры</option>
+            <option value="Стажировки и стипендии">Стажировки и стипендии</option>
+          </select>
         </div>
       </div>`;
     return;
@@ -821,6 +840,7 @@ function renderTokenMain() {
     <div class="section-label">Детали</div>
     <div class="form-grid">
       <div class="fg full"><label>Заметка</label><input type="text" readonly value="${t.note ? escapeHtmlAdm(t.note) : '—'}"></div>
+      <div class="fg full"><label>Доступ</label><input type="text" readonly value="${t.scope && t.scope.sheet ? 'Только раздел: ' + t.scope.sheet : 'Полный'}"></div>
       <div class="fg"><label>Выдан</label><input type="text" readonly value="${new Date(t.issued_at).toLocaleString('ru-RU')}"></div>
       <div class="fg"><label>Истекает</label><input type="text" readonly value="${exp}"></div>
     </div>`;
@@ -830,11 +850,13 @@ async function issueTokenFromForm() {
   const note = document.getElementById('tok-note').value.trim();
   const expiresDate = document.getElementById('tok-expires').value;
   const expires_at = expiresDate ? new Date(expiresDate + 'T23:59:59').toISOString() : null;
+  const scopeType = document.getElementById('tok-scope-type').value;
+  const scope = scopeType === 'single' ? { sheet: document.getElementById('tok-sheet').value } : null;
   try {
     const data = await adminApiFetch('/api/admin/tokens', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tier: 'full', note, expires_at }),
+      body: JSON.stringify({ tier: 'full', note, expires_at, scope }),
     });
     toast('Токен выдан ✓', 'ok');
     await loadTokens();
