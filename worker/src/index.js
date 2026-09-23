@@ -126,18 +126,23 @@ async function search(env, url, request) {
     return json({ total, visibleTotal: total, tier, scope, page, pageSize, hasMore: end < total, results });
   }
 
+  // Обход дневного лимита для владельца/тестов: заголовок X-Test-Bypass с тем же
+  // значением, что и ADMIN_TOKEN. Дневной счётчик при этом не трогается и не растёт.
+  const testBypassHeader = request && request.headers.get("x-test-bypass");
+  const isTestBypass = !!(testBypassHeader && env.ADMIN_TOKEN && testBypassHeader === env.ADMIN_TOKEN);
+
   // Тизер: лимит и на запрос, и суммарно на IP за день — иначе платный доступ
   // обходится перебором разных ключевых слов.
   const ip = (request && request.headers.get("cf-connecting-ip")) || "unknown";
-  const quotaUsed = await getTeaserQuotaUsed(env, ip);
-  const quotaLeft = Math.max(0, TEASER_DAILY_CAP - quotaUsed);
+  const quotaUsed = isTestBypass ? 0 : await getTeaserQuotaUsed(env, ip);
+  const quotaLeft = isTestBypass ? pageSize : Math.max(0, TEASER_DAILY_CAP - quotaUsed);
   const visibleTotal = Math.min(total, pageSize, quotaLeft);
   const start = (page - 1) * pageSize;
   const end = Math.min(start + pageSize, visibleTotal);
   const results = start < visibleTotal ? filtered.slice(start, end) : [];
   const hasMore = end < visibleTotal;
 
-  if (results.length) await addTeaserQuotaUsed(env, ip, results.length);
+  if (results.length && !isTestBypass) await addTeaserQuotaUsed(env, ip, results.length);
 
   return json({
     total,
@@ -148,7 +153,7 @@ async function search(env, url, request) {
     pageSize,
     hasMore,
     results,
-    quotaExhausted: quotaLeft === 0 && total > 0,
+    quotaExhausted: !isTestBypass && quotaLeft === 0 && total > 0,
   });
 }
 

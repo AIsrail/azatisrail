@@ -330,7 +330,9 @@ async function runSearch(reset){
 
   let data;
   try{
-    const res = await fetch('/api/search?' + params.toString());
+    const testBypass = localStorage.getItem('azat-test-bypass');
+    const fetchOpts = testBypass ? { headers: { 'X-Test-Bypass': testBypass } } : {};
+    const res = await fetch('/api/search?' + params.toString(), fetchOpts);
     data = await res.json();
   }catch(e){
     grid.innerHTML = '<div class="no-results">Поиск временно недоступен, попробуйте обновить страницу.</div>';
@@ -429,8 +431,11 @@ async function loadAndInit() {
 loadAndInit();
 initToken();
 
-const urlQ = new URLSearchParams(location.search).get('q');
+const urlParams = new URLSearchParams(location.search);
+const urlQ = urlParams.get('q');
 if(urlQ){ document.getElementById('fs-q').value = urlQ; }
+const testKey = urlParams.get('testkey');
+if(testKey){ localStorage.setItem('azat-test-bypass', testKey); }
 runSearch(true);
 </script>
 </body>
