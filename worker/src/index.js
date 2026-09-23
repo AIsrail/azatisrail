@@ -9,6 +9,8 @@
  *             весь раздел, но запрос по другим разделам игнорируется (форсится scope.sheet).
  */
 
+import { handleTelegramWebhook } from "./telegram.js";
+
 const PAGE_SIZE_FULL = 15;
 const PAGE_SIZE_TEASER = 6;
 
@@ -17,6 +19,9 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/funding" || url.pathname === "/funding.html") {
       return Response.redirect(url.origin + "/", 301);
+    }
+    if (url.pathname === "/api/telegram/webhook" && request.method === "POST") {
+      return handleTelegramWebhook(request, env);
     }
     if (url.pathname.startsWith("/api/")) {
       return handleApi(request, env, url);
@@ -112,19 +117,23 @@ function genToken() {
     .toUpperCase();
 }
 
-async function issueToken(request, env) {
-  const body = await request.json().catch(() => ({}));
+export async function issueTokenRecord(env, { tier, scope, note, expires_at } = {}) {
   const token = genToken();
-  const scope = body.scope && body.scope.sheet ? { sheet: String(body.scope.sheet) } : null;
   const rec = {
     token,
-    tier: body.tier || "full",
-    scope,
-    note: body.note || "",
+    tier: tier || "full",
+    scope: scope && scope.sheet ? { sheet: String(scope.sheet) } : null,
+    note: note || "",
     issued_at: new Date().toISOString(),
-    expires_at: body.expires_at || null,
+    expires_at: expires_at || null,
   };
   await env.TOKENS_KV.put(token, JSON.stringify(rec));
+  return rec;
+}
+
+async function issueToken(request, env) {
+  const body = await request.json().catch(() => ({}));
+  const rec = await issueTokenRecord(env, body);
   return json({ ok: true, token: rec });
 }
 
