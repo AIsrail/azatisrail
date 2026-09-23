@@ -19,7 +19,12 @@
   // и id из вывода команды вписываются сюда вместо REPLACE_ME.
   // Подробности — DEPLOY.md.
   "kv_namespaces": [
-    { "binding": "FUNDING_KV", "id": "REPLACE_ME_FUNDING_KV_ID" },
-    { "binding": "TOKENS_KV", "id": "REPLACE_ME_TOKENS_KV_ID" }
+    { "binding": "FUNDING_KV", "id": "6f4f8b9a4ff941f0af07c6abe484f949" },
+    { "binding": "TOKENS_KV", "id": "f26fc1fd267b471290f0c5fbed2f6a65" }
+  ],
+  // Подключает сам домен к этому Worker'у (вместо GitHub Pages) — работает только если
+  // зона azatisrail.cc находится в том же Cloudflare-аккаунте, под которым сделан "wrangler login".
+  "routes": [
+    { "pattern": "azatisrail.cc", "custom_domain": true }
   ]
 }
