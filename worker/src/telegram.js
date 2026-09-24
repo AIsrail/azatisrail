@@ -69,7 +69,7 @@ function tgApi(env) {
   return `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
 }
 
-async function tg(env, method, params) {
+export async function tg(env, method, params) {
   const res = await fetch(`${tgApi(env)}/${method}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -105,8 +105,33 @@ function genId(len = 8) {
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function getAdminChat(env) {
+export async function getAdminChat(env) {
   return env.TOKENS_KV.get("_admin_chat", "json");
+}
+
+// Разовый токен (200 сом): если даже мягкий поиск ничего не нашёл в оплаченном разделе
+// (search() в index.js подставляет вместо этого общую подборку по разделу — queryFallback),
+// владелец получает уведомление и может вручную найти 2-3 реальные возможности за пределами
+// базы, добавить их (вкладка "Записи вручную" в админке) и ответить покупателю через бота —
+// чтобы у него не было чувства, что его "кинули" при оплаченном, но нерелевантном поиске.
+export async function notifyAdminFallback(env, { token, sheet, q, buyerLabel, buyerChatId }) {
+  const admin = await getAdminChat(env);
+  if (!admin) return;
+  const reply_markup = buyerChatId
+    ? { inline_keyboard: [[{ text: "✍️ Ответить покупателю", callback_data: `areply:${buyerChatId}` }]] }
+    : undefined;
+  await tg(env, "sendMessage", {
+    chat_id: admin.chat_id,
+    text:
+      `⚠️ Разовый доступ — точных совпадений в разделе не нашлось\n` +
+      `Покупатель: ${buyerLabel || "—"}\n` +
+      `Раздел: ${sheet || "—"}\n` +
+      `Запрос: ${q ? q.slice(0, 300) : "—"}\n` +
+      `Код: ${token}\n\n` +
+      `Стоит вручную найти 2-3 подходящие возможности вне базы, добавить их через вкладку ` +
+      `«Записи вручную» в админке и ответить покупателю кнопкой ниже.`,
+    reply_markup,
+  });
 }
 
 async function isAdmin(env, userId) {
@@ -301,6 +326,8 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
     scope,
     note: `TG ${req.buyer_label}, тариф ${req.tariffLabel}, оплата подтверждена в боте`,
     expires_at: null,
+    buyer_chat_id: req.buyer_chat_id,
+    buyer_label: req.buyer_label,
   });
 
   await tg(env, "sendMessage", {
@@ -314,6 +341,32 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
       text: `${callbackMessage.text}\n\n✅ Подтверждено, код выдан: ${tokenRec.token}`,
     });
   }
+}
+
+// Ответ покупателю на "промах" поиска (см. notifyAdminFallback) — владелец жмёт кнопку,
+// следующее сообщение от него в этом чате пересылается покупателю как есть (текст/фото).
+async function handleAdminReplyStart(env, adminChatId, buyerChatId, adminUserId, callbackQueryId) {
+  if (!(await isAdmin(env, adminUserId))) {
+    await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId, text: "Только владелец может отвечать покупателям.", show_alert: true });
+    return;
+  }
+  await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId });
+  await setPending(env, adminChatId, { step: "admin_reply", buyerChatId });
+  await tg(env, "sendMessage", {
+    chat_id: adminChatId,
+    text: "Напишите сообщение (текст или фото) — перешлю его покупателю как есть. Для отмены: /cancel",
+  });
+}
+
+async function handleAdminReplyMessage(env, message, buyerChatId) {
+  const adminChatId = message.chat.id;
+  await tg(env, "copyMessage", {
+    chat_id: buyerChatId,
+    from_chat_id: adminChatId,
+    message_id: message.message_id,
+  });
+  await clearPending(env, adminChatId);
+  await tg(env, "sendMessage", { chat_id: adminChatId, text: "Отправлено покупателю ✓" });
 }
 
 export async function handleTelegramWebhook(request, env) {
@@ -335,6 +388,8 @@ export async function handleTelegramWebhook(request, env) {
         await handleDecision(env, "confirm", data.slice(8), cb.from.id, cb.id, cb.message);
       } else if (data.startsWith("reject:")) {
         await handleDecision(env, "reject", data.slice(7), cb.from.id, cb.id, cb.message);
+      } else if (data.startsWith("areply:")) {
+        await handleAdminReplyStart(env, chatId, data.slice(7), cb.from.id, cb.id);
       }
       return new Response("ok");
     }
@@ -355,10 +410,22 @@ export async function handleTelegramWebhook(request, env) {
     if (!message.chat || message.chat.type !== "private") return new Response("ok");
     const chatId = message.chat.id;
     const text = (message.text || "").trim();
-    const pendingForHint = text && !text.startsWith("/") ? await getPending(env, chatId) : null;
+    // Фото тоже нужно проверять на pending (ответ покупателю может быть скриншотом) —
+    // поэтому pending читаем всегда, а не только для непустого текста, как раньше.
+    const pending = await getPending(env, chatId);
+    const hasContent = Boolean(text || (message.photo && message.photo.length));
 
-    if (pendingForHint && pendingForHint.step === "awaiting_hint") {
+    if (pending && pending.step === "admin_reply" && hasContent) {
+      await handleAdminReplyMessage(env, message, pending.buyerChatId);
+    } else if (pending && pending.step === "awaiting_hint" && text && !text.startsWith("/")) {
       await handleHintReply(env, message);
+    } else if (text.startsWith("/cancel")) {
+      if (pending) {
+        await clearPending(env, chatId);
+        await tg(env, "sendMessage", { chat_id: chatId, text: "Отменено." });
+      } else {
+        await tg(env, "sendMessage", { chat_id: chatId, text: "Нечего отменять." });
+      }
     } else if (text.startsWith("/start")) {
       // Диплинк с сайта: t.me/c4faq_bot?start=basic -> Telegram шлёт "/start basic"
       const payload = text.slice(6).trim();

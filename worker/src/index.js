@@ -13,7 +13,7 @@
  *    (Гранты/Бизнес,НКО | Инвестиции | Обучение). Без токена — только total, как и /api/search.
  */
 
-import { handleTelegramWebhook } from "./telegram.js";
+import { handleTelegramWebhook, notifyAdminFallback } from "./telegram.js";
 import {
   extractTitle,
   extractSourceUrl,
@@ -79,6 +79,18 @@ async function handleApi(request, env, url) {
       const denied = requireAdmin(request, env);
       return denied || (await revokeToken(env, url));
     }
+    if (url.pathname === "/api/admin/records" && request.method === "GET") {
+      const denied = requireAdmin(request, env);
+      return denied || (await listManualRecords(env));
+    }
+    if (url.pathname === "/api/admin/records" && request.method === "POST") {
+      const denied = requireAdmin(request, env);
+      return denied || (await addManualRecord(request, env));
+    }
+    if (url.pathname === "/api/admin/records" && request.method === "DELETE") {
+      const denied = requireAdmin(request, env);
+      return denied || (await removeManualRecord(env, url));
+    }
     return json({ error: "not_found" }, 404);
   } catch (e) {
     return json({ error: "server_error", message: String(e && e.message ? e.message : e) }, 500);
@@ -98,8 +110,9 @@ async function resolveAccess(env, token) {
   const rec = await env.TOKENS_KV.get(token, "json");
   if (!rec) return { tier: "teaser", scope: null };
   if (rec.expires_at && new Date(rec.expires_at).getTime() < Date.now()) return { tier: "teaser", scope: null };
-  if (rec.scope && rec.scope.sheet) return { tier: "single", scope: rec.scope };
-  return { tier: "full", scope: null };
+  const buyer = { buyer_chat_id: rec.buyer_chat_id, buyer_label: rec.buyer_label };
+  if (rec.scope && rec.scope.sheet) return { tier: "single", scope: rec.scope, ...buyer };
+  return { tier: "full", scope: null, ...buyer };
 }
 
 async function getDbTeaserUsed(env, ip) {
@@ -110,6 +123,15 @@ async function getDbTeaserUsed(env, ip) {
 async function addDbTeaserUsed(env, ip, n) {
   const used = await getDbTeaserUsed(env, ip);
   await env.TOKENS_KV.put(`db_teaser:${ip}`, String(used + n), { expirationTtl: DB_TEASER_TTL });
+}
+
+// Уведомляем владельца только один раз на токен, а не на каждый повторный поиск/перезагрузку
+// страницы — иначе один "промах" покупателя спамит одним и тем же уведомлением многократно.
+async function notifyFallbackOnce(env, token, details) {
+  const key = `fallback_notified:${token}`;
+  if (await env.TOKENS_KV.get(key)) return;
+  await env.TOKENS_KV.put(key, "1", { expirationTtl: 2592000 });
+  await notifyAdminFallback(env, { token, ...details });
 }
 
 const CRYPTO_QUERY_RE = /крипто|blockchain|блокчейн|биткоин|bitcoin|ethereum|эфириум|web3|nft|defi/i;
@@ -294,7 +316,7 @@ async function search(env, url, request) {
   const token = url.searchParams.get("token") || "";
   const page = Math.max(1, parseInt(url.searchParams.get("page") || "1", 10) || 1);
 
-  const { tier, scope } = await resolveAccess(env, token);
+  const { tier, scope, buyer_chat_id, buyer_label } = await resolveAccess(env, token);
   // Разовый токен форсит свой раздел — запрос клиента по sheet игнорируется.
   const sheet = tier === "single" ? scope.sheet : url.searchParams.get("sheet") || "";
 
@@ -358,6 +380,7 @@ async function search(env, url, request) {
     // приходит с фронтенда как q, поэтому rerankByRegion уже отранжировал по нему.
     const visibleTotal = Math.min(total, SINGLE_TIER_CAP);
     const results = filtered.slice(0, visibleTotal);
+    if (queryFallback && token) await notifyFallbackOnce(env, token, { sheet, q, buyer_chat_id, buyer_label });
     return json({ total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results, queryFallback });
   }
 
@@ -375,7 +398,7 @@ function genToken() {
     .toUpperCase();
 }
 
-export async function issueTokenRecord(env, { tier, scope, note, expires_at } = {}) {
+export async function issueTokenRecord(env, { tier, scope, note, expires_at, buyer_chat_id, buyer_label } = {}) {
   const token = genToken();
   const rec = {
     token,
@@ -384,6 +407,11 @@ export async function issueTokenRecord(env, { tier, scope, note, expires_at } = 
     note: note || "",
     issued_at: new Date().toISOString(),
     expires_at: expires_at || null,
+    // Только для токенов, выданных ботом за реальную оплату — нужно, чтобы при
+    // "промахе" поиска (см. queryFallback в search()) можно было уведомить владельца
+    // и ответить покупателю напрямую через бота, а не только показать ему подборку.
+    buyer_chat_id: buyer_chat_id || undefined,
+    buyer_label: buyer_label || undefined,
   };
   await env.TOKENS_KV.put(token, JSON.stringify(rec));
   return rec;
@@ -398,7 +426,11 @@ async function issueToken(request, env) {
 async function listTokens(env) {
   const list = await env.TOKENS_KV.list();
   const items = await Promise.all(list.keys.map((k) => env.TOKENS_KV.get(k.name, "json")));
-  const tokens = items.filter(Boolean).sort((a, b) => (b.issued_at || "").localeCompare(a.issued_at || ""));
+  // TOKENS_KV также хранит служебные записи (_admin_chat, pending:*, payreq:*, db_teaser:*,
+  // fallback_notified:*) — берём только настоящие токены доступа, а не весь namespace.
+  const tokens = items
+    .filter((it) => it && typeof it === "object" && it.token)
+    .sort((a, b) => (b.issued_at || "").localeCompare(a.issued_at || ""));
   return json({ tokens });
 }
 
@@ -406,5 +438,46 @@ async function revokeToken(env, url) {
   const token = url.searchParams.get("token");
   if (!token) return json({ error: "missing_token" }, 400);
   await env.TOKENS_KV.delete(token);
+  return json({ ok: true });
+}
+
+// Записи, добавленные владельцем вручную (обычно — когда поиск для разового тарифа не
+// нашёл ничего в базе, см. queryFallback/notifyAdminFallback): попадают в тот же массив
+// "records", что и основная база, поэтому сразу участвуют в обычном поиске.
+async function listManualRecords(env) {
+  const all = (await env.FUNDING_KV.get("records", "json")) || [];
+  return json({ records: all.filter((r) => r.source === "manual") });
+}
+
+async function addManualRecord(request, env) {
+  const body = await request.json().catch(() => ({}));
+  if (!body.sheet || !body.name) return json({ error: "missing_fields" }, 400);
+  const all = (await env.FUNDING_KV.get("records", "json")) || [];
+  const rec = {
+    id: `manual-${Date.now().toString(36)}-${genToken().slice(0, 4)}`,
+    sheet: String(body.sheet),
+    name: String(body.name),
+    description: body.description ? String(body.description) : "",
+    amount: body.amount ? String(body.amount) : "",
+    deadline: body.deadline ? String(body.deadline) : "",
+    region: ["kg", "regional", "international"].includes(body.region) ? body.region : "international",
+    categories: Array.isArray(body.categories) ? body.categories.filter((c) => typeof c === "string") : [],
+    sectors: Array.isArray(body.sectors) ? body.sectors.filter((s) => typeof s === "string") : [],
+    is_crypto: Boolean(body.is_crypto),
+    source: "manual",
+    added_at: new Date().toISOString(),
+  };
+  all.push(rec);
+  await env.FUNDING_KV.put("records", JSON.stringify(all));
+  return json({ ok: true, record: rec });
+}
+
+async function removeManualRecord(env, url) {
+  const id = url.searchParams.get("id");
+  if (!id) return json({ error: "missing_id" }, 400);
+  const all = (await env.FUNDING_KV.get("records", "json")) || [];
+  const next = all.filter((r) => r.id !== id);
+  if (next.length === all.length) return json({ error: "not_found" }, 404);
+  await env.FUNDING_KV.put("records", JSON.stringify(next));
   return json({ ok: true });
 }

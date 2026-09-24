@@ -175,6 +175,7 @@ textarea{min-height:72px;resize:vertical}
     <button class="tab-btn active" id="tab-ev" onclick="switchTab('events')">📅 Мероприятия</button>
     <button class="tab-btn" id="tab-pub" onclick="switchTab('publications')">📄 Публикации</button>
     <button class="tab-btn" id="tab-tok" onclick="switchTab('tokens')">🔑 Токены доступа</button>
+    <button class="tab-btn" id="tab-rec" onclick="switchTab('records')">➕ Записи вручную</button>
   </div>
   <div class="topbar-right">
     <button class="logout-btn" onclick="logout()">Выйти</button>
@@ -264,12 +265,21 @@ function switchTab(tab) {
   document.getElementById('tab-ev').classList.toggle('active', tab === 'events');
   document.getElementById('tab-pub').classList.toggle('active', tab === 'publications');
   document.getElementById('tab-tok').classList.toggle('active', tab === 'tokens');
+  document.getElementById('tab-rec').classList.toggle('active', tab === 'records');
   if (tab === 'tokens') {
     document.getElementById('add-btn-label').textContent = '+ Выдать токен';
     tokenEditingId = null;
     document.getElementById('main-panel').innerHTML = '<div class="empty-state"><div class="empty-icon">←</div><div class="empty-text">Выбери токен слева или выдай новый</div></div>';
     renderTokenExportPanel();
     loadTokens();
+    return;
+  }
+  if (tab === 'records') {
+    document.getElementById('add-btn-label').textContent = '+ Добавить запись';
+    recordEditingId = null;
+    document.getElementById('main-panel').innerHTML = '<div class="empty-state"><div class="empty-icon">←</div><div class="empty-text">Выбери запись слева или добавь новую</div></div>';
+    renderTokenExportPanel();
+    loadManualRecords();
     return;
   }
   document.getElementById('add-btn-label').textContent = '+ Добавить';
@@ -315,6 +325,7 @@ function renderSidebar() {
 ═══════════════════════════════ */
 function handleAddClick() {
   if (currentTab === 'tokens') { newTokenForm(); return; }
+  if (currentTab === 'records') { newRecordForm(); return; }
   addNew();
 }
 
@@ -873,6 +884,192 @@ async function revokeTokenNow(tok) {
     tokenEditingId = null;
     await loadTokens();
     renderTokenMain();
+  } catch (e) {
+    toast(e.message, 'err');
+  }
+}
+
+/* ═══════════════════════════════
+   ЗАПИСИ ВРУЧНУЮ (Worker API — /api/admin/records)
+   Для случая, когда поиск по разовому тарифу ничего не находит в базе (queryFallback) —
+   владелец находит 2-3 реальные возможности за пределами базы и добавляет их сюда, чтобы
+   они сразу участвовали в обычном поиске и остались там навсегда.
+═══════════════════════════════ */
+let recordsCache = [];
+let recordEditingId = null;
+
+const RECORD_SHEETS = [
+  { value: 'Доноры', label: 'Доноры и гранты' },
+  { value: 'Инвесторы межд', label: 'Инвесторы — международные и региональные' },
+  { value: 'Инвесторы КР', label: 'Инвесторы — в Кыргызстане' },
+  { value: 'Финансы МСБ КР', label: 'Финансирование для МСБ в Кыргызстане' },
+  { value: 'Акселераторы и др.', label: 'Акселераторы и центры поддержки бизнеса' },
+  { value: 'Стажировки и стипендии', label: 'Стажировки и стипендии' },
+];
+
+async function loadManualRecords() {
+  const list = document.getElementById('item-list');
+  if (!getAdminApiToken()) {
+    list.innerHTML = '<div class="list-empty">Сначала сохрани API-токен слева внизу</div>';
+    document.getElementById('sidebar-title').textContent = 'Записи вручную';
+    document.getElementById('sidebar-count').textContent = '0';
+    return;
+  }
+  list.innerHTML = '<div class="list-empty">Загрузка…</div>';
+  try {
+    const data = await adminApiFetch('/api/admin/records');
+    recordsCache = data.records || [];
+  } catch (e) {
+    recordsCache = [];
+    list.innerHTML = `<div class="list-empty">${escapeHtmlAdm(e.message)}</div>`;
+    return;
+  }
+  renderRecordsSidebar();
+}
+
+function renderRecordsSidebar() {
+  document.getElementById('sidebar-title').textContent = 'Записи вручную';
+  document.getElementById('sidebar-count').textContent = recordsCache.length;
+  const list = document.getElementById('item-list');
+  if (!recordsCache.length) {
+    list.innerHTML = '<div class="list-empty">Пока нет ручных записей</div>';
+    return;
+  }
+  list.innerHTML = recordsCache.map(r => {
+    const active = r.id === recordEditingId ? ' active' : '';
+    return `<div class="list-item${active}" onclick="selectRecord('${r.id}')">
+      <div class="item-title">${escapeHtmlAdm(r.name)}</div>
+      <div class="item-meta">${escapeHtmlAdm(r.sheet)}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectRecord(id) {
+  recordEditingId = id;
+  renderRecordsSidebar();
+  renderRecordMain();
+}
+
+function newRecordForm() {
+  recordEditingId = 'NEW';
+  renderRecordsSidebar();
+  renderRecordMain();
+}
+
+function recordSheetOptions(selected) {
+  return RECORD_SHEETS.map(s => `<option value="${s.value}"${s.value === selected ? ' selected' : ''}>${s.label}</option>`).join('');
+}
+
+function renderRecordMain() {
+  const panel = document.getElementById('main-panel');
+  if (recordEditingId === 'NEW') {
+    panel.innerHTML = `
+      <div class="form-hd">
+        <div class="form-title">Добавить запись вручную</div>
+        <div class="form-actions"><button class="btn-save" onclick="addManualRecordFromForm()">Добавить</button></div>
+      </div>
+      <div class="section-label">Основное</div>
+      <div class="form-grid">
+        <div class="fg full">
+          <label>Название</label>
+          <input type="text" id="rec-name" placeholder="Напр.: Фонд Абилис (Abilis Foundation)">
+        </div>
+        <div class="fg">
+          <label>Раздел</label>
+          <select id="rec-sheet">${recordSheetOptions('Доноры')}</select>
+        </div>
+        <div class="fg">
+          <label>Регион</label>
+          <select id="rec-region">
+            <option value="kg">Кыргызстан</option>
+            <option value="regional">Центральная Азия / региональный</option>
+            <option value="international" selected>Международный</option>
+          </select>
+        </div>
+        <div class="fg full">
+          <label>Описание</label>
+          <textarea id="rec-description" placeholder="Коротко: кому, на что, условия"></textarea>
+        </div>
+        <div class="fg">
+          <label>Сумма / диапазон</label>
+          <input type="text" id="rec-amount" placeholder="Напр.: до $10 000">
+        </div>
+        <div class="fg">
+          <label>Дедлайн</label>
+          <input type="text" id="rec-deadline" placeholder="Напр.: rolling / 15 марта 2026">
+        </div>
+        <div class="fg full">
+          <label>Ключевые слова (через запятую)</label>
+          <input type="text" id="rec-sectors" placeholder="Напр.: инвалидность, инклюзия, реабилитация">
+        </div>
+        <div class="fg full">
+          <label>Категории</label>
+          <div class="check-row">
+            <label class="check-opt"><input type="checkbox" id="rec-cat-business"> Бизнес / МСБ</label>
+            <label class="check-opt"><input type="checkbox" id="rec-cat-ngo"> НКО</label>
+            <label class="check-opt"><input type="checkbox" id="rec-cat-individual"> Для физлиц</label>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+  const r = recordsCache.find(x => x.id === recordEditingId);
+  if (!r) { panel.innerHTML = '<div class="empty-state"><div class="empty-icon">←</div><div class="empty-text">Выбери запись слева или добавь новую</div></div>'; return; }
+  panel.innerHTML = `
+    <div class="form-hd">
+      <div class="form-title">${escapeHtmlAdm(r.name)}</div>
+      <div class="form-actions"><button class="btn-del" onclick="deleteManualRecordNow('${r.id}')">Удалить</button></div>
+    </div>
+    <div class="section-label">Детали</div>
+    <div class="form-grid">
+      <div class="fg full"><label>Раздел</label><input type="text" readonly value="${escapeHtmlAdm(r.sheet)}"></div>
+      <div class="fg full"><label>Описание</label><textarea readonly>${escapeHtmlAdm(r.description || '—')}</textarea></div>
+      <div class="fg"><label>Сумма</label><input type="text" readonly value="${escapeHtmlAdm(r.amount || '—')}"></div>
+      <div class="fg"><label>Дедлайн</label><input type="text" readonly value="${escapeHtmlAdm(r.deadline || '—')}"></div>
+      <div class="fg"><label>Регион</label><input type="text" readonly value="${escapeHtmlAdm(r.region || '—')}"></div>
+      <div class="fg"><label>Добавлено</label><input type="text" readonly value="${new Date(r.added_at).toLocaleString('ru-RU')}"></div>
+      <div class="fg full"><label>Ключевые слова</label><input type="text" readonly value="${escapeHtmlAdm((r.sectors || []).join(', ') || '—')}"></div>
+    </div>`;
+}
+
+async function addManualRecordFromForm() {
+  const name = document.getElementById('rec-name').value.trim();
+  const sheet = document.getElementById('rec-sheet').value;
+  if (!name) { toast('Укажи название', 'err'); return; }
+  const categories = [];
+  if (document.getElementById('rec-cat-business').checked) categories.push('business');
+  if (document.getElementById('rec-cat-ngo').checked) categories.push('ngo');
+  if (document.getElementById('rec-cat-individual').checked) categories.push('individual');
+  const sectors = document.getElementById('rec-sectors').value.split(',').map(s => s.trim()).filter(Boolean);
+  try {
+    const data = await adminApiFetch('/api/admin/records', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name, sheet,
+        description: document.getElementById('rec-description').value.trim(),
+        amount: document.getElementById('rec-amount').value.trim(),
+        deadline: document.getElementById('rec-deadline').value.trim(),
+        region: document.getElementById('rec-region').value,
+        categories, sectors,
+      }),
+    });
+    toast('Запись добавлена в базу ✓', 'ok');
+    await loadManualRecords();
+    selectRecord(data.record.id);
+  } catch (e) {
+    toast(e.message, 'err');
+  }
+}
+
+async function deleteManualRecordNow(id) {
+  if (!confirm('Удалить эту запись из базы?')) return;
+  try {
+    await adminApiFetch('/api/admin/records?id=' + encodeURIComponent(id), { method: 'DELETE' });
+    toast('Запись удалена');
+    recordEditingId = null;
+    await loadManualRecords();
+    renderRecordMain();
   } catch (e) {
     toast(e.message, 'err');
   }
