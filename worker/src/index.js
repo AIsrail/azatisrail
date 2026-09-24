@@ -14,7 +14,7 @@
  */
 
 import { handleTelegramWebhook } from "./telegram.js";
-import { extractTitle, extractSourceUrl, extractExcerpt } from "./extract.js";
+import { extractTitle, extractSourceUrl, extractExcerpt, extractDeadlineStatus, classifyArchiveRegion } from "./extract.js";
 
 const PAGE_SIZE_FULL = 15;
 const ARCHIVE_RESULTS_LIMIT = 3;
@@ -169,11 +169,14 @@ async function fetchRecentFbPosts(env) {
         // трафик и вовлечённость на странице Connect4Pro, а не уводит с неё сразу.
         const url = p.permalink_url || extractSourceUrl(p.message) || null;
         if (!url) return null;
+        const date = (p.created_time || "").slice(0, 10);
         return {
-          date: (p.created_time || "").slice(0, 10),
+          date,
           title,
           excerpt: extractExcerpt(p.message),
           url,
+          deadlineStatus: extractDeadlineStatus(p.message, date),
+          region: classifyArchiveRegion(p.message),
         };
       })
       .filter(Boolean);
@@ -210,8 +213,14 @@ async function archiveSearch(env, url) {
       return matchesQuery(hay, q);
     });
   }
-  const total = filtered.length;
-  const results = filtered.slice(0, ARCHIVE_RESULTS_LIMIT);
+  // Бесплатный тизер не должен дублировать платную базу: показываем только то, что уже
+  // неактуально (дедлайн прошёл), или международные возможности без указанного дедлайна —
+  // туда абсолютное большинство местных пользователей всё равно не идёт.
+  const freeEligible = filtered.filter(
+    (r) => r.deadlineStatus === "passed" || (r.deadlineStatus === "none" && r.region === "international")
+  );
+  const total = freeEligible.length;
+  const results = freeEligible.slice(0, ARCHIVE_RESULTS_LIMIT);
   return json({ total, results });
 }
 

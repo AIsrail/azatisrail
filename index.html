@@ -46,10 +46,12 @@
 .fs-select{min-width:170px}
 .note-bar{background:var(--sect);border-left:3px solid var(--sap);padding:16px 20px;margin-bottom:28px;font-size:13px;color:var(--mid);line-height:1.6;border-radius:0 2px 2px 0}
 .note-bar a{color:var(--sap)}
-.token-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.token-row input{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--white);border:1.5px solid var(--border);border-radius:2px;padding:8px 10px;width:200px}
-.token-row button{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;background:transparent;color:var(--sap);border:1.5px solid var(--sap);padding:8px 14px;border-radius:2px;cursor:pointer;transition:all .2s}
-.token-row button:hover{background:var(--sap);color:white}
+.token-panel{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0 24px;padding:18px 20px;background:var(--sect);border:1.5px solid var(--sap);border-radius:4px}
+.token-panel .token-label{font-size:13.5px;color:var(--ink);font-weight:500;flex:1 1 100%}
+.token-panel input{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);border:1.5px solid var(--border);border-radius:2px;padding:13px 14px;flex:1;min-width:180px}
+.token-panel input:focus{outline:none;border-color:var(--sap)}
+.token-panel button{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;background:var(--sap);color:#fff;border:none;padding:13px 26px;border-radius:2px;cursor:pointer;transition:background .2s,transform .15s;white-space:nowrap}
+.token-panel button:hover{background:var(--sap2);transform:translateY(-2px)}
 .token-status{font-size:12px;color:var(--muted)}
 .token-status.unlocked{color:var(--sap)}
 .fs-count{font-size:12px;color:var(--muted);margin-bottom:18px}
@@ -128,7 +130,8 @@
 </section>
 
 <section class="sw">
-  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px">Бесплатно — из архива публикаций Connect4Pro</div>
+  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 8px">Бесплатно — из архива публикаций Connect4Pro</div>
+  <div style="font-size:12px;color:var(--muted);margin:0 0 12px;max-width:560px">Примеры уже неактуальных или международных возможностей — ориентир по формату. Актуальные и по Кыргызстану — в структурированной базе ниже.</div>
   <div class="fs-grid" id="archive-grid"></div>
 </section>
 
@@ -157,11 +160,12 @@
 
   <div id="access-note" class="note-bar" style="display:none"></div>
 
-  <div class="token-row">
-    <span class="token-status" id="token-status">Полная база — по коду доступа.</span>
+  <div class="token-panel">
+    <div class="token-label">Уже оплатили в Telegram? Введите код доступа, который прислал бот:</div>
     <input type="text" id="fs-token" placeholder="Код доступа">
-    <button onclick="applyToken()">Активировать</button>
+    <button onclick="applyToken()">Активировать доступ</button>
   </div>
+  <div class="token-status" id="token-status">Полная база — по коду доступа.</div>
 
   <div class="fs-count" id="fs-count"></div>
   <div class="fs-grid" id="fs-grid"></div>
