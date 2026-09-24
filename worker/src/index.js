@@ -24,6 +24,7 @@ import {
   matchesQuery,
   matchesQueryLoose,
   makeRelevanceScorer,
+  normalizeRu,
 } from "./extract.js";
 
 const PAGE_SIZE_FULL = 15;
@@ -349,7 +350,7 @@ async function archiveSearch(env, url) {
   }
   merged.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
-  const archiveHay = (r) => [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
+  const archiveHay = (r) => normalizeRu([r.title, r.excerpt].filter(Boolean).join(" "));
   let filtered = merged;
   if (q) {
     filtered = merged.filter((r) => matchesQuery(archiveHay(r), q));
@@ -380,7 +381,7 @@ async function archiveFullSearch(env, url) {
   if (category) filtered = filtered.filter((r) => r.category === category);
   if (subcategory) filtered = filtered.filter((r) => r.subcategory === subcategory);
   if (q) {
-    const archiveFullHay = (r) => [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
+    const archiveFullHay = (r) => normalizeRu([r.title, r.excerpt].filter(Boolean).join(" "));
     const strict = filtered.filter((r) => matchesQuery(archiveFullHay(r), q));
     filtered = strict.length ? strict : filtered.filter((r) => matchesQueryLoose(archiveFullHay(r), q));
   }
@@ -400,7 +401,7 @@ async function archiveFullSearch(env, url) {
 }
 
 function recordHay(r) {
-  return [r.name, r.description, r.amount, (r.sectors || []).join(" ")].filter(Boolean).join(" ").toLowerCase();
+  return normalizeRu([r.name, r.description, r.amount, (r.sectors || []).join(" ")].filter(Boolean).join(" "));
 }
 
 async function search(env, url, request) {

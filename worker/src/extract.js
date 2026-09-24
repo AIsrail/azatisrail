@@ -144,8 +144,16 @@ function stemWord(w) {
 // стоп-слово — но в этом домене корень "грант" так же неинформативен, как и стоп-слова выше.
 const GRANT_ROOT_RE = /^грант/i;
 
+// "ё" и "е" на практике взаимозаменяемы в русских текстах (одни источники пишут "молодёжь",
+// другие — "молодежь"), но как буквы они разные — без нормализации то же слово в запросе и в
+// записи базы может буквально не совпасть только из-за этого. Применяется и к запросу, и к
+// тексту записей (см. recordHay и т.п. в index.js), иначе нормализация с одной стороны бесполезна.
+export function normalizeRu(text) {
+  return (text || "").toLowerCase().replace(/ё/g, "е");
+}
+
 export function extractQueryWords(q) {
-  const raw = (q || "").toLowerCase().replace(/[^a-zа-яё0-9]+/gi, " ").split(/\s+/).filter(Boolean);
+  const raw = normalizeRu(q).replace(/[^a-zа-я0-9]+/gi, " ").split(/\s+/).filter(Boolean);
   return raw.filter((w) => w.length >= 3 && !STOPWORDS_RU.has(w) && !GRANT_ROOT_RE.test(w)).map(stemWord);
 }
 
