@@ -21,7 +21,7 @@ const ARCHIVE_RESULTS_LIMIT = 3;
 const FB_CACHE_TTL = 900; // 15 минут — свежие посты подтягиваются быстро, но не на каждый запрос
 const DB_TEASER_CAP = 2; // сколько настоящих записей структурированной базы видит один IP бесплатно
 const DB_TEASER_TTL = 2592000; // 30 дней — не "в день", это и путало при тестировании
-const SINGLE_TIER_CAP = 3; // разовый токен (200 сом, 1 раздел) — не весь раздел, а 3 лучших совпадения
+const SINGLE_TIER_CAP = 5; // разовый токен (200 сом, 1 раздел) — не весь раздел, а 5 лучших совпадений
 
 export default {
   async fetch(request, env) {
@@ -245,7 +245,10 @@ async function archiveFullSearch(env, url) {
   }
   const total = filtered.length;
 
-  if (tier === "teaser") {
+  // Разовый токен (200 сом) покупается за доступ к одному разделу структурированной базы,
+  // не к архиву публикаций — иначе за 200 сом отдавался бы весь архив (339 записей) без
+  // ограничений, что и было багом. Архив публикаций доступен только с basic/standard/premium.
+  if (tier === "teaser" || tier === "single") {
     return json({ total, tier, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results: [] });
   }
 
