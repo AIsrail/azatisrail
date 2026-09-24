@@ -136,10 +136,9 @@ async function notifyFallbackOnce(env, token, details) {
 
 const CRYPTO_QUERY_RE = /крипто|blockchain|блокчейн|биткоин|bitcoin|ethereum|эфириум|web3|nft|defi/i;
 
-// Целевой микс результатов: примерно 50% Кыргызстан / 30% региональные (ЦА) / 20% международные —
-// по просьбе владельца, чтобы местные и близкие возможности не терялись среди тысяч глобальных.
 // Крипто-специфичные записи скрываются, если явно не спросили про крипто (максимум 1, в конце).
-function rerankByRegion(records, q) {
+// Общая логика для rerankByRegion и разового тарифа (rankForSingleTier).
+function suppressCryptoRecords(records, q) {
   const cryptoAllowed = CRYPTO_QUERY_RE.test(q || "");
   const crypto = [];
   const rest = [];
@@ -147,6 +146,13 @@ function rerankByRegion(records, q) {
     if (r.is_crypto && !cryptoAllowed) crypto.push(r);
     else rest.push(r);
   }
+  return { rest, cryptoTail: !cryptoAllowed && crypto.length ? [crypto[0]] : [] };
+}
+
+// Целевой микс результатов: примерно 50% Кыргызстан / 30% региональные (ЦА) / 20% международные —
+// по просьбе владельца, чтобы местные и близкие возможности не терялись среди тысяч глобальных.
+function rerankByRegion(records, q) {
+  const { rest, cryptoTail } = suppressCryptoRecords(records, q);
 
   const kg = rest.filter((r) => r.region === "kg");
   const regional = rest.filter((r) => r.region === "regional");
@@ -170,7 +176,7 @@ function rerankByRegion(records, q) {
       }
     }
   }
-  if (!cryptoAllowed && crypto.length) out.push(crypto[0]);
+  out.push(...cryptoTail);
   return out;
 }
 
@@ -178,6 +184,25 @@ function regionRank(r) {
   if (r.region === "kg") return 0;
   if (r.region === "regional") return 1;
   return 2;
+}
+
+// "easy" — посольские программы, госсоцзаказ, безусловные малые гранты (Pollination,
+// Awesome и т.п.) и записи, добавленные владельцем вручную (см. addManualRecord — их
+// специально подбирают под конкретный случай). Первому покупателю разового тарифа (обычно
+// без опыта подачи заявок) это даёт куда больше практической пользы, чем формально
+// подходящий по теме, но конкурентный международный фонд, требующий трека/английского/питча.
+// Бонус, а не жёсткая сортировка: сильное тематическое совпадение (например, специализированный
+// фонд именно по нужной теме) не должно тонуть под записями, зацепившимися за одно общее слово
+// только потому, что те помечены "easy" — обошлись без этого один раз, повторять не будем.
+const EASY_BONUS = 1.5;
+const KG_BONUS = 1;
+const REGIONAL_BONUS = 0.5;
+
+function accessRegionBonus(r) {
+  let bonus = r.access_tier === "easy" ? EASY_BONUS : 0;
+  if (r.region === "kg") bonus += KG_BONUS;
+  else if (r.region === "regional") bonus += REGIONAL_BONUS;
+  return bonus;
 }
 
 // Когда строгий AND-поиск ничего не дал и в ход идёт мягкий поиск по отдельным словам,
@@ -197,6 +222,38 @@ function relevanceRerank(pairs, q) {
   const out = rest.map((p) => p.r);
   if (!cryptoAllowed && crypto.length) out.push(crypto[0].r);
   return out;
+}
+
+const SINGLE_SEEN_TTL = 7776000; // 90 дней — сколько помним, что этому IP уже показывали
+
+async function getSingleSeen(env, ip) {
+  const arr = await env.TOKENS_KV.get(`single_seen:${ip}`, "json");
+  return Array.isArray(arr) ? arr : [];
+}
+
+async function addSingleSeen(env, ip, ids) {
+  const cur = await getSingleSeen(env, ip);
+  const next = Array.from(new Set([...cur, ...ids.filter(Boolean)])).slice(-200);
+  await env.TOKENS_KV.put(`single_seen:${ip}`, JSON.stringify(next), { expirationTtl: SINGLE_SEEN_TTL });
+}
+
+// Итоговая сортировка для разового тарифа: непоказанные этому IP записи — вперёд (при
+// повторной оплате открывает новое, а не повтор); внутри — релевантность (если считали) плюс
+// бонус за простой/местный доступ. Бонус умеренный (+1.5/+1/+0.5), а не отдельная категория
+// впереди всего: иначе один нерелевантный "easy"-грант (зацепился за общее слово вроде
+// "гранты") обходит специализированный фонд именно по нужной теме — то, ради чего вообще
+// делали релевантный скоринг. Это НЕ фильтрация — count/total не меняется, только порядок.
+function rankForSingleTier(records, seenIds, scoreById) {
+  const arr = records.slice();
+  arr.sort((a, b) => {
+    const seenA = seenIds.has(a.id) ? 1 : 0;
+    const seenB = seenIds.has(b.id) ? 1 : 0;
+    if (seenA !== seenB) return seenA - seenB;
+    const scoreA = (scoreById ? scoreById.get(a.id) || 0 : 0) + accessRegionBonus(a);
+    const scoreB = (scoreById ? scoreById.get(b.id) || 0 : 0) + accessRegionBonus(b);
+    return scoreB - scoreA;
+  });
+  return arr;
 }
 
 async function fetchRecentFbPosts(env) {
@@ -327,6 +384,7 @@ async function search(env, url, request) {
 
   let candidates = base;
   let relevanceRanked = null;
+  let scoreById = null;
   let queryFallback = false;
   if (q) {
     // Длинная фраза (например, подсказка, собранная ботом у покупателя разового тарифа)
@@ -346,10 +404,11 @@ async function search(env, url, request) {
       }
       if (scored.length) {
         relevanceRanked = relevanceRerank(scored, q);
+        scoreById = new Map(scored.map((p) => [p.r.id, p.score]));
       } else if (tier === "single") {
         // Разовый токен: если даже мягкий поиск не нашёл ничего в оплаченном разделе — не
         // оставляем покупателя с пустыми руками, показываем подборку по разделу без
-        // фильтра по запросу (region-ranked ниже: КР → ЦА → международные).
+        // фильтра по запросу (ниже всё равно ранжируется как обычно для разового тарифа).
         candidates = base;
         queryFallback = true;
       } else {
@@ -357,7 +416,25 @@ async function search(env, url, request) {
       }
     }
   }
-  const filtered = relevanceRanked || rerankByRegion(candidates, q);
+
+  const ip = (request && request.headers.get("cf-connecting-ip")) || "unknown";
+  let filtered;
+  if (tier === "single") {
+    // Разовый тариф ранжируется иначе, чем полный доступ: сначала непоказанные этому IP
+    // записи (повторная оплата открывает новое), среди них — сначала простой/местный доступ
+    // (посольства, госсоцзаказ, безусловные малые гранты), а не формально попавшая по
+    // ключевым словам, но нереалистичная для новичка международная конкурсная программа.
+    const pool = relevanceRanked
+      ? relevanceRanked
+      : (() => {
+          const { rest, cryptoTail } = suppressCryptoRecords(candidates, q);
+          return [...rest, ...cryptoTail];
+        })();
+    const seenIds = new Set(await getSingleSeen(env, ip));
+    filtered = rankForSingleTier(pool, seenIds, scoreById);
+  } else {
+    filtered = relevanceRanked || rerankByRegion(candidates, q);
+  }
 
   const total = filtered.length;
 
@@ -365,7 +442,6 @@ async function search(env, url, request) {
     // Без токена — до DB_TEASER_CAP настоящих записей суммарно на IP (не за день — это
     // путало при тестировании), дальше только count. Основной стимул оплатить, но новый
     // посетитель сразу видит хотя бы пару реальных записей, а не только архив постов.
-    const ip = (request && request.headers.get("cf-connecting-ip")) || "unknown";
     const used = await getDbTeaserUsed(env, ip);
     const left = Math.max(0, DB_TEASER_CAP - used);
     const visibleTotal = Math.min(total, left);
@@ -376,10 +452,10 @@ async function search(env, url, request) {
 
   if (tier === "single") {
     // Разовый токен — не весь раздел (несправедливо: одни разделы в разы больше других),
-    // а до SINGLE_TIER_CAP лучших совпадений. scope.hint (собран ботом при покупке)
-    // приходит с фронтенда как q, поэтому rerankByRegion уже отранжировал по нему.
+    // а до SINGLE_TIER_CAP лучших совпадений, отранжированных rankForSingleTier выше.
     const visibleTotal = Math.min(total, SINGLE_TIER_CAP);
     const results = filtered.slice(0, visibleTotal);
+    if (results.length) await addSingleSeen(env, ip, results.map((r) => r.id));
     if (queryFallback && token) await notifyFallbackOnce(env, token, { sheet, q, buyer_chat_id, buyer_label });
     return json({ total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results, queryFallback });
   }
@@ -464,6 +540,10 @@ async function addManualRecord(request, env) {
     categories: Array.isArray(body.categories) ? body.categories.filter((c) => typeof c === "string") : [],
     sectors: Array.isArray(body.sectors) ? body.sectors.filter((s) => typeof s === "string") : [],
     is_crypto: Boolean(body.is_crypto),
+    // Владелец добавляет эти записи целенаправленно под конкретный случай (обычно —
+    // после queryFallback), поэтому по умолчанию считаем их простыми/доступными для
+    // новичка, как посольские программы и госсоцзаказ — см. accessRank в search().
+    access_tier: body.access_tier === "standard" ? "standard" : "easy",
     source: "manual",
     added_at: new Date().toISOString(),
   };
