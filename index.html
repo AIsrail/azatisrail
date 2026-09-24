@@ -178,6 +178,34 @@
   </div>
 </section>
 
+<section class="sw" id="archive-full-section">
+  <div class="reveal"><div class="sec-tag">По коду доступа</div><h2 class="sec-ttl">Архив<br><em>публикаций</em></h2></div>
+  <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:560px;margin-top:16px;line-height:1.8">
+    339 реальных постов из истории Connect4Pro — гранты (бизнес и НКО отдельно), инвестиции, обучение. Тот же код доступа, что и для основной базы.
+  </p>
+  <div class="fs-bar">
+    <input class="fs-input" id="af-q" type="text" placeholder="Поиск по архиву публикаций…">
+    <select class="fs-select" id="af-category">
+      <option value="">Любая категория</option>
+      <option value="Гранты">Гранты</option>
+      <option value="Инвестиции">Инвестиции</option>
+      <option value="Обучение">Обучение</option>
+    </select>
+    <select class="fs-select" id="af-subcategory">
+      <option value="">Любая аудитория</option>
+      <option value="Бизнес">Бизнес</option>
+      <option value="НКО">НКО</option>
+      <option value="Бизнес + НКО">Бизнес + НКО</option>
+    </select>
+    <button class="fs-go" onclick="runArchiveFull(true)">Найти</button>
+  </div>
+  <div class="fs-count" id="af-count"></div>
+  <div class="fs-grid" id="af-grid"></div>
+  <div class="fs-more-row" id="af-more-row" style="display:none">
+    <button class="fs-more-btn" id="af-more-btn" onclick="loadMoreArchiveFull()">Показать ещё</button>
+  </div>
+</section>
+
 <section class="sw sw-alt" id="pricing">
   <div class="reveal"><div class="sec-tag">Доступ</div><h2 class="sec-ttl">Тарифы</h2></div>
   <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:560px;margin-top:16px;line-height:1.8">
@@ -291,6 +319,7 @@ function quickFilter(kind, value){
 function runAllSearches(reset){
   runArchiveSearch();
   runSearch(reset);
+  runArchiveFull(reset);
 }
 
 function initToken(){
@@ -319,6 +348,7 @@ function applyToken(){
   TOKEN = document.getElementById('fs-token').value.trim();
   localStorage.setItem('azat-funding-token', TOKEN);
   runSearch(true);
+  runArchiveFull(true);
 }
 
 async function runArchiveSearch(){
@@ -377,7 +407,7 @@ async function runSearch(reset){
 
   updateTokenStatus(data.tier, data.scope);
   ALL_LOADED = reset ? data.results : ALL_LOADED.concat(data.results);
-  renderGrid();
+  renderGrid(data.tier, data.total);
 
   const note = document.getElementById('access-note');
   if(data.tier === 'teaser' && data.total > 0){
@@ -399,10 +429,68 @@ function loadMore(){
   runSearch(false);
 }
 
-function renderGrid(){
+let AF_PAGE = 1;
+let AF_LOADED = [];
+
+async function runArchiveFull(reset){
+  if(reset){ AF_PAGE = 1; AF_LOADED = []; }
+  const q = document.getElementById('af-q').value.trim();
+  const category = document.getElementById('af-category').value;
+  const subcategory = document.getElementById('af-subcategory').value;
+  const params = new URLSearchParams({ page: String(AF_PAGE) });
+  if(q) params.set('q', q);
+  if(category) params.set('category', category);
+  if(subcategory) params.set('subcategory', subcategory);
+  if(TOKEN) params.set('token', TOKEN);
+
+  let data;
+  try{
+    const res = await fetch('/api/archive-full?' + params.toString());
+    data = await res.json();
+  }catch(e){
+    document.getElementById('af-more-row').style.display = 'none';
+    return;
+  }
+
+  AF_LOADED = reset ? data.results : AF_LOADED.concat(data.results);
+  const grid = document.getElementById('af-grid');
+  if(!AF_LOADED.length){
+    grid.innerHTML = data.tier === 'teaser' && data.total > 0
+      ? `<div class="no-results">🔒 ${data.total} совпадений в архиве публикаций — активируйте код доступа выше.</div>`
+      : '<div class="no-results">Ничего не найдено. Попробуйте другой запрос или снимите фильтры.</div>';
+  } else {
+    grid.innerHTML = AF_LOADED.map(r => {
+      const cat = r.subcategory ? `${escapeHtml(r.category)} / ${escapeHtml(r.subcategory)}` : escapeHtml(r.category||'');
+      return `<div class="fs-card">
+        <div class="fs-top-row"><span class="fs-section">${cat}</span></div>
+        <div class="fs-title">${escapeHtml(r.title||'')}</div>
+        <div class="fs-desc">${escapeHtml(r.excerpt||'')}</div>
+        ${r.url ? `<a class="fs-link" href="${escapeAttr(r.url)}" target="_blank" rel="noopener">Подробнее →</a>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('af-count').textContent = (data.tier !== 'teaser' && data.total)
+    ? `Совпадений: ${data.total}`
+    : '';
+  document.getElementById('af-more-row').style.display = data.hasMore ? 'block' : 'none';
+}
+
+function loadMoreArchiveFull(){
+  AF_PAGE += 1;
+  runArchiveFull(false);
+}
+
+function renderGrid(tier, total){
   const grid = document.getElementById('fs-grid');
   if(!ALL_LOADED.length){
-    grid.innerHTML = '<div class="no-results">Ничего не найдено. Попробуйте другой запрос или снимите фильтры.</div>';
+    if(tier === 'teaser' && total > 0){
+      grid.innerHTML = `<div class="no-results">🔒 ${total} совпадений скрыто — активируйте код доступа выше, чтобы увидеть их.</div>`;
+    } else if(tier === 'teaser'){
+      grid.innerHTML = '<div class="no-results">По этому запросу в базе ничего нет. Попробуйте другие слова — или загляните в примеры из архива выше.</div>';
+    } else {
+      grid.innerHTML = '<div class="no-results">Ничего не найдено. Попробуйте другой запрос или снимите фильтры.</div>';
+    }
     return;
   }
   grid.innerHTML = ALL_LOADED.map(r => {

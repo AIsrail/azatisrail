@@ -2,14 +2,15 @@
  * azatisrail.cc — единый Worker: отдаёт статику сайта (env.ASSETS) и API базы доноров (/api/*).
  * Полный массив записей никогда не уходит клиенту целиком — только отфильтрованная страница.
  *
- * Два независимых поиска:
- *  - /api/archive-search — бесплатно и без ограничений, по архиву уже опубликованных постов
- *    канала/страницы (KV-ключ "archive" в FUNDING_KV). Это уже публичный контент, поэтому
- *    ограничивать нечего — наоборот, чем больше показываем, тем больше доверия к самой базе.
- *  - /api/search — структурированная платная база (KV-ключ "records"). Без токена не отдаёт
- *    ни одной записи, только total (сколько совпадений) — весь смысл продукта в оплате.
- *    tier: full (обычный токен, весь массив постранично) | single (разовый токен, привязан
- *    к одному разделу scope.sheet — запрос клиента по sheet игнорируется, форсится scope.sheet).
+ * Три независимых поиска:
+ *  - /api/archive-search — бесплатно и без ограничений, 2-3 примера из архива уже
+ *    опубликованных постов канала/страницы (KV "archive" + живой запрос последних постов
+ *    FB). Публичный контент, ограничивать нечего — это тизер основной базы.
+ *  - /api/search — структурированная платная база (KV "records", 482 записи). Без токена
+ *    не отдаёт ни одной записи, только total. tier: full | single (разовый токен,
+ *    форсит scope.sheet — запрос клиента по sheet игнорируется).
+ *  - /api/archive-full — платный полный архив публикаций (KV "archive_full"), с категориями
+ *    (Гранты/Бизнес,НКО | Инвестиции | Обучение). Без токена — только total, как и /api/search.
  */
 
 import { handleTelegramWebhook } from "./telegram.js";
@@ -49,6 +50,9 @@ async function handleApi(request, env, url) {
     }
     if (url.pathname === "/api/archive-search" && request.method === "GET") {
       return await archiveSearch(env, url);
+    }
+    if (url.pathname === "/api/archive-full" && request.method === "GET") {
+      return await archiveFullSearch(env, url);
     }
     if (url.pathname === "/api/admin/tokens" && request.method === "GET") {
       const denied = requireAdmin(request, env);
@@ -145,6 +149,37 @@ async function archiveSearch(env, url) {
   const total = filtered.length;
   const results = filtered.slice(0, ARCHIVE_RESULTS_LIMIT);
   return json({ total, results });
+}
+
+async function archiveFullSearch(env, url) {
+  const q = (url.searchParams.get("q") || "").trim().toLowerCase();
+  const category = url.searchParams.get("category") || "";
+  const subcategory = url.searchParams.get("subcategory") || "";
+  const token = url.searchParams.get("token") || "";
+  const page = Math.max(1, parseInt(url.searchParams.get("page") || "1", 10) || 1);
+
+  const { tier } = await resolveAccess(env, token);
+  const all = (await env.FUNDING_KV.get("archive_full", "json")) || [];
+
+  let filtered = all;
+  if (category) filtered = filtered.filter((r) => r.category === category);
+  if (subcategory) filtered = filtered.filter((r) => r.subcategory === subcategory);
+  if (q) {
+    filtered = filtered.filter((r) => {
+      const hay = [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(q);
+    });
+  }
+  const total = filtered.length;
+
+  if (tier === "teaser") {
+    return json({ total, tier, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results: [] });
+  }
+
+  const start = (page - 1) * PAGE_SIZE_FULL;
+  const end = Math.min(start + PAGE_SIZE_FULL, total);
+  const results = start < total ? filtered.slice(start, end) : [];
+  return json({ total, tier, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results });
 }
 
 async function search(env, url) {
