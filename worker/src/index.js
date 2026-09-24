@@ -108,6 +108,46 @@ function matchesQuery(hay, q) {
   return words.every((w) => hay.includes(w));
 }
 
+const CRYPTO_QUERY_RE = /крипто|blockchain|блокчейн|биткоин|bitcoin|ethereum|эфириум|web3|nft|defi/i;
+
+// Целевой микс результатов: примерно 50% Кыргызстан / 30% региональные (ЦА) / 20% международные —
+// по просьбе владельца, чтобы местные и близкие возможности не терялись среди тысяч глобальных.
+// Крипто-специфичные записи скрываются, если явно не спросили про крипто (максимум 1, в конце).
+function rerankByRegion(records, q) {
+  const cryptoAllowed = CRYPTO_QUERY_RE.test(q || "");
+  const crypto = [];
+  const rest = [];
+  for (const r of records) {
+    if (r.is_crypto && !cryptoAllowed) crypto.push(r);
+    else rest.push(r);
+  }
+
+  const kg = rest.filter((r) => r.region === "kg");
+  const regional = rest.filter((r) => r.region === "regional");
+  const intl = rest.filter((r) => r.region !== "kg" && r.region !== "regional");
+
+  const buckets = [
+    { items: kg, weight: 5 },
+    { items: regional, weight: 3 },
+    { items: intl, weight: 2 },
+  ];
+  const cursors = buckets.map(() => 0);
+  const out = [];
+  let remaining = kg.length + regional.length + intl.length;
+  while (remaining > 0) {
+    for (let bi = 0; bi < buckets.length; bi++) {
+      const b = buckets[bi];
+      for (let k = 0; k < b.weight && cursors[bi] < b.items.length; k++) {
+        out.push(b.items[cursors[bi]]);
+        cursors[bi]++;
+        remaining--;
+      }
+    }
+  }
+  if (!cryptoAllowed && crypto.length) out.push(crypto[0]);
+  return out;
+}
+
 async function fetchRecentFbPosts(env) {
   if (!env.FB_PAGE_ID || !env.FB_PAGE_ACCESS_TOKEN) return [];
 
@@ -225,6 +265,7 @@ async function search(env, url, request) {
       return matchesQuery(hay, q);
     });
   }
+  filtered = rerankByRegion(filtered, q);
 
   const total = filtered.length;
 
