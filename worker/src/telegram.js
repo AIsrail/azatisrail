@@ -46,6 +46,68 @@ async function tg(env, method, params) {
   return res.json();
 }
 
+// Собственные/перекрёстные домены — не показывать как "ссылка на источник" в архиве.
+const HOUSE_DOMAINS = [
+  "t.me/connect4_pro",
+  "t.me/kginvest",
+  "t.me/bilim4kg",
+  "grantmanual.tilda.ws",
+  "pro4dev.tilda.ws",
+  "connect4funds.tilda.ws",
+  "connect4baza.tilda.ws",
+  "facebook.com/connect4kg",
+  "fund4.pro",
+  "fund4pro",
+  "azatisrail.cc",
+  "azatisrail.org",
+];
+
+const URL_RE = /https?:\/\/[^\s,;]+/gi;
+const TITLE_RE = /^👉\s*(.+?)\s*\n/;
+
+function extractTitle(text) {
+  const m = TITLE_RE.exec(text || "");
+  if (m) return m[1].trim();
+  const firstLine = (text || "").split("\n")[0].trim();
+  return firstLine ? firstLine.slice(0, 140) : null;
+}
+
+function extractSourceUrl(text) {
+  const urls = (text || "").match(URL_RE) || [];
+  const real = urls.filter((u) => !HOUSE_DOMAINS.some((d) => u.toLowerCase().includes(d)));
+  return real[0] || null;
+}
+
+function extractExcerpt(text) {
+  let body = (text || "").replace(/^👉[^\n]*\n/, "");
+  const parts = body.split("\n\n");
+  body = parts.length > 1 ? parts.slice(1).join("\n\n") : body;
+  body = body.replace(/\s*---\s*/g, " ").replace(/\s+/g, " ").trim();
+  return body.slice(0, 260);
+}
+
+async function handleChannelPost(env, post) {
+  const text = post.text || post.caption || "";
+  const title = extractTitle(text);
+  if (!title) return;
+  const sourceUrl = extractSourceUrl(text);
+  const username = post.chat && post.chat.username;
+  const tgUrl = username && post.message_id ? `https://t.me/${username}/${post.message_id}` : null;
+  const url = sourceUrl || tgUrl;
+  if (!url) return;
+
+  const archive = (await env.FUNDING_KV.get("archive", "json")) || [];
+  const entry = {
+    date: new Date().toISOString().slice(0, 10),
+    title,
+    excerpt: extractExcerpt(text),
+    url,
+    tg_url: tgUrl,
+  };
+  archive.unshift(entry);
+  await env.FUNDING_KV.put("archive", JSON.stringify(archive));
+}
+
 function genId(len = 8) {
   const bytes = crypto.getRandomValues(new Uint8Array(len));
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -245,6 +307,8 @@ export async function handleTelegramWebhook(request, env) {
   try {
     if (update.callback_query) {
       const cb = update.callback_query;
+      // Кнопки — только в личке бота, никогда в группах/каналах, где он тоже может быть админом.
+      if (!cb.message || !cb.message.chat || cb.message.chat.type !== "private") return new Response("ok");
       const chatId = cb.message.chat.id;
       const data = cb.data || "";
       if (data.startsWith("tariff:")) {
@@ -259,8 +323,20 @@ export async function handleTelegramWebhook(request, env) {
       return new Response("ok");
     }
 
+    if (update.channel_post) {
+      // Захватываем посты только из своего канала connect4_pro — не из любого чата, где бот админ.
+      const chat = update.channel_post.chat;
+      if (chat && chat.username && chat.username.toLowerCase() === "connect4_pro") {
+        await handleChannelPost(env, update.channel_post);
+      }
+      return new Response("ok");
+    }
+
     const message = update.message;
     if (!message) return new Response("ok");
+    // Платёжный флоу — только личка с ботом. Никаких ответов в группах/каналах,
+    // где бот тоже состоит (например, другие Tg-группы, где он админ по другой причине).
+    if (!message.chat || message.chat.type !== "private") return new Response("ok");
     const chatId = message.chat.id;
     const text = (message.text || "").trim();
 

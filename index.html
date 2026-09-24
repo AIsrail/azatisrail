@@ -17,7 +17,7 @@
 <meta name="twitter:description" content="468 доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии.">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Connect4Pro — база доноров","url":"https://azatisrail.cc/","description":"Поисковая база доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии.","publisher":{"@type":"Organization","name":"Connect4Pro","founder":{"@type":"Person","name":"Азат Исраилов","url":"https://azatisrail.org"},"url":"https://azatisrail.cc","sameAs":["https://azatisrail.org","https://www.facebook.com/connect4kg","https://t.me/connect4_pro"]},"potentialAction":{"@type":"SearchAction","target":"https://azatisrail.cc/?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"База доноров, инвесторов и грантов Connect4Pro","description":"468 записей: доноры и гранты, международные и местные инвесторы, акселераторы, финансы для МСБ Кыргызстана, социальные доноры, стажировки и стипендии.","keywords":["гранты","доноры","инвесторы","акселераторы","фандрайзинг","Кыргызстан","Центральная Азия","НКО","стартапы"],"creator":{"@type":"Organization","name":"Connect4Pro"},"license":"https://azatisrail.cc/#pricing"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Что входит в базу доноров?","acceptedAnswer":{"@type":"Answer","text":"468 записей: международные и местные доноры и гранты, инвесторы (международные и в Кыргызстане), акселераторы, программы финансирования МСБ в КР, социальные доноры, стажировки и стипендии."}},{"@type":"Question","name":"Сколько стоит доступ к базе доноров?","acceptedAnswer":{"@type":"Answer","text":"Без оплаты доступна бесплатная выборка результатов по каждому запросу. Полный доступ — от 1900 сом (Базовая), 4900 сом (Стандартная, с пособиями) или 8900 сом (Полноценная, с консультацией). Есть разовый доступ к одному разделу базы за 200 сом."}},{"@type":"Question","name":"Как получить доступ после оплаты?","acceptedAnswer":{"@type":"Answer","text":"Оплата и выдача кода проходят в Telegram-боте @c4faq_bot: выбираете тариф, оплачиваете и присылаете чек, бот сам присылает код доступа после подтверждения. Код активируется прямо на странице поиска."}},{"@type":"Question","name":"Как часто обновляется база?","acceptedAnswer":{"@type":"Answer","text":"База основана на 15-летнем практическом опыте фандрайзинга Азата Исраилова и регулярно пополняется новыми донорами, инвесторами и программами."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Что входит в базу доноров?","acceptedAnswer":{"@type":"Answer","text":"468 записей: международные и местные доноры и гранты, инвесторы (международные и в Кыргызстане), акселераторы, программы финансирования МСБ в КР, социальные доноры, стажировки и стипендии."}},{"@type":"Question","name":"Сколько стоит доступ к базе доноров?","acceptedAnswer":{"@type":"Answer","text":"Без оплаты доступен бесплатный поиск по архиву публикаций Connect4Pro (примеры, не гарантия точного совпадения). Полный доступ к структурированной базе — от 1900 сом (Базовая), 4900 сом (Стандартная, с пособиями) или 8900 сом (Полноценная, с консультацией). Есть разовый доступ к одному разделу базы за 200 сом."}},{"@type":"Question","name":"Как получить доступ после оплаты?","acceptedAnswer":{"@type":"Answer","text":"Оплата и выдача кода проходят в Telegram-боте @c4faq_bot: выбираете тариф, оплачиваете и присылаете чек, бот сам присылает код доступа после подтверждения. Код активируется прямо на странице поиска."}},{"@type":"Question","name":"Как часто обновляется база?","acceptedAnswer":{"@type":"Answer","text":"База основана на 15-летнем практическом опыте фандрайзинга Азата Исраилова и регулярно пополняется новыми донорами, инвесторами и программами."}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
@@ -119,7 +119,7 @@
   <p class="db-desc">468 грантов, инвесторов, акселераторов и программ поддержки для бизнеса и НКО в Кыргызстане и Центральной Азии.</p>
   <div class="db-search">
     <input id="fs-q" type="text" placeholder="Например: гранты для НКО в сфере экологии">
-    <button onclick="runSearch(true)">Найти</button>
+    <button onclick="runAllSearches(true)">Найти</button>
   </div>
   <div class="db-chips">
     <button class="db-chip" onclick="quickFilter('category','business')">Бизнес</button>
@@ -161,10 +161,13 @@
     </select>
   </div>
 
+  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:8px 0 12px">Бесплатно — из архива публикаций Connect4Pro</div>
+  <div class="fs-grid" id="archive-grid"></div>
+
   <div id="access-note" class="note-bar" style="display:none"></div>
 
   <div class="token-row">
-    <span class="token-status" id="token-status">Бесплатный доступ — показываем ограниченную выборку.</span>
+    <span class="token-status" id="token-status">Полная база — по коду доступа.</span>
     <input type="text" id="fs-token" placeholder="Код доступа">
     <button onclick="applyToken()">Активировать</button>
   </div>
@@ -179,7 +182,7 @@
 <section class="sw sw-alt" id="pricing">
   <div class="reveal"><div class="sec-tag">Доступ</div><h2 class="sec-ttl">Тарифы</h2></div>
   <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:560px;margin-top:16px;line-height:1.8">
-    Бесплатно доступна ограниченная выборка результатов. Оплатите один из вариантов ниже в Telegram-боте @c4faq_bot и получите код доступа.
+    Бесплатно доступны примеры из архива публикаций (см. выше). Структурированная база с фильтрами, суммами и дедлайнами — по коду доступа: оплатите один из вариантов ниже в Telegram-боте @c4faq_bot.
   </p>
   <div class="pricing-g">
     <div class="price-card">
@@ -282,8 +285,13 @@ let ALL_LOADED = [];
 function quickFilter(kind, value){
   if(kind === 'q'){ document.getElementById('fs-q').value = value; }
   if(kind === 'category'){ document.getElementById('fs-category').value = value; }
-  runSearch(true);
+  runAllSearches(true);
   document.getElementById('search').scrollIntoView({behavior:'smooth'});
+}
+
+function runAllSearches(reset){
+  runArchiveSearch();
+  runSearch(reset);
 }
 
 function initToken(){
@@ -300,10 +308,10 @@ function updateTokenStatus(tier, scope){
     el.textContent = 'Разовый доступ активен — только раздел «' + (scope && scope.sheet || '') + '».';
     el.classList.add('unlocked');
   } else {
-    el.textContent = 'Бесплатный доступ — показываем ограниченную выборку.';
+    el.textContent = 'Полная база — по коду доступа.';
     el.classList.remove('unlocked');
     if(TOKEN){
-      el.textContent = 'Код не найден или истёк — показываем бесплатную выборку.';
+      el.textContent = 'Код не найден или истёк.';
     }
   }
 }
@@ -312,6 +320,37 @@ function applyToken(){
   TOKEN = document.getElementById('fs-token').value.trim();
   localStorage.setItem('azat-funding-token', TOKEN);
   runSearch(true);
+}
+
+async function runArchiveSearch(){
+  const q = document.getElementById('fs-q').value.trim();
+  const grid = document.getElementById('archive-grid');
+  const params = new URLSearchParams();
+  if(q) params.set('q', q);
+  let data;
+  try{
+    const res = await fetch('/api/archive-search?' + params.toString());
+    data = await res.json();
+  }catch(e){
+    grid.innerHTML = '';
+    return;
+  }
+  const items = data.results || [];
+  const cards = items.map(r => `<div class="fs-card">
+      <div class="fs-top-row"><span class="fs-section">Из архива публикаций</span></div>
+      <div class="fs-title">${escapeHtml(r.title||'')}</div>
+      <div class="fs-desc">${escapeHtml(r.excerpt||'')}</div>
+      ${r.url ? `<a class="fs-link" href="${escapeAttr(r.url)}" target="_blank" rel="noopener">Подробнее →</a>` : ''}
+    </div>`);
+  cards.push(`<div class="fs-card" style="background:var(--sect)">
+      <div class="fs-top-row"><span class="fs-section">Полная база</span></div>
+      <div class="fs-title">Возможно, более подходящий вариант есть в базе</div>
+      <div class="fs-desc">В структурированной базе Connect4Pro — 468 доноров, инвесторов и программ с суммами, дедлайнами и фильтрами по разделам. Архив постов выше — лишь примеры, не гарантия точного совпадения.</div>
+      <a class="fs-link" href="#pricing">Открыть доступ →</a>
+    </div>`);
+  grid.innerHTML = items.length
+    ? cards.join('')
+    : `<div class="no-results">По этому запросу в архиве публикаций пока пусто.</div>` + cards[cards.length-1];
 }
 
 async function runSearch(reset){
@@ -326,16 +365,13 @@ async function runSearch(reset){
   if(TOKEN) params.set('token', TOKEN);
 
   const grid = document.getElementById('fs-grid');
-  if(reset) grid.innerHTML = '<div class="no-results">Ищем…</div>';
+  if(reset) grid.innerHTML = '';
 
   let data;
   try{
-    const testBypass = localStorage.getItem('azat-test-bypass');
-    const fetchOpts = testBypass ? { headers: { 'X-Test-Bypass': testBypass } } : {};
-    const res = await fetch('/api/search?' + params.toString(), fetchOpts);
+    const res = await fetch('/api/search?' + params.toString());
     data = await res.json();
   }catch(e){
-    grid.innerHTML = '<div class="no-results">Поиск временно недоступен, попробуйте обновить страницу.</div>';
     document.getElementById('fs-more-row').style.display = 'none';
     return;
   }
@@ -345,17 +381,14 @@ async function runSearch(reset){
   renderGrid();
 
   const note = document.getElementById('access-note');
-  if(data.quotaExhausted){
+  if(data.tier === 'teaser' && data.total > 0){
     note.style.display = 'block';
-    note.innerHTML = `Бесплатный лимит просмотров на сегодня исчерпан. Возвращайтесь завтра или откройте полный доступ. <a href="#pricing">Тарифы →</a>`;
-  } else if(data.tier === 'teaser' && data.total > data.visibleTotal){
-    note.style.display = 'block';
-    note.innerHTML = `Показано ${data.visibleTotal} из ${data.total} совпадений. <a href="#pricing">Открыть полный доступ →</a>`;
+    note.innerHTML = `В базе ${data.total} совпадений — введите код доступа или <a href="#pricing">выберите тариф →</a>`;
   } else {
     note.style.display = 'none';
   }
 
-  document.getElementById('fs-count').textContent = data.total
+  document.getElementById('fs-count').textContent = (data.tier !== 'teaser' && data.total)
     ? `Совпадений: ${data.total}`
     : '';
 
@@ -395,7 +428,7 @@ function escapeHtml(s){
 }
 function escapeAttr(s){ return escapeHtml(s); }
 
-document.getElementById('fs-q').addEventListener('keydown', e => { if(e.key === 'Enter') runSearch(true); });
+document.getElementById('fs-q').addEventListener('keydown', e => { if(e.key === 'Enter') runAllSearches(true); });
 
 async function loadAndInit() {
   let evData = [], pubData = [];
@@ -434,9 +467,7 @@ initToken();
 const urlParams = new URLSearchParams(location.search);
 const urlQ = urlParams.get('q');
 if(urlQ){ document.getElementById('fs-q').value = urlQ; }
-const testKey = urlParams.get('testkey');
-if(testKey){ localStorage.setItem('azat-test-bypass', testKey); }
-runSearch(true);
+runAllSearches(true);
 </script>
 </body>
 </html>
