@@ -89,6 +89,13 @@ async function resolveAccess(env, token) {
   return { tier: "full", scope: null };
 }
 
+// Многословный запрос ("гранты нко климат") должен требовать все слова где-то в тексте,
+// а не точное совпадение всей фразы подряд — иначе такой запрос никогда ничего не найдёт.
+function matchesQuery(hay, q) {
+  const words = q.split(/\s+/).filter(Boolean);
+  return words.every((w) => hay.includes(w));
+}
+
 async function fetchRecentFbPosts(env) {
   if (!env.FB_PAGE_ID || !env.FB_PAGE_ACCESS_TOKEN) return [];
 
@@ -143,7 +150,7 @@ async function archiveSearch(env, url) {
   if (q) {
     filtered = merged.filter((r) => {
       const hay = [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
-      return hay.includes(q);
+      return matchesQuery(hay, q);
     });
   }
   const total = filtered.length;
@@ -167,7 +174,7 @@ async function archiveFullSearch(env, url) {
   if (q) {
     filtered = filtered.filter((r) => {
       const hay = [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
-      return hay.includes(q);
+      return matchesQuery(hay, q);
     });
   }
   const total = filtered.length;
@@ -199,7 +206,7 @@ async function search(env, url) {
   if (q) {
     filtered = filtered.filter((r) => {
       const hay = [r.name, r.description, r.amount, (r.sectors || []).join(" ")].filter(Boolean).join(" ").toLowerCase();
-      return hay.includes(q);
+      return matchesQuery(hay, q);
     });
   }
 
