@@ -31,16 +31,13 @@
 .db-search{display:flex;max-width:540px;margin:0 auto 16px;border:1.5px solid var(--sap);border-radius:2px;overflow:hidden}
 .db-search input{flex:1;border:none;padding:14px 16px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white)}
 .db-search input:focus{outline:none}
-.db-search button{background:var(--sap);color:#fff;border:none;padding:0 26px;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s}
+.db-search button{background:var(--sap);color:#fff;border:none;padding:0 26px;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s,transform .1s}
 .db-search button:hover{background:var(--sap2)}
+.db-search button:active{transform:scale(.96)}
+.db-search button:disabled{opacity:.7;cursor:default}
 .db-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .db-chip{font-size:11px;letter-spacing:.04em;border:1px solid var(--border);border-radius:20px;padding:6px 14px;color:var(--mid);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
 .db-chip:hover,.db-chip.active{border-color:var(--sap);color:var(--sap)}
-.db-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:0.5px solid var(--border);background:var(--white)}
-.db-stat{text-align:center;padding:20px 8px;border-right:0.5px solid var(--border)}
-.db-stat:last-child{border-right:none}
-.db-stat-val{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--sap)}
-.db-stat-lbl{font-size:10px;color:var(--muted);letter-spacing:.04em;margin-top:2px}
 .db-origin{padding:22px 24px;font-size:13px;color:var(--mid);line-height:1.8;text-align:center;max-width:640px;margin:0 auto;border-bottom:0.5px solid var(--border)}
 .db-origin a{color:var(--sap)}
 .fs-bar{display:flex;gap:10px;flex-wrap:wrap;margin:36px 0 18px;align-items:center}
@@ -85,7 +82,7 @@
 .faq-a{font-size:13.5px;color:var(--mid);line-height:1.7;font-weight:300}
 .about-box{max-width:640px;margin:0 auto;text-align:center;font-size:13.5px;color:var(--mid);line-height:1.85}
 .about-box a{color:var(--sap)}
-@media(max-width:1100px){.fs-grid{grid-template-columns:1fr}.pricing-g{grid-template-columns:1fr 1fr}.db-stats{grid-template-columns:1fr 1fr}}
+@media(max-width:1100px){.fs-grid{grid-template-columns:1fr}.pricing-g{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.pricing-g{grid-template-columns:1fr}}
 </style>
 </head>
@@ -119,7 +116,7 @@
   <p class="db-desc">482 грантов, инвесторов, акселераторов и программ поддержки для бизнеса и НКО в Кыргызстане и Центральной Азии.</p>
   <div class="db-search">
     <input id="fs-q" type="text" placeholder="Например: гранты для НКО в сфере экологии">
-    <button onclick="runAllSearches(true)">Найти</button>
+    <button id="db-search-btn" onclick="runAllSearches(true)">Найти</button>
   </div>
   <div class="db-chips">
     <button class="db-chip" onclick="quickFilter('category','business')">Бизнес</button>
@@ -130,12 +127,10 @@
   </div>
 </section>
 
-<div class="db-stats">
-  <div class="db-stat"><div class="db-stat-val">482</div><div class="db-stat-lbl">возможностей</div></div>
-  <div class="db-stat"><div class="db-stat-val">6</div><div class="db-stat-lbl">разделов базы</div></div>
-  <div class="db-stat"><div class="db-stat-val">15 лет</div><div class="db-stat-lbl">опыта в отборе</div></div>
-  <div class="db-stat"><div class="db-stat-val">КР + мир</div><div class="db-stat-lbl">охват</div></div>
-</div>
+<section class="sw">
+  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px">Бесплатно — из архива публикаций Connect4Pro</div>
+  <div class="fs-grid" id="archive-grid"></div>
+</section>
 
 <div class="db-origin">
   Проект вырос из каталога <a href="https://connect4baza.tilda.ws/" target="_blank">connect4baza.tilda.ws</a> и практического опыта фандрайзинга <a href="https://azatisrail.org" target="_blank">Азата Исраилова</a> — консультанта, тренера и основателя Connect4Pro.
@@ -159,9 +154,6 @@
       <option value="Стажировки и стипендии">Стажировки и стипендии</option>
     </select>
   </div>
-
-  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:8px 0 12px">Бесплатно — из архива публикаций Connect4Pro</div>
-  <div class="fs-grid" id="archive-grid"></div>
 
   <div id="access-note" class="note-bar" style="display:none"></div>
 
@@ -316,10 +308,15 @@ function quickFilter(kind, value){
   document.getElementById('search').scrollIntoView({behavior:'smooth'});
 }
 
-function runAllSearches(reset){
-  runArchiveSearch();
-  runSearch(reset);
-  runArchiveFull(reset);
+async function runAllSearches(reset){
+  const btn = document.getElementById('db-search-btn');
+  const originalLabel = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.textContent = 'Ищем…'; }
+  try{
+    await Promise.all([runArchiveSearch(), runSearch(reset), runArchiveFull(reset)]);
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = originalLabel; }
+  }
 }
 
 function initToken(){

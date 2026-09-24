@@ -103,14 +103,18 @@ async function fetchRecentFbPosts(env) {
   if (cached) return cached;
 
   try {
-    const apiUrl = `https://graph.facebook.com/v19.0/${env.FB_PAGE_ID}/posts?fields=message,created_time,permalink_url&limit=25&access_token=${env.FB_PAGE_ACCESS_TOKEN}`;
+    // limit=50 — чем шире окно, тем меньше риск потерять тематический пост, если с момента
+    // публикации вышло много постов на другие темы.
+    const apiUrl = `https://graph.facebook.com/v19.0/${env.FB_PAGE_ID}/posts?fields=message,created_time,permalink_url&limit=50&access_token=${env.FB_PAGE_ACCESS_TOKEN}`;
     const res = await fetch(apiUrl);
     const data = await res.json();
     const posts = (data.data || [])
       .map((p) => {
         const title = extractTitle(p.message);
         if (!title) return null;
-        const url = extractSourceUrl(p.message) || p.permalink_url || null;
+        // Ссылка ведёт на сам пост на странице FB (не на внешний сайт донора) — держит
+        // трафик и вовлечённость на странице Connect4Pro, а не уводит с неё сразу.
+        const url = p.permalink_url || extractSourceUrl(p.message) || null;
         if (!url) return null;
         return {
           date: (p.created_time || "").slice(0, 10),
