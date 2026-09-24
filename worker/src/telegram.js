@@ -12,6 +12,7 @@
  */
 
 import { issueTokenRecord } from "./index.js";
+import { extractTitle, extractSourceUrl, extractExcerpt } from "./extract.js";
 
 const PAY_REQUISITES = "MBank или О!Деньги: 0702 271 827";
 
@@ -29,7 +30,6 @@ const SHEETS = [
   { value: "Инвесторы КР", label: "Инвесторы — в Кыргызстане" },
   { value: "Финансы МСБ КР", label: "Финансирование для МСБ в Кыргызстане (кредиты, льготы)" },
   { value: "Акселераторы и др.", label: "Акселераторы и центры поддержки бизнеса" },
-  { value: "Социальные доноры", label: "Доноры социальных и НКО-проектов" },
   { value: "Стажировки и стипендии", label: "Стажировки и стипендии (для специалистов)" },
 ];
 
@@ -44,46 +44,6 @@ async function tg(env, method, params) {
     body: JSON.stringify(params),
   });
   return res.json();
-}
-
-// Собственные/перекрёстные домены — не показывать как "ссылка на источник" в архиве.
-const HOUSE_DOMAINS = [
-  "t.me/connect4_pro",
-  "t.me/kginvest",
-  "t.me/bilim4kg",
-  "grantmanual.tilda.ws",
-  "pro4dev.tilda.ws",
-  "connect4funds.tilda.ws",
-  "connect4baza.tilda.ws",
-  "facebook.com/connect4kg",
-  "fund4.pro",
-  "fund4pro",
-  "azatisrail.cc",
-  "azatisrail.org",
-];
-
-const URL_RE = /https?:\/\/[^\s,;]+/gi;
-const TITLE_RE = /^👉\s*(.+?)\s*\n/;
-
-function extractTitle(text) {
-  const m = TITLE_RE.exec(text || "");
-  if (m) return m[1].trim();
-  const firstLine = (text || "").split("\n")[0].trim();
-  return firstLine ? firstLine.slice(0, 140) : null;
-}
-
-function extractSourceUrl(text) {
-  const urls = (text || "").match(URL_RE) || [];
-  const real = urls.filter((u) => !HOUSE_DOMAINS.some((d) => u.toLowerCase().includes(d)));
-  return real[0] || null;
-}
-
-function extractExcerpt(text) {
-  let body = (text || "").replace(/^👉[^\n]*\n/, "");
-  const parts = body.split("\n\n");
-  body = parts.length > 1 ? parts.slice(1).join("\n\n") : body;
-  body = body.replace(/\s*---\s*/g, " ").replace(/\s+/g, " ").trim();
-  return body.slice(0, 260);
 }
 
 async function handleChannelPost(env, post) {
@@ -164,7 +124,7 @@ async function handleStart(env, chatId) {
   await clearPending(env, chatId);
   await tg(env, "sendMessage", {
     chat_id: chatId,
-    text: greeting() + "468 возможностей для бизнеса и НКО. Выберите тариф, чтобы получить код доступа:",
+    text: greeting() + "482 возможностей для бизнеса и НКО. Выберите тариф, чтобы получить код доступа:",
     reply_markup: tariffKeyboard(),
   });
 }

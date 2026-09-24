@@ -13,9 +13,11 @@
  */
 
 import { handleTelegramWebhook } from "./telegram.js";
+import { extractTitle, extractSourceUrl, extractExcerpt } from "./extract.js";
 
 const PAGE_SIZE_FULL = 15;
 const ARCHIVE_RESULTS_LIMIT = 3;
+const FB_CACHE_TTL = 900; // 15 минут — свежие посты подтягиваются быстро, но не на каждый запрос
 
 export default {
   async fetch(request, env) {
@@ -83,17 +85,63 @@ async function resolveAccess(env, token) {
   return { tier: "full", scope: null };
 }
 
+async function fetchRecentFbPosts(env) {
+  if (!env.FB_PAGE_ID || !env.FB_PAGE_ACCESS_TOKEN) return [];
+
+  const cached = await env.FUNDING_KV.get("fb_recent_cache", "json");
+  if (cached) return cached;
+
+  try {
+    const apiUrl = `https://graph.facebook.com/v19.0/${env.FB_PAGE_ID}/posts?fields=message,created_time,permalink_url&limit=25&access_token=${env.FB_PAGE_ACCESS_TOKEN}`;
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    const posts = (data.data || [])
+      .map((p) => {
+        const title = extractTitle(p.message);
+        if (!title) return null;
+        const url = extractSourceUrl(p.message) || p.permalink_url || null;
+        if (!url) return null;
+        return {
+          date: (p.created_time || "").slice(0, 10),
+          title,
+          excerpt: extractExcerpt(p.message),
+          url,
+        };
+      })
+      .filter(Boolean);
+    // Короткий кэш — не дёргаем Graph API на каждый отдельный поиск.
+    await env.FUNDING_KV.put("fb_recent_cache", JSON.stringify(posts), { expirationTtl: FB_CACHE_TTL });
+    return posts;
+  } catch (e) {
+    return [];
+  }
+}
+
 async function archiveSearch(env, url) {
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
-  const all = (await env.FUNDING_KV.get("archive", "json")) || [];
-  let filtered = all;
+
+  const [stored, recent] = await Promise.all([
+    env.FUNDING_KV.get("archive", "json"),
+    fetchRecentFbPosts(env),
+  ]);
+
+  const seenTitles = new Set();
+  const merged = [];
+  for (const r of recent.concat(stored || [])) {
+    const key = (r.title || "").trim().toLowerCase();
+    if (!key || seenTitles.has(key)) continue;
+    seenTitles.add(key);
+    merged.push(r);
+  }
+  merged.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+
+  let filtered = merged;
   if (q) {
-    filtered = all.filter((r) => {
+    filtered = merged.filter((r) => {
       const hay = [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
       return hay.includes(q);
     });
   }
-  // Архив уже отсортирован по дате (новые первые) при сборке индекса.
   const total = filtered.length;
   const results = filtered.slice(0, ARCHIVE_RESULTS_LIMIT);
   return json({ total, results });
