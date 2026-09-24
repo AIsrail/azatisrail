@@ -260,6 +260,38 @@ function rankForSingleTier(records, seenIds, scoreById) {
   return arr;
 }
 
+// Топ-N по чистому скору часто скучивается в одной узкой группе (например, несколько местных
+// благотворительных фондов одного типа) — покупатель получает не "5 вариантов", а "1 вариант
+// 5 раз". group = регион + уровень доступа (это уже разделяет, например, местные религиозные
+// фонды от посольских программ, хотя оба региона "kg"). Не более cap-2 подряд из одной
+// группы — но только если есть чем разбавить; если разнообразия в самих данных нет,
+// оставшиеся слоты всё равно заполняются лучшими по скору, а не пустуют.
+function diversifyTop(ranked, cap) {
+  const maxSameGroup = Math.max(1, cap - 2);
+  const groupOf = (r) => `${r.region || "international"}:${r.access_tier || "standard"}`;
+  const counts = {};
+  const picked = [];
+  const deferred = [];
+  for (const r of ranked) {
+    if (picked.length >= cap) {
+      deferred.push(r);
+      continue;
+    }
+    const key = groupOf(r);
+    if ((counts[key] || 0) < maxSameGroup) {
+      picked.push(r);
+      counts[key] = (counts[key] || 0) + 1;
+    } else {
+      deferred.push(r);
+    }
+  }
+  for (const r of deferred) {
+    if (picked.length >= cap) break;
+    picked.push(r);
+  }
+  return picked;
+}
+
 async function fetchRecentFbPosts(env) {
   if (!env.FB_PAGE_ID || !env.FB_PAGE_ACCESS_TOKEN) return [];
 
@@ -466,9 +498,11 @@ async function search(env, url, request) {
 
   if (tier === "single") {
     // Разовый токен — не весь раздел (несправедливо: одни разделы в разы больше других),
-    // а до SINGLE_TIER_CAP лучших совпадений, отранжированных rankForSingleTier выше.
+    // а до SINGLE_TIER_CAP лучших совпадений, отранжированных rankForSingleTier и
+    // разбавленных diversifyTop — иначе топ-5 может оказаться "1 вариант 5 раз"
+    // (например, несколько местных фондов одного типа), а не ассорти.
     const visibleTotal = Math.min(total, SINGLE_TIER_CAP);
-    const results = filtered.slice(0, visibleTotal);
+    const results = diversifyTop(filtered, visibleTotal);
     if (results.length) await addSingleSeen(env, ip, results.map((r) => r.id));
     if (queryFallback && token) await notifyFallbackOnce(env, token, { sheet, q, buyer_chat_id, buyer_label });
     return json({ total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results, queryFallback });
