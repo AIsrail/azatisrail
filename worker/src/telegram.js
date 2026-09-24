@@ -33,6 +33,34 @@ const SHEETS = [
   { value: "Стажировки и стипендии", label: "Стажировки и стипендии (для специалистов)" },
 ];
 
+// Те же темы, что используются для секторных тегов в основной базе — так свободный
+// текст покупателя ложится на ту же систему, что уже размечает записи.
+const SECTOR_KW = [
+  ["Технологии/ИИ", /\b(ии|ai\b|искусственн\w* интеллект|цифров\w* эконом|data\b|кибер|программн\w* обеспечен|deep ?tech|хакатон)/i],
+  ["Климат/экология", /клима|эколог|устойчив\w* развит|зелён|зелен\w+ (энерг|финанс|техн)|выброс|природн\w* (наслед|решен)|биоразнообраз|возобновляем\w* энерг/i],
+  ["Здравоохранение", /здравоохран|медицин\w*|пациент/i],
+  ["Образование", /образовательн|edtech|школ\w*|студент\w*|высш\w* образован/i],
+  ["Женщины/гендер", /женщин|гендер\w*|девуш\w*|women\b/i],
+  ["Сельское хозяйство", /сельск\w* хозяйств|агро[а-я]*|фермер|продовольств/i],
+  ["Права человека/демократия", /демократ|прав\w* человека|гражданск\w* обществ|миграц|конфликт/i],
+  ["Медиа/журналистика", /журналист|медиа\b|сми\b|расследовательск/i],
+  ["Бизнес/МСБ", /стартап|предпринимат|мсб\b|малого и среднего бизнеса|бизнес-|венчур/i],
+];
+
+const SKIP_HINT_RE = /^(-|пропустить|нет|skip)$/i;
+
+// Короткий текст (пара слов) — используем как есть. Длинный (скопированное описание
+// организации) — вытаскиваем из него узнаваемые темы, чтобы не искать по всему абзацу
+// буквально (это почти никогда не совпадёт с текстом записи в базе).
+function distillHint(text) {
+  const trimmed = (text || "").trim();
+  if (!trimmed || SKIP_HINT_RE.test(trimmed)) return null;
+  if (trimmed.length <= 60) return trimmed;
+  const found = SECTOR_KW.filter(([, re]) => re.test(trimmed)).map(([label]) => label);
+  if (found.length) return found[0];
+  return trimmed.slice(0, 60);
+}
+
 function tgApi(env) {
   return `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
 }
@@ -158,8 +186,30 @@ async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
   const pending = await getPending(env, chatId);
   const price = (pending && pending.price) || "200 сом";
   const tariffLabel = (pending && pending.tariffLabel) || "Разовый доступ (1 раздел)";
-  await setPending(env, chatId, { step: "await_receipt", tariffId: "single", tariffLabel, price, sheet: sheet.value, sheetLabel: sheet.label });
-  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(tariffLabel, price, sheet.label) });
+  await setPending(env, chatId, { step: "awaiting_hint", tariffId: "single", tariffLabel, price, sheet: sheet.value, sheetLabel: sheet.label });
+  await tg(env, "sendMessage", {
+    chat_id: chatId,
+    text:
+      `Раздел «${sheet.label}» выбран.\n\n` +
+      `Разовый доступ показывает только 3 записи, поэтому напишите, что именно ищете — ` +
+      `несколько ключевых слов (например: «климат НКО») или подробнее об организации/проекте ` +
+      `(можно скопировать текст, до 1 страницы) — чем точнее опишете, тем точнее подбор.\n\n` +
+      `Если пропустить этот шаг — отправьте «-».`,
+  });
+}
+
+async function handleHintReply(env, message) {
+  const chatId = message.chat.id;
+  const pending = await getPending(env, chatId);
+  const raw = (message.text || "").trim().slice(0, 4000);
+  const hint = distillHint(raw);
+  await setPending(env, chatId, {
+    ...pending,
+    step: "await_receipt",
+    hintRaw: raw || null,
+    hint,
+  });
+  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(pending.tariffLabel, pending.price, pending.sheetLabel) });
 }
 
 async function handleReceiptPhoto(env, message) {
@@ -189,6 +239,8 @@ async function handleReceiptPhoto(env, message) {
       price: pending.price,
       sheet: pending.sheet || null,
       sheetLabel: pending.sheetLabel || null,
+      hint: pending.hint || null,
+      hintRaw: pending.hintRaw || null,
       created_at: new Date().toISOString(),
     }),
     { expirationTtl: 86400 }
@@ -197,7 +249,7 @@ async function handleReceiptPhoto(env, message) {
   await tg(env, "forwardMessage", { chat_id: admin.chat_id, from_chat_id: chatId, message_id: message.message_id });
   await tg(env, "sendMessage", {
     chat_id: admin.chat_id,
-    text: `Новый чек от ${buyerLabel}\nТариф: ${pending.tariffLabel} — ${pending.price}${pending.sheetLabel ? "\nРаздел: " + pending.sheetLabel : ""}\nЗаявка: ${requestId}`,
+    text: `Новый чек от ${buyerLabel}\nТариф: ${pending.tariffLabel} — ${pending.price}${pending.sheetLabel ? "\nРаздел: " + pending.sheetLabel : ""}${pending.hintRaw ? "\nЗапрос: " + pending.hintRaw.slice(0, 300) : ""}\nЗаявка: ${requestId}`,
     reply_markup: {
       inline_keyboard: [
         [
@@ -239,7 +291,7 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
     return;
   }
 
-  const scope = req.sheet ? { sheet: req.sheet } : null;
+  const scope = req.sheet ? { sheet: req.sheet, hint: req.hint || undefined } : null;
   const tokenRec = await issueTokenRecord(env, {
     tier: req.tariffId,
     scope,
@@ -299,8 +351,11 @@ export async function handleTelegramWebhook(request, env) {
     if (!message.chat || message.chat.type !== "private") return new Response("ok");
     const chatId = message.chat.id;
     const text = (message.text || "").trim();
+    const pendingForHint = text && !text.startsWith("/") ? await getPending(env, chatId) : null;
 
-    if (text.startsWith("/start")) {
+    if (pendingForHint && pendingForHint.step === "awaiting_hint") {
+      await handleHintReply(env, message);
+    } else if (text.startsWith("/start")) {
       // Диплинк с сайта: t.me/c4faq_bot?start=basic -> Telegram шлёт "/start basic"
       const payload = text.slice(6).trim();
       const tariff = payload ? TARIFFS.find((t) => t.id === payload) : null;

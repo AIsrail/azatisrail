@@ -225,7 +225,7 @@
     <div class="price-card">
       <div class="price-name">Разовый доступ</div>
       <div class="price-val">200 сом</div>
-      <div class="price-desc">Полный поиск в одном разделе базы (например, только Акселераторы). Хватит на конкретную узкую задачу.</div>
+      <div class="price-desc">3 наиболее подходящих варианта из одного раздела базы (например, только Акселераторы) — бот попросит уточнить запрос для точного подбора.</div>
       <a class="price-btn" target="_blank" href="https://t.me/c4faq_bot?start=single">Оплатить →</a>
     </div>
   </div>
@@ -330,7 +330,7 @@ function updateTokenStatus(tier, scope){
     el.textContent = 'Полный доступ активен.';
     el.classList.add('unlocked');
   } else if(tier === 'single'){
-    el.textContent = 'Разовый доступ активен — только раздел «' + (scope && scope.sheet || '') + '».';
+    el.textContent = 'Разовый доступ активен — раздел «' + (scope && scope.sheet || '') + '», до 3 подходящих совпадений.';
     el.classList.add('unlocked');
   } else {
     el.textContent = 'Полная база — по коду доступа.';
@@ -341,9 +341,21 @@ function updateTokenStatus(tier, scope){
   }
 }
 
-function applyToken(){
+async function maybeFillHint(){
+  if(!TOKEN) return;
+  const qEl = document.getElementById('fs-q');
+  if(qEl.value.trim()) return;
+  try{
+    const res = await fetch('/api/search?' + new URLSearchParams({ token: TOKEN }).toString());
+    const data = await res.json();
+    if(data.scope && data.scope.hint){ qEl.value = data.scope.hint; }
+  }catch(e){}
+}
+
+async function applyToken(){
   TOKEN = document.getElementById('fs-token').value.trim();
   localStorage.setItem('azat-funding-token', TOKEN);
+  await maybeFillHint();
   runSearch(true);
   runArchiveFull(true);
 }
@@ -413,6 +425,9 @@ async function runSearch(reset){
   } else if(data.tier === 'teaser' && data.total > 0){
     note.style.display = 'block';
     note.innerHTML = `Бесплатный показ примеров исчерпан. В базе ${data.total} совпадений — <a href="#pricing">откройте доступ →</a>`;
+  } else if(data.tier === 'single' && data.total > data.visibleTotal){
+    note.style.display = 'block';
+    note.innerHTML = `Показано ${data.visibleTotal} из ${data.total} совпадений в разделе — разовый доступ ограничен тремя. Для остального нужен тариф выше. <a href="#pricing">Тарифы →</a>`;
   } else {
     note.style.display = 'none';
   }
@@ -554,7 +569,11 @@ initToken();
 const urlParams = new URLSearchParams(location.search);
 const urlQ = urlParams.get('q');
 if(urlQ){ document.getElementById('fs-q').value = urlQ; }
-runAllSearches(true);
+
+(async () => {
+  if(!urlQ) await maybeFillHint();
+  runAllSearches(true);
+})();
 </script>
 </body>
 </html>

@@ -21,6 +21,7 @@ const ARCHIVE_RESULTS_LIMIT = 3;
 const FB_CACHE_TTL = 900; // 15 минут — свежие посты подтягиваются быстро, но не на каждый запрос
 const DB_TEASER_CAP = 2; // сколько настоящих записей структурированной базы видит один IP бесплатно
 const DB_TEASER_TTL = 2592000; // 30 дней — не "в день", это и путало при тестировании
+const SINGLE_TIER_CAP = 3; // разовый токен (200 сом, 1 раздел) — не весь раздел, а 3 лучших совпадения
 
 export default {
   async fetch(request, env) {
@@ -282,6 +283,15 @@ async function search(env, url, request) {
     return json({ total, visibleTotal, tier, scope: null, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results });
   }
 
+  if (tier === "single") {
+    // Разовый токен — не весь раздел (несправедливо: одни разделы в разы больше других),
+    // а до SINGLE_TIER_CAP лучших совпадений. scope.hint (собран ботом при покупке)
+    // приходит с фронтенда как q, поэтому rerankByRegion уже отранжировал по нему.
+    const visibleTotal = Math.min(total, SINGLE_TIER_CAP);
+    const results = filtered.slice(0, visibleTotal);
+    return json({ total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results });
+  }
+
   const start = (page - 1) * PAGE_SIZE_FULL;
   const end = Math.min(start + PAGE_SIZE_FULL, total);
   const results = start < total ? filtered.slice(start, end) : [];
@@ -301,7 +311,7 @@ export async function issueTokenRecord(env, { tier, scope, note, expires_at } = 
   const rec = {
     token,
     tier: tier || "full",
-    scope: scope && scope.sheet ? { sheet: String(scope.sheet) } : null,
+    scope: scope && scope.sheet ? { sheet: String(scope.sheet), hint: scope.hint ? String(scope.hint) : undefined } : null,
     note: note || "",
     issued_at: new Date().toISOString(),
     expires_at: expires_at || null,
