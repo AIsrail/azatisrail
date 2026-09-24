@@ -197,6 +197,10 @@ function regionRank(r) {
 const EASY_BONUS = 1.5;
 const KG_BONUS = 1;
 const REGIONAL_BONUS = 0.5;
+// Ниже почти любого реального совпадения по ключевым словам (даже слабого — одно общее
+// слово вроде "гранты" уже даёт больше), но выше нуля: генералист-доноры дополняют
+// список, а не соревнуются на равных с записями, реально упомянувшими тему запроса.
+const GENERALIST_BASE_SCORE = 0.5;
 
 function accessRegionBonus(r) {
   let bonus = r.access_tier === "easy" ? EASY_BONUS : 0;
@@ -218,7 +222,7 @@ function relevanceRerank(pairs, q) {
     if (p.r.is_crypto && !cryptoAllowed) crypto.push(p);
     else rest.push(p);
   }
-  rest.sort((a, b) => b.score - a.score || regionRank(a.r) - regionRank(b.r));
+  rest.sort((a, b) => (b.score + accessRegionBonus(b.r)) - (a.score + accessRegionBonus(a.r)));
   const out = rest.map((p) => p.r);
   if (!cryptoAllowed && crypto.length) out.push(crypto[0].r);
   return out;
@@ -402,6 +406,16 @@ async function search(env, url, request) {
         const scoreOf = makeRelevanceScorer(hays, words);
         scored = base.map((r, i) => ({ r, score: scoreOf(hays[i]) })).filter((p) => p.score > 0);
       }
+      // Донор без узкой ниши (SDG, "социально-экономические проекты", "дети и молодёжь" и
+      // т.п.) по смыслу подходит под любую социальную тему, даже если ни одно слово запроса
+      // не встречается буквально — иначе "сирота" почти ничего не найдёт, хотя половина базы
+      // формально готова его принять. Добавляем таких доноров с невысоким базовым весом —
+      // они дополняют реальные совпадения, но не перекрывают их.
+      const scoredIds = new Set(scored.map((p) => p.r.id));
+      const generalistExtra = base
+        .filter((r) => r.is_generalist && !scoredIds.has(r.id))
+        .map((r) => ({ r, score: GENERALIST_BASE_SCORE }));
+      scored = scored.concat(generalistExtra);
       if (scored.length) {
         relevanceRanked = relevanceRerank(scored, q);
         scoreById = new Map(scored.map((p) => [p.r.id, p.score]));
