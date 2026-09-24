@@ -404,12 +404,15 @@ async function runSearch(reset){
 
   updateTokenStatus(data.tier, data.scope);
   ALL_LOADED = reset ? data.results : ALL_LOADED.concat(data.results);
-  renderGrid(data.tier, data.total);
+  renderGrid(data.tier, data.total, data.visibleTotal);
 
   const note = document.getElementById('access-note');
-  if(data.tier === 'teaser' && data.total > 0){
+  if(data.tier === 'teaser' && data.total > 0 && data.visibleTotal > 0){
     note.style.display = 'block';
-    note.innerHTML = `В базе ${data.total} совпадений — введите код доступа или <a href="#pricing">выберите тариф →</a>`;
+    note.innerHTML = `Бесплатно показано ${data.visibleTotal} из ${data.total} совпадений — остальное по коду доступа. <a href="#pricing">Тарифы →</a>`;
+  } else if(data.tier === 'teaser' && data.total > 0){
+    note.style.display = 'block';
+    note.innerHTML = `Бесплатный показ примеров исчерпан. В базе ${data.total} совпадений — <a href="#pricing">откройте доступ →</a>`;
   } else {
     note.style.display = 'none';
   }

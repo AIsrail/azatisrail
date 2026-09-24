@@ -19,6 +19,8 @@ import { extractTitle, extractSourceUrl, extractExcerpt } from "./extract.js";
 const PAGE_SIZE_FULL = 15;
 const ARCHIVE_RESULTS_LIMIT = 3;
 const FB_CACHE_TTL = 900; // 15 минут — свежие посты подтягиваются быстро, но не на каждый запрос
+const DB_TEASER_CAP = 2; // сколько настоящих записей структурированной базы видит один IP бесплатно
+const DB_TEASER_TTL = 2592000; // 30 дней — не "в день", это и путало при тестировании
 
 export default {
   async fetch(request, env) {
@@ -46,7 +48,7 @@ function json(obj, status = 200) {
 async function handleApi(request, env, url) {
   try {
     if (url.pathname === "/api/search" && request.method === "GET") {
-      return await search(env, url);
+      return await search(env, url, request);
     }
     if (url.pathname === "/api/archive-search" && request.method === "GET") {
       return await archiveSearch(env, url);
@@ -87,6 +89,16 @@ async function resolveAccess(env, token) {
   if (rec.expires_at && new Date(rec.expires_at).getTime() < Date.now()) return { tier: "teaser", scope: null };
   if (rec.scope && rec.scope.sheet) return { tier: "single", scope: rec.scope };
   return { tier: "full", scope: null };
+}
+
+async function getDbTeaserUsed(env, ip) {
+  const n = await env.TOKENS_KV.get(`db_teaser:${ip}`);
+  return n ? parseInt(n, 10) || 0 : 0;
+}
+
+async function addDbTeaserUsed(env, ip, n) {
+  const used = await getDbTeaserUsed(env, ip);
+  await env.TOKENS_KV.put(`db_teaser:${ip}`, String(used + n), { expirationTtl: DB_TEASER_TTL });
 }
 
 // Многословный запрос ("гранты нко климат") должен требовать все слова где-то в тексте,
@@ -193,7 +205,7 @@ async function archiveFullSearch(env, url) {
   return json({ total, tier, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results });
 }
 
-async function search(env, url) {
+async function search(env, url, request) {
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
   const category = url.searchParams.get("category") || "";
   const token = url.searchParams.get("token") || "";
@@ -217,9 +229,16 @@ async function search(env, url) {
   const total = filtered.length;
 
   if (tier === "teaser") {
-    // Без токена — ни одной записи, только количество совпадений (мотивация оплатить).
-    // Бесплатный "вкус" даёт отдельный /api/archive-search по уже публичному архиву постов.
-    return json({ total, visibleTotal: 0, tier, scope: null, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results: [] });
+    // Без токена — до DB_TEASER_CAP настоящих записей суммарно на IP (не за день — это
+    // путало при тестировании), дальше только count. Основной стимул оплатить, но новый
+    // посетитель сразу видит хотя бы пару реальных записей, а не только архив постов.
+    const ip = (request && request.headers.get("cf-connecting-ip")) || "unknown";
+    const used = await getDbTeaserUsed(env, ip);
+    const left = Math.max(0, DB_TEASER_CAP - used);
+    const visibleTotal = Math.min(total, left);
+    const results = filtered.slice(0, visibleTotal);
+    if (results.length) await addDbTeaserUsed(env, ip, results.length);
+    return json({ total, visibleTotal, tier, scope: null, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results });
   }
 
   const start = (page - 1) * PAGE_SIZE_FULL;
