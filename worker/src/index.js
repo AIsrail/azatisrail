@@ -14,7 +14,17 @@
  */
 
 import { handleTelegramWebhook } from "./telegram.js";
-import { extractTitle, extractSourceUrl, extractExcerpt, extractDeadlineStatus, classifyArchiveRegion } from "./extract.js";
+import {
+  extractTitle,
+  extractSourceUrl,
+  extractExcerpt,
+  extractDeadlineStatus,
+  classifyArchiveRegion,
+  extractQueryWords,
+  matchesQuery,
+  matchesQueryLoose,
+  makeRelevanceScorer,
+} from "./extract.js";
 
 const PAGE_SIZE_FULL = 15;
 const ARCHIVE_RESULTS_LIMIT = 3;
@@ -102,13 +112,6 @@ async function addDbTeaserUsed(env, ip, n) {
   await env.TOKENS_KV.put(`db_teaser:${ip}`, String(used + n), { expirationTtl: DB_TEASER_TTL });
 }
 
-// Многословный запрос ("гранты нко климат") должен требовать все слова где-то в тексте,
-// а не точное совпадение всей фразы подряд — иначе такой запрос никогда ничего не найдёт.
-function matchesQuery(hay, q) {
-  const words = q.split(/\s+/).filter(Boolean);
-  return words.every((w) => hay.includes(w));
-}
-
 const CRYPTO_QUERY_RE = /крипто|blockchain|блокчейн|биткоин|bitcoin|ethereum|эфириум|web3|nft|defi/i;
 
 // Целевой микс результатов: примерно 50% Кыргызстан / 30% региональные (ЦА) / 20% международные —
@@ -146,6 +149,31 @@ function rerankByRegion(records, q) {
     }
   }
   if (!cryptoAllowed && crypto.length) out.push(crypto[0]);
+  return out;
+}
+
+function regionRank(r) {
+  if (r.region === "kg") return 0;
+  if (r.region === "regional") return 1;
+  return 2;
+}
+
+// Когда строгий AND-поиск ничего не дал и в ход идёт мягкий поиск по отдельным словам,
+// региональный микс (rerankByRegion) не годится: он раскладывает по 50/30/20 вслепую и
+// задвигает единственную тематически точную запись (например, специализированный
+// международный фонд) под общие местные записи, зацепившиеся только за одно общее слово.
+// Здесь порядок определяет число совпавших слов, регион — только тай-брейк при равенстве.
+function relevanceRerank(pairs, q) {
+  const cryptoAllowed = CRYPTO_QUERY_RE.test(q || "");
+  const crypto = [];
+  const rest = [];
+  for (const p of pairs) {
+    if (p.r.is_crypto && !cryptoAllowed) crypto.push(p);
+    else rest.push(p);
+  }
+  rest.sort((a, b) => b.score - a.score || regionRank(a.r) - regionRank(b.r));
+  const out = rest.map((p) => p.r);
+  if (!cryptoAllowed && crypto.length) out.push(crypto[0].r);
   return out;
 }
 
@@ -206,12 +234,11 @@ async function archiveSearch(env, url) {
   }
   merged.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
+  const archiveHay = (r) => [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
   let filtered = merged;
   if (q) {
-    filtered = merged.filter((r) => {
-      const hay = [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
-      return matchesQuery(hay, q);
-    });
+    filtered = merged.filter((r) => matchesQuery(archiveHay(r), q));
+    if (filtered.length === 0) filtered = merged.filter((r) => matchesQueryLoose(archiveHay(r), q));
   }
   // Бесплатный тизер не должен дублировать платную базу: показываем только то, что уже
   // неактуально (дедлайн прошёл), или международные возможности без указанного дедлайна —
@@ -238,10 +265,9 @@ async function archiveFullSearch(env, url) {
   if (category) filtered = filtered.filter((r) => r.category === category);
   if (subcategory) filtered = filtered.filter((r) => r.subcategory === subcategory);
   if (q) {
-    filtered = filtered.filter((r) => {
-      const hay = [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
-      return matchesQuery(hay, q);
-    });
+    const archiveFullHay = (r) => [r.title, r.excerpt].filter(Boolean).join(" ").toLowerCase();
+    const strict = filtered.filter((r) => matchesQuery(archiveFullHay(r), q));
+    filtered = strict.length ? strict : filtered.filter((r) => matchesQueryLoose(archiveFullHay(r), q));
   }
   const total = filtered.length;
 
@@ -258,6 +284,10 @@ async function archiveFullSearch(env, url) {
   return json({ total, tier, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results });
 }
 
+function recordHay(r) {
+  return [r.name, r.description, r.amount, (r.sectors || []).join(" ")].filter(Boolean).join(" ").toLowerCase();
+}
+
 async function search(env, url, request) {
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
   const category = url.searchParams.get("category") || "";
@@ -269,16 +299,43 @@ async function search(env, url, request) {
   const sheet = tier === "single" ? scope.sheet : url.searchParams.get("sheet") || "";
 
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
-  let filtered = all;
-  if (sheet) filtered = filtered.filter((r) => r.sheet === sheet);
-  if (category) filtered = filtered.filter((r) => Array.isArray(r.categories) && r.categories.includes(category));
+  let base = all;
+  if (sheet) base = base.filter((r) => r.sheet === sheet);
+  if (category) base = base.filter((r) => Array.isArray(r.categories) && r.categories.includes(category));
+
+  let candidates = base;
+  let relevanceRanked = null;
+  let queryFallback = false;
   if (q) {
-    filtered = filtered.filter((r) => {
-      const hay = [r.name, r.description, r.amount, (r.sectors || []).join(" ")].filter(Boolean).join(" ").toLowerCase();
-      return matchesQuery(hay, q);
-    });
+    // Длинная фраза (например, подсказка, собранная ботом у покупателя разового тарифа)
+    // почти никогда не совпадёт по всем словам буквально — сначала строгий AND-поиск.
+    const strict = base.filter((r) => matchesQuery(recordHay(r), q));
+    if (strict.length) {
+      candidates = strict;
+    } else {
+      // Мягкий поиск с оценкой числа совпавших слов — ранжируем по релевантности, а не
+      // по региону, иначе одно общее слово ("гранты") зашумляет топ мимо точных совпадений.
+      const words = extractQueryWords(q);
+      let scored = [];
+      if (words.length) {
+        const hays = base.map(recordHay);
+        const scoreOf = makeRelevanceScorer(hays, words);
+        scored = base.map((r, i) => ({ r, score: scoreOf(hays[i]) })).filter((p) => p.score > 0);
+      }
+      if (scored.length) {
+        relevanceRanked = relevanceRerank(scored, q);
+      } else if (tier === "single") {
+        // Разовый токен: если даже мягкий поиск не нашёл ничего в оплаченном разделе — не
+        // оставляем покупателя с пустыми руками, показываем подборку по разделу без
+        // фильтра по запросу (region-ranked ниже: КР → ЦА → международные).
+        candidates = base;
+        queryFallback = true;
+      } else {
+        candidates = [];
+      }
+    }
   }
-  filtered = rerankByRegion(filtered, q);
+  const filtered = relevanceRanked || rerankByRegion(candidates, q);
 
   const total = filtered.length;
 
@@ -301,7 +358,7 @@ async function search(env, url, request) {
     // приходит с фронтенда как q, поэтому rerankByRegion уже отранжировал по нему.
     const visibleTotal = Math.min(total, SINGLE_TIER_CAP);
     const results = filtered.slice(0, visibleTotal);
-    return json({ total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results });
+    return json({ total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results, queryFallback });
   }
 
   const start = (page - 1) * PAGE_SIZE_FULL;

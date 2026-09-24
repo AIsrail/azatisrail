@@ -429,6 +429,9 @@ async function runSearch(reset){
   } else if(data.tier === 'teaser' && data.total > 0){
     note.style.display = 'block';
     note.innerHTML = `Бесплатный показ примеров исчерпан. В базе ${data.total} совпадений — <a href="#pricing">откройте доступ →</a>`;
+  } else if(data.tier === 'single' && data.queryFallback){
+    note.style.display = 'block';
+    note.innerHTML = `Точных совпадений по вашему запросу не нашлось — показана подборка по разделу «${escapeHtml((data.scope&&data.scope.sheet)||'')}» (в первую очередь по Кыргызстану, затем регион и международные).`;
   } else if(data.tier === 'single' && data.total > data.visibleTotal){
     note.style.display = 'block';
     note.innerHTML = `Показано ${data.visibleTotal} из ${data.total} совпадений в разделе — разовый доступ ограничен пятью. Для остального нужен тариф выше. <a href="#pricing">Тарифы →</a>`;

@@ -12,7 +12,7 @@
  */
 
 import { issueTokenRecord } from "./index.js";
-import { extractTitle, extractSourceUrl, extractExcerpt } from "./extract.js";
+import { extractTitle, extractSourceUrl, extractExcerpt, extractQueryWords } from "./extract.js";
 
 const PAY_REQUISITES = "MBank или О!Деньги: 0702 271 827";
 
@@ -45,20 +45,24 @@ const SECTOR_KW = [
   ["Права человека/демократия", /демократ|прав\w* человека|гражданск\w* обществ|миграц|конфликт/i],
   ["Медиа/журналистика", /журналист|медиа\b|сми\b|расследовательск/i],
   ["Бизнес/МСБ", /стартап|предпринимат|мсб\b|малого и среднего бизнеса|бизнес-|венчур/i],
+  ["Инвалидность/инклюзия", /инвалид|инклюз|ограниченн\w* возможностями|овз\b|особ\w* потребностями|disabilit/i],
 ];
 
 const SKIP_HINT_RE = /^(-|пропустить|нет|skip)$/i;
 
 // Короткий текст (пара слов) — используем как есть. Длинный (скопированное описание
 // организации) — вытаскиваем из него узнаваемые темы, чтобы не искать по всему абзацу
-// буквально (это почти никогда не совпадёт с текстом записи в базе).
+// буквально (это почти никогда не совпадёт с текстом записи в базе). Если тема не
+// распозналась — берём значимые слова (без "для/у/меня/в Токмаке/5 лет..."), а не
+// обрубок первых 60 символов: обрубок почти гарантированно ничего не найдёт в базе.
 function distillHint(text) {
   const trimmed = (text || "").trim();
   if (!trimmed || SKIP_HINT_RE.test(trimmed)) return null;
   if (trimmed.length <= 60) return trimmed;
   const found = SECTOR_KW.filter(([, re]) => re.test(trimmed)).map(([label]) => label);
   if (found.length) return found[0];
-  return trimmed.slice(0, 60);
+  const words = extractQueryWords(trimmed).slice(0, 6);
+  return words.length ? words.join(" ") : trimmed.slice(0, 60);
 }
 
 function tgApi(env) {
