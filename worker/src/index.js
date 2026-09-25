@@ -27,6 +27,7 @@ import {
   normalizeRu,
 } from "./extract.js";
 import { semanticScores, reindex, dbInfo } from "./semantic.js";
+import { pickForBuyer } from "./pick.js";
 
 const PAGE_SIZE_FULL = 15;
 const ARCHIVE_RESULTS_LIMIT = 3;
@@ -71,7 +72,7 @@ export default {
       return Response.redirect(url.origin + "/", 301);
     }
     if (url.pathname === "/api/telegram/webhook" && request.method === "POST") {
-      return handleTelegramWebhook(request, env);
+      return handleTelegramWebhook(request, env, ctx);
     }
     if (url.pathname.startsWith("/api/")) {
       return handleApi(request, env, url, ctx);
@@ -127,6 +128,13 @@ async function handleApi(request, env, url, ctx) {
     if (url.pathname === "/api/admin/records" && request.method === "DELETE") {
       const denied = requireAdmin(request, env);
       return denied || (await removeManualRecord(env, url));
+    }
+    // Предпросмотр разового подбора (что получит покупатель за 200 сом в боте) — для владельца.
+    if (url.pathname === "/api/admin/pick" && request.method === "GET") {
+      const denied = requireAdmin(request, env);
+      if (denied) return denied;
+      const { picks, weak } = await pickForBuyer(env, ctx, url.searchParams.get("q") || "");
+      return json({ weak, picks: picks.map(({ r, why }) => ({ id: r.id, name: r.name, region: r.region, deadline: r.deadline, url: r.url, why })) });
     }
     if (url.pathname === "/api/admin/reindex" && request.method === "POST") {
       const denied = requireAdmin(request, env);

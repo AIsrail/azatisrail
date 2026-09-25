@@ -12,7 +12,8 @@
  *  - payreq:<request_id>    — заявка на подтверждение, ждёт решения владельца, TTL 24 часа
  */
 
-import { issueTokenRecord, performSearch } from "./index.js";
+import { issueTokenRecord } from "./index.js";
+import { pickForBuyer, REGION_LABEL } from "./pick.js";
 import { extractTitle, extractSourceUrl, extractExcerpt, extractQueryWords } from "./extract.js";
 
 const PAY_REQUISITES = "MBank или О!Деньги: 0702 271 827";
@@ -27,7 +28,7 @@ const TARIFFS = [
     price: "4500 сом",
     what: "база + архив публикаций + пособия и шаблоны + ИИ-помощник fund4pro для разработки проектного предложения (2 проекта), 6 месяцев",
   },
-  { id: "single", label: "Разовый подбор (5 вариантов)", price: "200 сом", what: "5 подходящих вариантов из одного раздела — сразу сюда в чат" },
+  { id: "single", label: "Разовый подбор (5 вариантов)", price: "200 сом", what: "5 вариантов под вашу задачу по всей базе — сразу сюда в чат" },
 ];
 
 // Старые диплинки (t.me/c4faq_bot?start=basic и т.п. — в постах, на старых страницах) ведут
@@ -156,11 +157,12 @@ export async function notifyAdminFallback(env, { token, sheet, q, buyerLabel, bu
   await tg(env, "sendMessage", {
     chat_id: admin.chat_id,
     text:
-      `⚠️ Разовый доступ — точных совпадений в разделе не нашлось\n` +
+      `⚠️ Разовый подбор — по запросу в базе мало подходящего\n` +
       `Покупатель: ${buyerLabel || "—"}\n` +
       `Раздел: ${sheet || "—"}\n` +
       `Запрос: ${q ? q.slice(0, 300) : "—"}\n` +
-      `Код: ${token}\n\n` +
+      (token && token !== "—" ? `Код: ${token}\n` : "") +
+      `\n` +
       `Стоит вручную найти 2-3 подходящие возможности вне базы, добавить их через вкладку ` +
       `«Записи вручную» в админке и ответить покупателю кнопкой ниже.`,
     reply_markup,
@@ -190,11 +192,6 @@ function tariffKeyboard() {
   };
 }
 
-function sheetKeyboard() {
-  return {
-    inline_keyboard: SHEETS.map((s, i) => [{ text: s.label, callback_data: `sheet:${i}` }]),
-  };
-}
 
 function greeting() {
   return "Здравствуйте! 🙏 Спасибо за интерес к базе доноров, инвесторов и грантов Connect4Pro.\n\n";
@@ -225,12 +222,10 @@ async function handleStart(env, chatId) {
 async function startTariffFlow(env, chatId, tariff) {
   await clearPending(env, chatId);
   if (tariff.id === "single") {
-    await setPending(env, chatId, { step: "choose_sheet", tariffId: tariff.id, tariffLabel: tariff.label, price: tariff.price });
-    await tg(env, "sendMessage", {
-      chat_id: chatId,
-      text: greeting() + "Выберите раздел базы, к которому нужен доступ:",
-      reply_markup: sheetKeyboard(),
-    });
+    // Подбор идёт по всей базе (см. pick.js) — раздел больше не спрашиваем: покупатель не
+    // обязан знать, что акселератор и инвестфонд лежат в разных разделах.
+    await setPending(env, chatId, { step: "awaiting_hint", tariffId: tariff.id, tariffLabel: tariff.label, price: tariff.price });
+    await tg(env, "sendMessage", { chat_id: chatId, text: greeting() + HINT_PROMPT });
     return;
   }
   await setPending(env, chatId, { step: "await_receipt", tariffId: tariff.id, tariffLabel: tariff.label, price: tariff.price });
@@ -244,6 +239,14 @@ async function handleTariffChoice(env, chatId, tariffId, callbackQueryId) {
   await startTariffFlow(env, chatId, tariff);
 }
 
+const HINT_PROMPT =
+  `Разовый подбор — это 5 вариантов под вашу задачу, поэтому опишите, что ищете: кто вы (НКО, ` +
+  `бизнес, стартап, физлицо), где работаете, на что нужны деньги и какой вид поддержки интересен ` +
+  `(грант, инвестиции, кредит, акселератор). Можно скопировать описание организации или проекта ` +
+  `(до 1 страницы) — чем подробнее, тем точнее подбор.`;
+
+// Устаревший шаг (раньше разовый тариф выбирал раздел): кнопки из старых сообщений
+// ведут в тот же сценарий, что и новый флоу.
 async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
   const sheet = SHEETS[sheetIndex];
   await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId });
@@ -252,16 +255,8 @@ async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
   const single = TARIFFS.find((t) => t.id === "single");
   const price = (pending && pending.price) || single.price;
   const tariffLabel = (pending && pending.tariffLabel) || single.label;
-  await setPending(env, chatId, { step: "awaiting_hint", tariffId: "single", tariffLabel, price, sheet: sheet.value, sheetLabel: sheet.label });
-  await tg(env, "sendMessage", {
-    chat_id: chatId,
-    text:
-      `Раздел «${sheet.label}» выбран.\n\n` +
-      `Разовый подбор — это 5 вариантов, поэтому напишите, что именно ищете — ` +
-      `несколько ключевых слов (например: «климат НКО») или подробнее об организации/проекте ` +
-      `(можно скопировать текст, до 1 страницы) — чем точнее опишете, тем точнее подбор.\n\n` +
-      `Если пропустить этот шаг — отправьте «-».`,
-  });
+  await setPending(env, chatId, { step: "awaiting_hint", tariffId: "single", tariffLabel, price });
+  await tg(env, "sendMessage", { chat_id: chatId, text: HINT_PROMPT });
 }
 
 async function handleHintReply(env, message) {
@@ -269,6 +264,11 @@ async function handleHintReply(env, message) {
   const pending = await getPending(env, chatId);
   const raw = (message.text || "").trim().slice(0, 4000);
   const hint = distillHint(raw);
+  // Без описания подбор из 5 вариантов превращается в лотерею — просим описать задачу.
+  if (!hint) {
+    await tg(env, "sendMessage", { chat_id: chatId, text: "Опишите, пожалуйста, задачу хотя бы парой фраз — без этого подбор не получится.\n\n" + HINT_PROMPT });
+    return;
+  }
   await setPending(env, chatId, {
     ...pending,
     step: "await_receipt",
@@ -329,32 +329,54 @@ async function handleReceiptPhoto(env, message) {
   await clearPending(env, chatId);
 }
 
-// Разовый тариф живёт только в Telegram: результаты сразу в чат, код для сайта покупателю не
-// показываем (токен создаётся лишь как внутренний носитель раздела/запроса для performSearch и
-// уведомления владельцу о промахе, и истекает через сутки).
-function formatSingleResult(r, i) {
-  const lines = [`${i + 1}. ${r.name}`];
-  if (r.amount) lines.push(`Сумма: ${r.amount}`);
-  if (r.deadline) lines.push(`Дедлайн: ${r.deadline}`);
-  if (r.description) lines.push(r.description.length > 300 ? r.description.slice(0, 300) + "…" : r.description);
-  if (r.url) lines.push(r.url);
+// Разовый тариф живёт только в Telegram: 5 вариантов сразу в чат (pick.js), кода для сайта нет.
+const SINGLE_SEEN_TTL = 7776000; // 90 дней: при повторной покупке показываем новое
+
+function formatSingleResult({ r, why }, i) {
+  const lines = [`${i + 1}. ${r.name.replace(/\s+/g, " ").trim()}`];
+  lines.push(`🌍 ${REGION_LABEL[r.region] || "—"}`);
+  if (why) lines.push(`✅ ${why}`);
+  if (r.amount) lines.push(`💰 ${r.amount.replace(/\s+/g, " ").slice(0, 150)}`);
+  if (r.deadline) lines.push(`📅 ${r.deadline.replace(/\s+/g, " ").slice(0, 150)}`);
+  if (r.description) {
+    const d = r.description.replace(/\s+/g, " ").trim();
+    lines.push(d.length > 220 ? d.slice(0, 220) + "…" : d);
+  }
+  const urls = Array.from(new Set([r.url, ...(r.urls || [])].filter(Boolean))).slice(0, 2);
+  lines.push(urls.length ? `🔗 ${urls.join("\n🔗 ")}` : "🔗 Ссылки в базе нет — напишите сюда, пришлю контакты.");
   return lines.join("\n");
 }
 
-function formatSingleResultsMessage(sheetLabel, results) {
-  if (!results.length) {
-    return (
-      `По разделу «${sheetLabel}» подходящих вариантов сходу не нашлось — сейчас посмотрю ` +
-      `вручную и пришлю несколько вариантов сам, подождите, пожалуйста.`
-    );
-  }
+function formatSingleResultsMessage(picks) {
   return (
-    `Раздел «${sheetLabel}» — вот ${results.length} наиболее подходящих вариантов:\n\n` +
-    results.map(formatSingleResult).join("\n\n")
+    `Вот ${picks.length} наиболее подходящих вариантов — сначала Кыргызстан, затем регион, затем международные:\n\n` +
+    picks.map(formatSingleResult).join("\n\n") +
+    `\n\nПрограммы меняются: сохраните подходящие и проверьте сроки на сайте программы перед подачей.`
   );
 }
 
-async function handleDecision(env, action, requestId, adminUserId, callbackQueryId, callbackMessage) {
+async function deliverSinglePicks(env, req) {
+  const q = (req.hintRaw || req.hint || "").slice(0, 2000);
+  const seenKey = `single_seen:tg:${req.buyer_chat_id}`;
+  const seen = new Set((await env.TOKENS_KV.get(seenKey, "json")) || []);
+  const { picks, weak } = await pickForBuyer(env, null, q, { exclude: seen });
+  if (!picks.length) {
+    await tg(env, "sendMessage", {
+      chat_id: req.buyer_chat_id,
+      text: "Подходящих вариантов сходу не нашлось — посмотрю вручную и пришлю сам, подождите, пожалуйста.",
+    });
+  } else {
+    await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text: formatSingleResultsMessage(picks), disable_web_page_preview: true });
+    const next = Array.from(new Set([...seen, ...picks.map((p) => p.r.id)])).slice(-200);
+    await env.TOKENS_KV.put(seenKey, JSON.stringify(next), { expirationTtl: SINGLE_SEEN_TTL });
+  }
+  if (weak || picks.length < 5) {
+    await notifyAdminFallback(env, { token: "—", sheet: "вся база", q, buyerLabel: req.buyer_label, buyerChatId: req.buyer_chat_id });
+  }
+  return picks.length;
+}
+
+async function handleDecision(env, action, requestId, adminUserId, callbackQueryId, callbackMessage, ctx) {
   if (!(await isAdmin(env, adminUserId))) {
     await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId, text: "Только владелец может подтверждать оплату.", show_alert: true });
     return;
@@ -383,31 +405,44 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
     return;
   }
 
-  const scope = req.sheet ? { sheet: req.sheet, hint: req.hint || undefined } : null;
-  const expires_at = scope ? new Date(Date.now() + 86400000).toISOString() : accessUntil();
+  if (req.tariffId === "single") {
+    // Подбор с LLM занимает 10-20 с — вебхук Telegram отвечаем сразу, работа идёт в фоне.
+    const job = (async () => {
+      if (callbackMessage) {
+        await tg(env, "editMessageText", {
+          chat_id: callbackMessage.chat.id,
+          message_id: callbackMessage.message_id,
+          text: `${callbackMessage.text}\n\n⏳ Подтверждено, идёт подбор…`,
+          reply_markup: { inline_keyboard: [] },
+        });
+      }
+      await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text: "Оплата подтверждена! Подбираю варианты — это займёт до минуты." });
+      const n = await deliverSinglePicks(env, req);
+      if (callbackMessage) {
+        await tg(env, "editMessageText", {
+          chat_id: callbackMessage.chat.id,
+          message_id: callbackMessage.message_id,
+          text: `${callbackMessage.text}\n\n✅ Подтверждено, отправлено вариантов: ${n}`,
+          reply_markup: { inline_keyboard: [] },
+        });
+      }
+    })().catch((e) => console.error("single delivery failed", e));
+    if (ctx) ctx.waitUntil(job);
+    else await job;
+    return;
+  }
+
+  const expires_at = accessUntil();
   const tokenRec = await issueTokenRecord(env, {
     tier: req.tariffId,
-    scope,
+    scope: null,
     note: `TG ${req.buyer_label}, тариф ${req.tariffLabel} (${req.price}), оплата подтверждена в боте`,
     expires_at,
     buyer_chat_id: req.buyer_chat_id,
     buyer_label: req.buyer_label,
   });
 
-  if (scope) {
-    // Разовый тариф — не заставляем покупателя идти на сайт за первым ответом: ищем сразу
-    // здесь же (performSearch — та же логика, что и на сайте) и присылаем результаты в чат.
-    const result = await performSearch(env, null, {
-      q: (req.hint || "").toLowerCase(),
-      token: tokenRec.token,
-      sheetParam: req.sheet,
-      ip: `tg:${req.buyer_chat_id}`,
-    });
-    await tg(env, "sendMessage", {
-      chat_id: req.buyer_chat_id,
-      text: formatSingleResultsMessage(req.sheetLabel || req.sheet, result.results),
-    });
-  } else {
+  {
     const until = formatDateRu(expires_at);
     let text =
       `Оплата подтверждена! Код доступа: ${tokenRec.token}\n` +
@@ -419,9 +454,8 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
     await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text });
   }
   if (callbackMessage) {
-    const note = scope
-      ? "✅ Подтверждено, 5 вариантов отправлены покупателю"
-      : `✅ Подтверждено, код выдан: ${tokenRec.token} (до ${formatDateRu(expires_at)})` +
+    const note =
+      `✅ Подтверждено, код выдан: ${tokenRec.token} (до ${formatDateRu(expires_at)})` +
         (req.tariffId === "pro"
           ? "\n📚 Не забудьте отправить покупателю пособия и шаблоны." +
             (env.FUND4PRO_BOT ? "" : "\n🤖 И начислить ему 2 проекта в fund4pro вручную.")
@@ -473,7 +507,7 @@ async function handleAdminReplyMessage(env, message, pending) {
   await tg(env, "sendMessage", { chat_id: adminChatId, text: "Отправлено покупателю ✓" });
 }
 
-export async function handleTelegramWebhook(request, env) {
+export async function handleTelegramWebhook(request, env, ctx) {
   const update = await request.json().catch(() => null);
   if (!update) return new Response("ok");
 
@@ -489,7 +523,7 @@ export async function handleTelegramWebhook(request, env) {
       } else if (data.startsWith("sheet:")) {
         await handleSheetChoice(env, chatId, parseInt(data.slice(6), 10), cb.id);
       } else if (data.startsWith("confirm:")) {
-        await handleDecision(env, "confirm", data.slice(8), cb.from.id, cb.id, cb.message);
+        await handleDecision(env, "confirm", data.slice(8), cb.from.id, cb.id, cb.message, ctx);
       } else if (data.startsWith("reject:")) {
         await handleDecision(env, "reject", data.slice(7), cb.from.id, cb.id, cb.message);
       } else if (data.startsWith("areply:")) {

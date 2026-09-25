@@ -89,7 +89,32 @@ export function extractDeadlineStatus(text, postDateISO) {
   return deadline.getTime() < Date.now() ? "passed" : "open";
 }
 
-const KG_KW = /кыргызстан|кыргызск|\bкр\b|бишкек|\bош\b|таласск|нарынск|джалал-абад|баткен/i;
+// Для поля deadline структурированной базы (свободный текст: "28.04–30.05.2026 (следующий год
+// уточнять)", "до 15 марта 2026", "регулярно", "ежегодно"...). true — только если в тексте есть
+// хотя бы одна полная дата, ВСЕ такие даты уже прошли и нет признаков регулярного приёма.
+// Всё неоднозначное (нет дат, дата без года, "ежегодно") — не прошедший: лучше показать
+// лишнее, чем спрятать живую программу.
+const RECORD_ROLLING_RE = /регулярн|ежегодн|ежемесячн|ежекварт|постоянн|круглогодичн|любое время|rolling|каждые|раз в год|нет дедлайна|открыт|по мере|ожидается/i;
+// "Проверено 24.09.2026" — дата проверки записи, а не дедлайн.
+const CHECKED_RE = /(проверено|обновлено|checked)\s*:?\s*\d{1,2}\.\d{1,2}\.\d{4}/gi;
+const NUM_DATE_RE = /(\d{1,2})\.(\d{1,2})\.(\d{4})/g;
+const WORD_DATE_RE = /(\d{1,2})\s+([а-яё]+)\s+(\d{4})/gi;
+
+export function isRecordDeadlinePassed(deadline, now = Date.now()) {
+  const t = (deadline || "").trim();
+  if (!t || RECORD_ROLLING_RE.test(t)) return false;
+  const dates = [];
+  // "28.04–30.05.2026": у первой даты год не указан — берём год из следующей.
+  const t2 = t.replace(CHECKED_RE, "").replace(/(\d{1,2})\.(\d{1,2})\s*[–—-]\s*(\d{1,2})\.(\d{1,2})\.(\d{4})/g, "$1.$2.$5 – $3.$4.$5");
+  for (const m of t2.matchAll(NUM_DATE_RE)) dates.push(Date.UTC(+m[3], +m[2] - 1, +m[1], 23, 59, 59));
+  for (const m of t2.matchAll(WORD_DATE_RE)) {
+    const month = MONTHS_RU[m[2].toLowerCase()];
+    if (month !== undefined) dates.push(Date.UTC(+m[3], month, +m[1], 23, 59, 59));
+  }
+  return dates.length > 0 && dates.every((d) => d < now);
+}
+
+const KG_KW =/кыргызстан|кыргызск|\bкр\b|бишкек|\bош\b|таласск|нарынск|джалал-абад|баткен/i;
 const REGIONAL_KW = /центральн\w* ази|\bца\b|региональн|astana ?hub|астана ?хаб|казахстан|узбекистан|таджикистан|туркменистан|снг\b/i;
 
 export function classifyArchiveRegion(text) {
