@@ -111,11 +111,17 @@ export async function reindex(env, { force = false, limit = MAX_PER_RUN } = {}) 
 
   const texts = records.map(recordEmbedText);
   const hashes = texts.map(hashText);
-  const keep = new Set();
+  // id в базе позиционный (donor-N по порядку строк Excel) и съезжает при любой вставке, поэтому
+  // старый вектор ищем сначала по id, а если id сменился — по отпечатку текста: та же запись под
+  // новым номером не должна заново тратить дневной лимит Workers AI.
+  const oldByHash = new Map();
+  if (old) old.meta.hashes.forEach((h, i) => oldByHash.set(h, i));
+  const reuse = new Map(); // индекс записи -> позиция её вектора в старом индексе
   const todo = [];
   records.forEach((r, i) => {
     const o = oldPos.get(r.id);
-    if (o && o.h === hashes[i]) keep.add(i);
+    if (o && o.h === hashes[i]) reuse.set(i, o.i);
+    else if (oldByHash.has(hashes[i])) reuse.set(i, oldByHash.get(hashes[i]));
     else todo.push(i);
   });
   const batchNow = todo.slice(0, limit);
@@ -129,7 +135,7 @@ export async function reindex(env, { force = false, limit = MAX_PER_RUN } = {}) 
 
   const dim = fresh.size ? fresh.values().next().value.length : old ? old.meta.dim : 0;
   if (!dim) return { total: records.length, embedded: 0, remaining: todo.length };
-  const included = records.map((r, i) => i).filter((i) => fresh.has(i) || keep.has(i));
+  const included = records.map((r, i) => i).filter((i) => fresh.has(i) || reuse.has(i));
   const vec = new Int8Array(included.length * dim);
   included.forEach((i, n) => {
     const off = n * dim;
@@ -137,8 +143,8 @@ export async function reindex(env, { force = false, limit = MAX_PER_RUN } = {}) 
     if (f) {
       for (let d = 0; d < dim; d++) vec[off + d] = Math.max(-127, Math.min(127, Math.round(f[d] * 127)));
     } else {
-      const o = oldPos.get(records[i].id);
-      vec.set(old.vec.subarray(o.i * dim, (o.i + 1) * dim), off);
+      const j = reuse.get(i);
+      vec.set(old.vec.subarray(j * dim, (j + 1) * dim), off);
     }
   });
 
