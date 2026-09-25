@@ -262,11 +262,29 @@ async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
 async function handleHintReply(env, message) {
   const chatId = message.chat.id;
   const pending = await getPending(env, chatId);
-  const raw = (message.text || "").trim().slice(0, 4000);
+  const text = (message.text || "").trim();
+  // Второй ответ после уточняющего вопроса дополняет первый, а не заменяет его.
+  const raw = [pending.hintDraft, text].filter(Boolean).join(". ").slice(0, 4000);
   const hint = distillHint(raw);
   // Без описания подбор из 5 вариантов превращается в лотерею — просим описать задачу.
   if (!hint) {
     await tg(env, "sendMessage", { chat_id: chatId, text: "Опишите, пожалуйста, задачу хотя бы парой фраз — без этого подбор не получится.\n\n" + HINT_PROMPT });
+    return;
+  }
+  // "нужны деньги на бизнес" — слишком мало, чтобы подбор был точным. Один раз просим уточнить
+  // (новички обычно не знают, что важно), второй ответ принимаем как есть.
+  if (!pending.hintDraft && extractQueryWords(raw).length < 5) {
+    await setPending(env, chatId, { ...pending, hintDraft: raw });
+    await tg(env, "sendMessage", {
+      chat_id: chatId,
+      text:
+        "Спасибо! Чтобы подбор был точным, допишите пару деталей одним сообщением:\n" +
+        "• кто вы: НКО, ИП/компания, стартап или частное лицо;\n" +
+        "• где: город или область;\n" +
+        "• на что нужны деньги и примерно сколько;\n" +
+        "• что подходит: грант, кредит, инвестиции, акселератор, стипендия.\n\n" +
+        "Например: «ИП, швейный цех в Бишкеке, нужно 500 тыс. сом на новые машинки, подойдёт льготный кредит или грант».",
+    });
     return;
   }
   await setPending(env, chatId, {
@@ -338,20 +356,23 @@ function formatSingleResult({ r, why }, i) {
   if (why) lines.push(`✅ ${why}`);
   if (r.amount) lines.push(`💰 ${r.amount.replace(/\s+/g, " ").slice(0, 150)}`);
   if (r.deadline) lines.push(`📅 ${r.deadline.replace(/\s+/g, " ").slice(0, 150)}`);
-  if (r.description) {
+  if (r.description && !/^см\.?\s*выше/i.test(r.description.trim())) {
     const d = r.description.replace(/\s+/g, " ").trim();
-    lines.push(d.length > 220 ? d.slice(0, 220) + "…" : d);
+    lines.push(d.length > 180 ? d.slice(0, 180) + "…" : d);
   }
   const urls = Array.from(new Set([r.url, ...(r.urls || [])].filter(Boolean))).slice(0, 2);
   lines.push(urls.length ? `🔗 ${urls.join("\n🔗 ")}` : "🔗 Ссылки в базе нет — напишите сюда, пришлю контакты.");
   return lines.join("\n");
 }
 
-function formatSingleResultsMessage(picks) {
+export function formatSingleResultsMessage(picks, tip) {
   return (
-    `Вот ${picks.length} наиболее подходящих вариантов — сначала Кыргызстан, затем регион, затем международные:\n\n` +
+    `Вот ${picks.length} наиболее подходящих вариантов — сначала открытые конкурсы, затем постоянный приём; ` +
+    `внутри — Кыргызстан, регион, международные:\n\n` +
     picks.map(formatSingleResult).join("\n\n") +
-    `\n\nПрограммы меняются: сохраните подходящие и проверьте сроки на сайте программы перед подачей.`
+    (tip ? `\n\n💡 Совет: ${tip}` : "") +
+    `\n\nПрограммы меняются: сохраните подходящие и проверьте условия и сроки на сайте программы перед подачей.` +
+    `\nНужна помощь с самой заявкой? ИИ-помощник fund4pro входит в тариф «Расширенный» — /start`
   );
 }
 
@@ -359,14 +380,14 @@ async function deliverSinglePicks(env, req) {
   const q = (req.hintRaw || req.hint || "").slice(0, 2000);
   const seenKey = `single_seen:tg:${req.buyer_chat_id}`;
   const seen = new Set((await env.TOKENS_KV.get(seenKey, "json")) || []);
-  const { picks, weak } = await pickForBuyer(env, null, q, { exclude: seen });
+  const { picks, weak, tip } = await pickForBuyer(env, null, q, { exclude: seen });
   if (!picks.length) {
     await tg(env, "sendMessage", {
       chat_id: req.buyer_chat_id,
       text: "Подходящих вариантов сходу не нашлось — посмотрю вручную и пришлю сам, подождите, пожалуйста.",
     });
   } else {
-    await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text: formatSingleResultsMessage(picks), disable_web_page_preview: true });
+    await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text: formatSingleResultsMessage(picks, tip), disable_web_page_preview: true });
     const next = Array.from(new Set([...seen, ...picks.map((p) => p.r.id)])).slice(-200);
     await env.TOKENS_KV.put(seenKey, JSON.stringify(next), { expirationTtl: SINGLE_SEEN_TTL });
   }

@@ -13,7 +13,7 @@
  *    (Гранты/Бизнес,НКО | Инвестиции | Обучение). Без токена — только total, как и /api/search.
  */
 
-import { handleTelegramWebhook, notifyAdminFallback } from "./telegram.js";
+import { handleTelegramWebhook, notifyAdminFallback, formatSingleResultsMessage } from "./telegram.js";
 import {
   extractTitle,
   extractSourceUrl,
@@ -134,8 +134,12 @@ async function handleApi(request, env, url, ctx) {
     if (url.pathname === "/api/admin/pick" && request.method === "GET") {
       const denied = requireAdmin(request, env);
       if (denied) return denied;
-      const { picks, weak } = await pickForBuyer(env, ctx, url.searchParams.get("q") || "");
-      return json({ weak, picks: picks.map(({ r, why }) => ({ id: r.id, name: r.name, region: r.region, deadline: r.deadline, url: r.url, why })) });
+      const { picks, weak, tip } = await pickForBuyer(env, ctx, url.searchParams.get("q") || "");
+      return json({
+        weak,
+        picks: picks.map(({ r, why }) => ({ id: r.id, name: r.name, region: r.region, deadline: r.deadline, url: r.url, why })),
+        message: picks.length ? formatSingleResultsMessage(picks, tip) : null, // ровно то, что увидит покупатель
+      });
     }
     if (url.pathname === "/api/admin/reindex" && request.method === "POST") {
       const denied = requireAdmin(request, env);
