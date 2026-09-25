@@ -27,8 +27,10 @@ const MAX_TEXT = 1500;
 const QUERY_PREFIX = "task: search result | query: ";
 const DOC_PREFIX = "title: none | text: ";
 
+// Теги (tags[] из столбца «Теги» Excel) — сразу после названия: это сжатое описание темы и
+// аудитории, и оно не должно отрезаться MAX_TEXT у записей с длинным описанием.
 export function recordEmbedText(r) {
-  return [r.name, r.description, (r.sectors || []).join(", "), r.amount]
+  return [r.name, (r.tags || []).join(", "), r.description, (r.sectors || []).join(", "), r.amount]
     .filter(Boolean)
     .join(" | ")
     .slice(0, MAX_TEXT);

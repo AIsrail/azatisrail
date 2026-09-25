@@ -425,7 +425,9 @@ async function archiveFullSearch(env, url) {
 }
 
 function recordHay(r) {
-  return normalizeRu([r.name, r.description, r.amount, (r.sectors || []).join(" ")].filter(Boolean).join(" "));
+  return normalizeRu(
+    [r.name, r.description, r.amount, (r.sectors || []).join(" "), (r.tags || []).join(" ")].filter(Boolean).join(" ")
+  );
 }
 
 async function search(env, url, request, ctx) {
