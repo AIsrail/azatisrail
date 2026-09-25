@@ -438,10 +438,17 @@ async function search(env, url, request, ctx) {
   const category = url.searchParams.get("category") || "";
   const token = url.searchParams.get("token") || "";
   const page = Math.max(1, parseInt(url.searchParams.get("page") || "1", 10) || 1);
+  const sheetParam = url.searchParams.get("sheet") || "";
+  const ip = (request && request.headers.get("cf-connecting-ip")) || "unknown";
+  return json(await performSearch(env, ctx, { q, category, token, page, sheetParam, ip }));
+}
 
+// Вынесено из search(): переиспользуется ботом (telegram.js) для мгновенной выдачи результатов
+// разового тарифа прямо в чат, без похода покупателя на сайт с кодом доступа.
+export async function performSearch(env, ctx, { q = "", category = "", token = "", page = 1, sheetParam = "", ip = "unknown" } = {}) {
   const { tier, scope, buyer_chat_id, buyer_label } = await resolveAccess(env, token);
   // Разовый токен форсит свой раздел — запрос клиента по sheet игнорируется.
-  const sheet = tier === "single" ? scope.sheet : url.searchParams.get("sheet") || "";
+  const sheet = tier === "single" ? scope.sheet : sheetParam;
 
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
   let base = all;
@@ -534,7 +541,6 @@ async function search(env, url, request, ctx) {
     }
   }
 
-  const ip = (request && request.headers.get("cf-connecting-ip")) || "unknown";
   let filtered;
   if (tier === "single") {
     // Разовый тариф ранжируется иначе, чем полный доступ: сначала непоказанные этому IP
@@ -564,7 +570,7 @@ async function search(env, url, request, ctx) {
     const visibleTotal = Math.min(total, left);
     const results = filtered.slice(0, visibleTotal);
     if (results.length) await addDbTeaserUsed(env, ip, results.length);
-    return json({ total, visibleTotal, tier, scope: null, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results });
+    return { total, visibleTotal, tier, scope: null, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results };
   }
 
   if (tier === "single") {
@@ -576,13 +582,13 @@ async function search(env, url, request, ctx) {
     const results = diversifyTop(filtered, visibleTotal);
     if (results.length) await addSingleSeen(env, ip, results.map((r) => r.id));
     if (queryFallback && token) await notifyFallbackOnce(env, token, { sheet, q, buyer_chat_id, buyer_label });
-    return json({ total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results, queryFallback });
+    return { total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results, queryFallback };
   }
 
   const start = (page - 1) * PAGE_SIZE_FULL;
   const end = Math.min(start + PAGE_SIZE_FULL, total);
   const results = start < total ? filtered.slice(start, end) : [];
-  return json({ total, visibleTotal: total, tier, scope, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results });
+  return { total, visibleTotal: total, tier, scope, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results };
 }
 
 function genToken() {

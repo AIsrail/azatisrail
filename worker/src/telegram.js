@@ -11,7 +11,7 @@
  *  - payreq:<request_id>    — заявка на подтверждение, ждёт решения владельца, TTL 24 часа
  */
 
-import { issueTokenRecord } from "./index.js";
+import { issueTokenRecord, performSearch } from "./index.js";
 import { extractTitle, extractSourceUrl, extractExcerpt, extractQueryWords } from "./extract.js";
 
 const PAY_REQUISITES = "MBank или О!Деньги: 0702 271 827";
@@ -292,6 +292,31 @@ async function handleReceiptPhoto(env, message) {
   await clearPending(env, chatId);
 }
 
+// Мгновенная выдача результатов разового тарифа прямо в чат вместо похода на сайт с кодом —
+// код доступа всё равно даём отдельным сообщением как запасной вариант (переформулировать
+// запрос можно только на сайте, бот не хранит диалог поиска).
+function formatSingleResult(r, i) {
+  const lines = [`${i + 1}. ${r.name}`];
+  if (r.amount) lines.push(`Сумма: ${r.amount}`);
+  if (r.deadline) lines.push(`Дедлайн: ${r.deadline}`);
+  if (r.description) lines.push(r.description.length > 300 ? r.description.slice(0, 300) + "…" : r.description);
+  if (r.url) lines.push(r.url);
+  return lines.join("\n");
+}
+
+function formatSingleResultsMessage(sheetLabel, results) {
+  if (!results.length) {
+    return (
+      `По разделу «${sheetLabel}» подходящих вариантов сходу не нашлось — сейчас посмотрю ` +
+      `вручную и пришлю несколько вариантов сам, подождите, пожалуйста.`
+    );
+  }
+  return (
+    `Раздел «${sheetLabel}» — вот ${results.length} наиболее подходящих вариантов:\n\n` +
+    results.map(formatSingleResult).join("\n\n")
+  );
+}
+
 async function handleDecision(env, action, requestId, adminUserId, callbackQueryId, callbackMessage) {
   if (!(await isAdmin(env, adminUserId))) {
     await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId, text: "Только владелец может подтверждать оплату.", show_alert: true });
@@ -315,6 +340,7 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
         chat_id: callbackMessage.chat.id,
         message_id: callbackMessage.message_id,
         text: `${callbackMessage.text}\n\n❌ Отклонено`,
+        reply_markup: { inline_keyboard: [] },
       });
     }
     return;
@@ -330,15 +356,37 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
     buyer_label: req.buyer_label,
   });
 
-  await tg(env, "sendMessage", {
-    chat_id: req.buyer_chat_id,
-    text: `Оплата подтверждена! Код доступа: ${tokenRec.token}\n\nВведите его в поле «Код доступа» на azatisrail.cc.`,
-  });
+  if (scope) {
+    // Разовый тариф — не заставляем покупателя идти на сайт за первым ответом: ищем сразу
+    // здесь же (performSearch — та же логика, что и на сайте) и присылаем результаты в чат.
+    const result = await performSearch(env, null, {
+      q: (req.hint || "").toLowerCase(),
+      token: tokenRec.token,
+      sheetParam: req.sheet,
+      ip: `tg:${req.buyer_chat_id}`,
+    });
+    await tg(env, "sendMessage", {
+      chat_id: req.buyer_chat_id,
+      text: formatSingleResultsMessage(req.sheetLabel || req.sheet, result.results),
+    });
+    await tg(env, "sendMessage", {
+      chat_id: req.buyer_chat_id,
+      text:
+        `Если захотите поискать ещё раз с другой формулировкой — код доступа: ${tokenRec.token} ` +
+        `(введите в поле «Код доступа» на azatisrail.cc).`,
+    });
+  } else {
+    await tg(env, "sendMessage", {
+      chat_id: req.buyer_chat_id,
+      text: `Оплата подтверждена! Код доступа: ${tokenRec.token}\n\nВведите его в поле «Код доступа» на azatisrail.cc.`,
+    });
+  }
   if (callbackMessage) {
     await tg(env, "editMessageText", {
       chat_id: callbackMessage.chat.id,
       message_id: callbackMessage.message_id,
       text: `${callbackMessage.text}\n\n✅ Подтверждено, код выдан: ${tokenRec.token}`,
+      reply_markup: { inline_keyboard: [] },
     });
   }
 }
