@@ -18,6 +18,8 @@
   //   npx wrangler kv namespace create TOKENS_KV
   // и id из вывода команды вписываются сюда вместо REPLACE_ME.
   // Подробности — DEPLOY.md.
+  // Workers AI — эмбеддинги для семантического поиска по базе доноров (worker/src/semantic.js).
+  "ai": { "binding": "AI" },
   "kv_namespaces": [
     { "binding": "FUNDING_KV", "id": "6f4f8b9a4ff941f0af07c6abe484f949" },
     { "binding": "TOKENS_KV", "id": "f26fc1fd267b471290f0c5fbed2f6a65" }

@@ -26,6 +26,7 @@ import {
   makeRelevanceScorer,
   normalizeRu,
 } from "./extract.js";
+import { semanticScores, reindex } from "./semantic.js";
 
 const PAGE_SIZE_FULL = 15;
 const ARCHIVE_RESULTS_LIMIT = 3;
@@ -34,8 +35,27 @@ const DB_TEASER_CAP = 2; // сколько настоящих записей с�
 const DB_TEASER_TTL = 2592000; // 30 дней — не "в день", это и путало при тестировании
 const SINGLE_TIER_CAP = 5; // разовый токен (200 сом, 1 раздел) — не весь раздел, а 5 лучших совпадений
 
+// Семантический поиск (см. semantic.js). Абсолютная косинусная близость EmbeddingGemma зависит от
+// запроса: у "стартап" лучшая запись ~0.53, у "ГЭС" ~0.25, у "кондитерский цех" ~0.17. Поэтому всё
+// меряется относительно лучшей записи по этому запросу (rel = sim / top, лучшая = 1).
+// В выдачу — записи с rel ≥ SEM_REL_MIN и sim ≥ SEM_MIN (совсем посторонние отсекаются).
+const SEM_REL_MIN = 0.7;
+const SEM_MIN = 0.12;
+// Очки = SEM_SCALE * rel + accessRegionBonus (до +2.5 за местный/простой доступ). При 10 бонус
+// +2.5 перевешивает до 25% отставания по близости: местная/простая запись из верхней части
+// выдачи обходит международную, но явно посторонняя местная — нет (её и так нет в выдаче).
+const SEM_SCALE = 10;
+const SEM_KEYWORD_BONUS = 1;
+// Для узких запросов (например, "швейный цех") порог по близости может оставить 1-2 записи —
+// показываем не меньше SEM_MIN_RESULTS лучших по близости, если они выше SEM_MIN.
+const SEM_MIN_RESULTS = 5;
+// Если даже лучшая запись дальше этого порога — в базе по теме по сути ничего нет (например,
+// "кондитерский цех": ~0.17). Выдача показывается, но для разового тарифа это считается
+// промахом (queryFallback): покупателю — пояснение, владельцу — уведомление, как и раньше.
+const SEM_WEAK = 0.2;
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (url.pathname === "/funding" || url.pathname === "/funding.html") {
       return Response.redirect(url.origin + "/", 301);
@@ -44,7 +64,7 @@ export default {
       return handleTelegramWebhook(request, env);
     }
     if (url.pathname.startsWith("/api/")) {
-      return handleApi(request, env, url);
+      return handleApi(request, env, url, ctx);
     }
     return env.ASSETS.fetch(request);
   },
@@ -57,10 +77,10 @@ function json(obj, status = 200) {
   });
 }
 
-async function handleApi(request, env, url) {
+async function handleApi(request, env, url, ctx) {
   try {
     if (url.pathname === "/api/search" && request.method === "GET") {
-      return await search(env, url, request);
+      return await search(env, url, request, ctx);
     }
     if (url.pathname === "/api/archive-search" && request.method === "GET") {
       return await archiveSearch(env, url);
@@ -86,11 +106,15 @@ async function handleApi(request, env, url) {
     }
     if (url.pathname === "/api/admin/records" && request.method === "POST") {
       const denied = requireAdmin(request, env);
-      return denied || (await addManualRecord(request, env));
+      return denied || (await addManualRecord(request, env, ctx));
     }
     if (url.pathname === "/api/admin/records" && request.method === "DELETE") {
       const denied = requireAdmin(request, env);
       return denied || (await removeManualRecord(env, url));
+    }
+    if (url.pathname === "/api/admin/reindex" && request.method === "POST") {
+      const denied = requireAdmin(request, env);
+      return denied || json({ ok: true, ...(await reindex(env, { force: url.searchParams.get("force") === "1" })) });
     }
     return json({ error: "not_found" }, 404);
   } catch (e) {
@@ -404,7 +428,7 @@ function recordHay(r) {
   return normalizeRu([r.name, r.description, r.amount, (r.sectors || []).join(" ")].filter(Boolean).join(" "));
 }
 
-async function search(env, url, request) {
+async function search(env, url, request, ctx) {
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
   const category = url.searchParams.get("category") || "";
   const token = url.searchParams.get("token") || "";
@@ -423,12 +447,53 @@ async function search(env, url, request) {
   let relevanceRanked = null;
   let scoreById = null;
   let queryFallback = false;
-  if (q) {
+  const sem = q ? await semanticScores(env, ctx, base, q) : null;
+  if (q && sem) {
+    // Основной путь: ранжирование по смыслу (см. SEM_* выше). Поиск по словам ниже — запасной,
+    // на случай если Workers AI недоступен или индекс векторов ещё строится.
+    const top = Math.max(...sem.values());
+    const sims = [...sem.values()].sort((a, b) => b - a);
+    const nth = sims[Math.min(SEM_MIN_RESULTS, sims.length) - 1];
+    const cutoff = Math.max(SEM_MIN, Math.min(top * SEM_REL_MIN, nth));
+    const pairs = [];
+    for (const r of base) {
+      const sim = sem.get(r.id);
+      const exact = matchesQuery(recordHay(r), q);
+      if ((sim !== undefined && sim >= cutoff) || exact) {
+        pairs.push({ r, score: SEM_SCALE * ((sim || 0) / top) + (exact ? SEM_KEYWORD_BONUS : 0) });
+      }
+    }
+    if (tier === "single" && pairs.length && pairs.length < SINGLE_TIER_CAP) {
+      // Оплаченные 5 мест не должны пустовать: добиваем подборкой по разделу с нулевым скором
+      // (идут после настоящих совпадений) и помечаем как промах.
+      const have = new Set(pairs.map((p) => p.r.id));
+      for (const r of base) if (!have.has(r.id)) pairs.push({ r, score: 0 });
+      queryFallback = true;
+    }
+    if (pairs.length) {
+      relevanceRanked = relevanceRerank(pairs, q);
+      scoreById = new Map(pairs.map((p) => [p.r.id, p.score]));
+      if (tier === "single" && top < SEM_WEAK && !pairs.some((p) => p.score > SEM_SCALE)) queryFallback = true;
+    } else if (tier === "single") {
+      // Как и в поиске по словам ниже: покупатель разового тарифа не остаётся с пустыми руками.
+      candidates = base;
+      queryFallback = true;
+    } else {
+      candidates = [];
+    }
+  } else if (q) {
     // Длинная фраза (например, подсказка, собранная ботом у покупателя разового тарифа)
     // почти никогда не совпадёт по всем словам буквально — сначала строгий AND-поиск.
     const strict = base.filter((r) => matchesQuery(recordHay(r), q));
     if (strict.length) {
-      candidates = strict;
+      // Строгие совпадения тоже ранжируются по релевантности (редкие слова весят больше),
+      // а не остаются в порядке строк Excel, как было раньше.
+      const words = extractQueryWords(q);
+      const hays = strict.map(recordHay);
+      const scoreOf = makeRelevanceScorer(base.map(recordHay), words);
+      const pairs = strict.map((r, i) => ({ r, score: scoreOf(hays[i]) }));
+      relevanceRanked = relevanceRerank(pairs, q);
+      scoreById = new Map(pairs.map((p) => [p.r.id, p.score]));
     } else {
       // Мягкий поиск с оценкой числа совпавших слов — ранжируем по релевантности, а не
       // по региону, иначе одно общее слово ("гранты") зашумляет топ мимо точных совпадений.
@@ -574,7 +639,7 @@ async function listManualRecords(env) {
   return json({ records: all.filter((r) => r.source === "manual") });
 }
 
-async function addManualRecord(request, env) {
+async function addManualRecord(request, env, ctx) {
   const body = await request.json().catch(() => ({}));
   if (!body.sheet || !body.name) return json({ error: "missing_fields" }, 400);
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
@@ -598,6 +663,8 @@ async function addManualRecord(request, env) {
   };
   all.push(rec);
   await env.FUNDING_KV.put("records", JSON.stringify(all));
+  // Вектор для новой записи — сразу, чтобы она участвовала в семантическом поиске.
+  if (env.AI && ctx) ctx.waitUntil(reindex(env).catch(() => {}));
   return json({ ok: true, record: rec });
 }
 
