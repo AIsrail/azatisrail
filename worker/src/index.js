@@ -143,7 +143,7 @@ async function handleApi(request, env, url, ctx) {
     }
     if (url.pathname === "/api/admin/reindex" && request.method === "POST") {
       const denied = requireAdmin(request, env);
-      return denied || json({ ok: true, ...(await reindex(env, { force: url.searchParams.get("force") === "1" })) });
+      return denied || json({ ok: true, ...(await reindex(env, { force: url.searchParams.get("force") === "1", limit: Infinity })) });
     }
     return json({ error: "not_found" }, 404);
   } catch (e) {

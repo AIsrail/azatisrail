@@ -91,12 +91,19 @@ async function loadIndex(env) {
 // всего "records" на каждую загрузку страницы.
 export async function dbInfo(env) {
   const meta = await env.FUNDING_KV.get(META_KEY, "json");
-  if (meta) return { count: meta.ids.length, updated_at: meta.updated_at || null };
+  if (meta) return { count: meta.total || meta.ids.length, updated_at: meta.updated_at || null };
   const records = (await env.FUNDING_KV.get("records", "json")) || [];
   return { count: records.length, updated_at: null };
 }
 
-export async function reindex(env, { force = false } = {}) {
+// Фоновый пересчёт живёт в waitUntil (~30 с после ответа): все ~470 записей разом туда не
+// влезают (так и случилось, когда базу перенумеровали). Поэтому за один проход — не больше
+// MAX_PER_RUN новых векторов; индекс сохраняется частично (только записи с актуальным вектором)
+// и дозаполняется следующими проходами, пока не станет полным. Ручной вызов из админки
+// (/api/admin/reindex) не ограничен — там ждём сколько нужно.
+const MAX_PER_RUN = 150;
+
+export async function reindex(env, { force = false, limit = MAX_PER_RUN } = {}) {
   const records = (await env.FUNDING_KV.get("records", "json")) || [];
   const old = force ? null : await loadIndex(env);
   const oldPos = new Map();
@@ -104,38 +111,54 @@ export async function reindex(env, { force = false } = {}) {
 
   const texts = records.map(recordEmbedText);
   const hashes = texts.map(hashText);
-  const todo = records.map((r, i) => i).filter((i) => {
-    const o = oldPos.get(records[i].id);
-    return !o || o.h !== hashes[i];
+  const keep = new Set();
+  const todo = [];
+  records.forEach((r, i) => {
+    const o = oldPos.get(r.id);
+    if (o && o.h === hashes[i]) keep.add(i);
+    else todo.push(i);
   });
+  const batchNow = todo.slice(0, limit);
 
   const fresh = new Map();
-  for (let b = 0; b < todo.length; b += BATCH) {
-    const chunk = todo.slice(b, b + BATCH);
+  for (let b = 0; b < batchNow.length; b += BATCH) {
+    const chunk = batchNow.slice(b, b + BATCH);
     const vecs = await embedTexts(env, chunk.map((i) => texts[i]), false);
     chunk.forEach((i, k) => fresh.set(i, vecs[k]));
   }
 
   const dim = fresh.size ? fresh.values().next().value.length : old ? old.meta.dim : 0;
-  if (!dim) return { total: records.length, embedded: 0 };
-  const vec = new Int8Array(records.length * dim);
-  records.forEach((r, i) => {
-    const off = i * dim;
+  if (!dim) return { total: records.length, embedded: 0, remaining: todo.length };
+  const included = records.map((r, i) => i).filter((i) => fresh.has(i) || keep.has(i));
+  const vec = new Int8Array(included.length * dim);
+  included.forEach((i, n) => {
+    const off = n * dim;
     const f = fresh.get(i);
     if (f) {
       for (let d = 0; d < dim; d++) vec[off + d] = Math.max(-127, Math.min(127, Math.round(f[d] * 127)));
     } else {
-      const o = oldPos.get(r.id);
+      const o = oldPos.get(records[i].id);
       vec.set(old.vec.subarray(o.i * dim, (o.i + 1) * dim), off);
     }
   });
 
+  const remaining = todo.length - batchNow.length;
+  const nowIso = new Date().toISOString();
   await env.FUNDING_KV.put(VEC_KEY, vec.buffer);
   await env.FUNDING_KV.put(
     META_KEY,
-    JSON.stringify({ model: EMB_MODEL, dim, ids: records.map((r) => r.id), hashes, updated_at: new Date().toISOString() })
+    JSON.stringify({
+      model: EMB_MODEL,
+      dim,
+      ids: included.map((i) => records[i].id),
+      hashes: included.map((i) => hashes[i]),
+      total: records.length,
+      complete: remaining === 0,
+      // Дата "Обновлено ..." на сайте — момент, когда индекс догнал новую базу целиком.
+      updated_at: remaining === 0 || !old ? nowIso : old.meta.updated_at || nowIso,
+    })
   );
-  return { total: records.length, embedded: todo.length };
+  return { total: records.length, embedded: batchNow.length, remaining };
 }
 
 // Фоновый reindex не чаще раза в минуту — иначе при только что залитой базе каждый поиск
