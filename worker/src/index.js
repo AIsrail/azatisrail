@@ -35,6 +35,16 @@ const DB_TEASER_CAP = 2; // сколько настоящих записей с�
 const DB_TEASER_TTL = 2592000; // 30 дней — не "в день", это и путало при тестировании
 const SINGLE_TIER_CAP = 5; // разовый токен (200 сом, 1 раздел) — не весь раздел, а 5 лучших совпадений
 
+// Тарифы с 2026-09-25 (rec.tier токена = id тарифа в боте):
+//   "db"  — 1500 сом, только структурированная база, 6 месяцев;
+//   "pro" — 4500 сом, база + архив публикаций + пособия + ИИ-помощник fund4pro, 6 месяцев.
+// Старые бессрочные коды ("basic"/"standard"/"premium", выданные вручную "full") сохраняют всё,
+// что им обещали при покупке: база + архив публикаций.
+const PLAN_DB = "db";
+// Сколько проектов в fund4pro (ИИ-помощник по проектным предложениям) даёт код этого тарифа.
+// Старые "standard"/"premium" (4900/8900 сом) — не меньше нового "pro".
+const FUND4PRO_PROJECTS = { pro: 2, standard: 2, premium: 2 };
+
 // Семантический поиск (см. semantic.js). Абсолютная косинусная близость EmbeddingGemma зависит от
 // запроса: у "стартап" лучшая запись ~0.53, у "ГЭС" ~0.25, у "кондитерский цех" ~0.17. Поэтому всё
 // меряется относительно лучшей записи по этому запросу (rel = sim / top, лучшая = 1).
@@ -91,6 +101,9 @@ async function handleApi(request, env, url, ctx) {
     if (url.pathname === "/api/archive-full" && request.method === "GET") {
       return await archiveFullSearch(env, url);
     }
+    if (url.pathname === "/api/fund4pro/redeem" && request.method === "POST") {
+      return await fund4proRedeem(request, env);
+    }
     if (url.pathname === "/api/admin/tokens" && request.method === "GET") {
       const denied = requireAdmin(request, env);
       return denied || (await listTokens(env));
@@ -139,8 +152,9 @@ async function resolveAccess(env, token) {
   if (!rec) return { tier: "teaser", scope: null };
   if (rec.expires_at && new Date(rec.expires_at).getTime() < Date.now()) return { tier: "teaser", scope: null };
   const buyer = { buyer_chat_id: rec.buyer_chat_id, buyer_label: rec.buyer_label };
-  if (rec.scope && rec.scope.sheet) return { tier: "single", scope: rec.scope, ...buyer };
-  return { tier: "full", scope: null, ...buyer };
+  const meta = { plan: rec.tier || "full", expires_at: rec.expires_at || null };
+  if (rec.scope && rec.scope.sheet) return { tier: "single", scope: rec.scope, ...buyer, ...meta };
+  return { tier: "full", scope: null, ...buyer, ...meta };
 }
 
 async function getDbTeaserUsed(env, ip) {
@@ -401,7 +415,7 @@ async function archiveFullSearch(env, url) {
   const token = url.searchParams.get("token") || "";
   const page = Math.max(1, parseInt(url.searchParams.get("page") || "1", 10) || 1);
 
-  const { tier } = await resolveAccess(env, token);
+  const { tier, plan } = await resolveAccess(env, token);
   const all = (await env.FUNDING_KV.get("archive_full", "json")) || [];
 
   let filtered = all;
@@ -419,6 +433,10 @@ async function archiveFullSearch(env, url) {
   // ограничений, что и было багом. Архив публикаций доступен только с basic/standard/premium.
   if (tier === "teaser" || tier === "single") {
     return json({ total, tier, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results: [] });
+  }
+  // Тариф 1500 сом — только база доноров; архив публикаций входит в 4500.
+  if (plan === PLAN_DB) {
+    return json({ total, tier, plan, archiveLocked: true, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results: [] });
   }
 
   const start = (page - 1) * PAGE_SIZE_FULL;
@@ -446,7 +464,7 @@ async function search(env, url, request, ctx) {
 // Вынесено из search(): переиспользуется ботом (telegram.js) для мгновенной выдачи результатов
 // разового тарифа прямо в чат, без похода покупателя на сайт с кодом доступа.
 export async function performSearch(env, ctx, { q = "", category = "", token = "", page = 1, sheetParam = "", ip = "unknown" } = {}) {
-  const { tier, scope, buyer_chat_id, buyer_label } = await resolveAccess(env, token);
+  const { tier, scope, buyer_chat_id, buyer_label, plan, expires_at } = await resolveAccess(env, token);
   // Разовый токен форсит свой раздел — запрос клиента по sheet игнорируется.
   const sheet = tier === "single" ? scope.sheet : sheetParam;
 
@@ -582,13 +600,13 @@ export async function performSearch(env, ctx, { q = "", category = "", token = "
     const results = diversifyTop(filtered, visibleTotal);
     if (results.length) await addSingleSeen(env, ip, results.map((r) => r.id));
     if (queryFallback && token) await notifyFallbackOnce(env, token, { sheet, q, buyer_chat_id, buyer_label });
-    return { total, visibleTotal, tier, scope, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results, queryFallback };
+    return { total, visibleTotal, tier, scope, expires_at, page: 1, pageSize: SINGLE_TIER_CAP, hasMore: false, results, queryFallback };
   }
 
   const start = (page - 1) * PAGE_SIZE_FULL;
   const end = Math.min(start + PAGE_SIZE_FULL, total);
   const results = start < total ? filtered.slice(start, end) : [];
-  return { total, visibleTotal: total, tier, scope, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results };
+  return { total, visibleTotal: total, tier, scope, plan, expires_at, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results };
 }
 
 function genToken() {
@@ -622,6 +640,33 @@ async function issueToken(request, env) {
   const body = await request.json().catch(() => ({}));
   const rec = await issueTokenRecord(env, body);
   return json({ ok: true, token: rec });
+}
+
+// fund4pro (отдельный бот-помощник по проектным предложениям) начисляет проекты покупателю
+// тарифа 4500 по тому же коду доступа, что и для сайта. Общего секрета нет: сам код и есть
+// секрет — его знает только покупатель, и сайтом по нему он и так пользуется. Один код —
+// один чат fund4pro: повтор из того же чата идемпотентен (projects: 0, already: true), из
+// другого — отказ, иначе пересланный код раздавал бы проекты всем подряд.
+async function fund4proRedeem(request, env) {
+  const body = await request.json().catch(() => ({}));
+  const token = String(body.token || "").trim().toUpperCase();
+  const chatId = body.chat_id !== undefined && body.chat_id !== null ? String(body.chat_id) : "";
+  if (!token || !chatId) return json({ ok: false, error: "missing_fields" }, 400);
+  const rec = await env.TOKENS_KV.get(token, "json");
+  if (!rec || !rec.token) return json({ ok: false, error: "invalid" }, 404);
+  if (rec.expires_at && new Date(rec.expires_at).getTime() < Date.now()) return json({ ok: false, error: "expired" }, 403);
+  const projects = FUND4PRO_PROJECTS[rec.tier] || 0;
+  if (!projects) return json({ ok: false, error: "plan", plan: rec.tier || "full" }, 403);
+  if (rec.fund4pro_chat_id) {
+    if (rec.fund4pro_chat_id === chatId) {
+      return json({ ok: true, already: true, projects: 0, plan: rec.tier, expires_at: rec.expires_at || null });
+    }
+    return json({ ok: false, error: "used" }, 409);
+  }
+  rec.fund4pro_chat_id = chatId;
+  rec.fund4pro_redeemed_at = new Date().toISOString();
+  await env.TOKENS_KV.put(token, JSON.stringify(rec));
+  return json({ ok: true, already: false, projects, plan: rec.tier, expires_at: rec.expires_at || null });
 }
 
 async function listTokens(env) {

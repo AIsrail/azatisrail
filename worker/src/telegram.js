@@ -3,7 +3,8 @@
  * Флоу: /start (или диплинк /start <tariff_id> с сайта) -> выбор тарифа ->
  *       (для разового: выбор раздела) -> приветствие + реквизиты ->
  *       покупатель шлёт фото чека -> бот форвардит его владельцу с кнопками ✅/❌ ->
- *       владелец подтверждает -> бот сам выдаёт код доступа и присылает покупателю.
+ *       владелец подтверждает -> бот сам выдаёт код доступа на 6 месяцев (разовый тариф —
+ *       сразу присылает 5 вариантов в чат, без кода).
  *
  * Состояние живёт в TOKENS_KV (тот же namespace, что и коды доступа):
  *  - _admin_chat            — { chat_id } куда слать уведомления о новых чеках
@@ -16,12 +17,44 @@ import { extractTitle, extractSourceUrl, extractExcerpt, extractQueryWords } fro
 
 const PAY_REQUISITES = "MBank или О!Деньги: 0702 271 827";
 
+// Тарифы с 2026-09-25. id уходит в rec.tier токена (см. PLAN_DB / FUND4PRO_PROJECTS в index.js).
+// "single" — только в Telegram: 5 вариантов сразу в чат, кода для сайта покупатель не получает.
 const TARIFFS = [
-  { id: "basic", label: "Базовая", price: "1900 сом" },
-  { id: "standard", label: "Стандартная", price: "4900 сом" },
-  { id: "premium", label: "Полноценная", price: "8900 сом" },
-  { id: "single", label: "Разовый доступ (1 раздел)", price: "200 сом" },
+  { id: "db", label: "Базовый", price: "1500 сом", what: "поиск по всей базе доноров на сайте, 6 месяцев" },
+  {
+    id: "pro",
+    label: "Расширенный",
+    price: "4500 сом",
+    what: "база + архив публикаций + пособия и шаблоны + ИИ-помощник fund4pro для разработки проектного предложения (2 проекта), 6 месяцев",
+  },
+  { id: "single", label: "Разовый подбор (5 вариантов)", price: "200 сом", what: "5 подходящих вариантов из одного раздела — сразу сюда в чат" },
 ];
+
+// Старые диплинки (t.me/c4faq_bot?start=basic и т.п. — в постах, на старых страницах) ведут
+// на ближайший новый тариф, а не на пустое приветствие.
+const LEGACY_TARIFF_IDS = { basic: "db", standard: "pro", premium: "pro" };
+
+const ACCESS_MONTHS = 6;
+
+function accessUntil() {
+  const d = new Date();
+  d.setUTCMonth(d.getUTCMonth() + ACCESS_MONTHS);
+  d.setUTCHours(23, 59, 59, 0);
+  return d.toISOString();
+}
+
+function formatDateRu(iso) {
+  return new Date(iso).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Bishkek" });
+}
+
+// Юзернейм бота fund4pro (без @) — переменная окружения FUND4PRO_BOT. Задавать её, только когда
+// fund4pro уже умеет принимать код (POST /api/fund4pro/redeem в index.js): до этого покупатель
+// получает "доступ пришлю отдельно", а владелец — напоминание начислить проекты вручную.
+function fund4proText(env) {
+  return env.FUND4PRO_BOT
+    ? `ИИ-помощник для проектного предложения: отправьте этот же код боту @${env.FUND4PRO_BOT} — он начислит 2 проекта.`
+    : `Доступ к ИИ-помощнику fund4pro для проектного предложения (2 проекта) пришлю отдельно.`;
+}
 
 // value — как хранится в базе (r.sheet), label — понятный текст для покупателя.
 const SHEETS = [
@@ -173,15 +206,18 @@ function paymentText(tariffLabel, price, sheet) {
     greeting() +
     `Тариф: «${tariffLabel}» — ${price}\n${sheetLine}\n` +
     `Оплатите переводом на ${PAY_REQUISITES}\n\n` +
-    `После оплаты пришлите сюда фото или скриншот чека — как только увижу, сразу пришлю код доступа.`
+    (sheet
+      ? `После оплаты пришлите сюда фото или скриншот чека — как только увижу, сразу пришлю подборку.`
+      : `После оплаты пришлите сюда фото или скриншот чека — как только увижу, сразу пришлю код доступа.`)
   );
 }
 
 async function handleStart(env, chatId) {
   await clearPending(env, chatId);
+  const list = TARIFFS.map((t) => `• ${t.label} — ${t.price}: ${t.what}`).join("\n");
   await tg(env, "sendMessage", {
     chat_id: chatId,
-    text: greeting() + "482 возможностей для бизнеса и НКО. Выберите тариф, чтобы получить код доступа:",
+    text: greeting() + "Более 450 возможностей для бизнеса и НКО. Тарифы:\n\n" + list + "\n\nВыберите тариф:",
     reply_markup: tariffKeyboard(),
   });
 }
@@ -213,14 +249,15 @@ async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
   await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId });
   if (!sheet) return;
   const pending = await getPending(env, chatId);
-  const price = (pending && pending.price) || "200 сом";
-  const tariffLabel = (pending && pending.tariffLabel) || "Разовый доступ (1 раздел)";
+  const single = TARIFFS.find((t) => t.id === "single");
+  const price = (pending && pending.price) || single.price;
+  const tariffLabel = (pending && pending.tariffLabel) || single.label;
   await setPending(env, chatId, { step: "awaiting_hint", tariffId: "single", tariffLabel, price, sheet: sheet.value, sheetLabel: sheet.label });
   await tg(env, "sendMessage", {
     chat_id: chatId,
     text:
       `Раздел «${sheet.label}» выбран.\n\n` +
-      `Разовый доступ показывает только 5 записей, поэтому напишите, что именно ищете — ` +
+      `Разовый подбор — это 5 вариантов, поэтому напишите, что именно ищете — ` +
       `несколько ключевых слов (например: «климат НКО») или подробнее об организации/проекте ` +
       `(можно скопировать текст, до 1 страницы) — чем точнее опишете, тем точнее подбор.\n\n` +
       `Если пропустить этот шаг — отправьте «-».`,
@@ -292,9 +329,9 @@ async function handleReceiptPhoto(env, message) {
   await clearPending(env, chatId);
 }
 
-// Мгновенная выдача результатов разового тарифа прямо в чат вместо похода на сайт с кодом —
-// код доступа всё равно даём отдельным сообщением как запасной вариант (переформулировать
-// запрос можно только на сайте, бот не хранит диалог поиска).
+// Разовый тариф живёт только в Telegram: результаты сразу в чат, код для сайта покупателю не
+// показываем (токен создаётся лишь как внутренний носитель раздела/запроса для performSearch и
+// уведомления владельцу о промахе, и истекает через сутки).
 function formatSingleResult(r, i) {
   const lines = [`${i + 1}. ${r.name}`];
   if (r.amount) lines.push(`Сумма: ${r.amount}`);
@@ -347,11 +384,12 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
   }
 
   const scope = req.sheet ? { sheet: req.sheet, hint: req.hint || undefined } : null;
+  const expires_at = scope ? new Date(Date.now() + 86400000).toISOString() : accessUntil();
   const tokenRec = await issueTokenRecord(env, {
     tier: req.tariffId,
     scope,
-    note: `TG ${req.buyer_label}, тариф ${req.tariffLabel}, оплата подтверждена в боте`,
-    expires_at: null,
+    note: `TG ${req.buyer_label}, тариф ${req.tariffLabel} (${req.price}), оплата подтверждена в боте`,
+    expires_at,
     buyer_chat_id: req.buyer_chat_id,
     buyer_label: req.buyer_label,
   });
@@ -369,23 +407,29 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
       chat_id: req.buyer_chat_id,
       text: formatSingleResultsMessage(req.sheetLabel || req.sheet, result.results),
     });
-    await tg(env, "sendMessage", {
-      chat_id: req.buyer_chat_id,
-      text:
-        `Если захотите поискать ещё раз с другой формулировкой — код доступа: ${tokenRec.token} ` +
-        `(введите в поле «Код доступа» на azatisrail.cc).`,
-    });
   } else {
-    await tg(env, "sendMessage", {
-      chat_id: req.buyer_chat_id,
-      text: `Оплата подтверждена! Код доступа: ${tokenRec.token}\n\nВведите его в поле «Код доступа» на azatisrail.cc.`,
-    });
+    const until = formatDateRu(expires_at);
+    let text =
+      `Оплата подтверждена! Код доступа: ${tokenRec.token}\n` +
+      `Действует до ${until}.\n\n` +
+      `Введите его в поле «Код доступа» на azatisrail.cc.`;
+    if (req.tariffId === "pro") {
+      text += `\n\n${fund4proText(env)}\nПособия и шаблоны пришлю сюда отдельно.`;
+    }
+    await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text });
   }
   if (callbackMessage) {
+    const note = scope
+      ? "✅ Подтверждено, 5 вариантов отправлены покупателю"
+      : `✅ Подтверждено, код выдан: ${tokenRec.token} (до ${formatDateRu(expires_at)})` +
+        (req.tariffId === "pro"
+          ? "\n📚 Не забудьте отправить покупателю пособия и шаблоны." +
+            (env.FUND4PRO_BOT ? "" : "\n🤖 И начислить ему 2 проекта в fund4pro вручную.")
+          : "");
     await tg(env, "editMessageText", {
       chat_id: callbackMessage.chat.id,
       message_id: callbackMessage.message_id,
-      text: `${callbackMessage.text}\n\n✅ Подтверждено, код выдан: ${tokenRec.token}`,
+      text: `${callbackMessage.text}\n\n${note}`,
       reply_markup: { inline_keyboard: [] },
     });
   }
@@ -393,27 +437,39 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
 
 // Ответ покупателю на "промах" поиска (см. notifyAdminFallback) — владелец жмёт кнопку,
 // следующее сообщение от него в этом чате пересылается покупателю как есть (текст/фото).
-async function handleAdminReplyStart(env, adminChatId, buyerChatId, adminUserId, callbackQueryId) {
+async function handleAdminReplyStart(env, adminChatId, buyerChatId, adminUserId, callbackQueryId, sourceMessage) {
   if (!(await isAdmin(env, adminUserId))) {
     await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId, text: "Только владелец может отвечать покупателям.", show_alert: true });
     return;
   }
   await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId });
-  await setPending(env, adminChatId, { step: "admin_reply", buyerChatId });
+  await setPending(env, adminChatId, {
+    step: "admin_reply",
+    buyerChatId,
+    sourceMessageId: sourceMessage ? sourceMessage.message_id : null,
+  });
   await tg(env, "sendMessage", {
     chat_id: adminChatId,
     text: "Напишите сообщение (текст или фото) — перешлю его покупателю как есть. Для отмены: /cancel",
   });
 }
 
-async function handleAdminReplyMessage(env, message, buyerChatId) {
+async function handleAdminReplyMessage(env, message, pending) {
   const adminChatId = message.chat.id;
   await tg(env, "copyMessage", {
-    chat_id: buyerChatId,
+    chat_id: pending.buyerChatId,
     from_chat_id: adminChatId,
     message_id: message.message_id,
   });
   await clearPending(env, adminChatId);
+  // Уведомление о промахе обработано — кнопка "Ответить покупателю" больше не нужна.
+  if (pending.sourceMessageId) {
+    await tg(env, "editMessageReplyMarkup", {
+      chat_id: adminChatId,
+      message_id: pending.sourceMessageId,
+      reply_markup: { inline_keyboard: [] },
+    });
+  }
   await tg(env, "sendMessage", { chat_id: adminChatId, text: "Отправлено покупателю ✓" });
 }
 
@@ -437,7 +493,7 @@ export async function handleTelegramWebhook(request, env) {
       } else if (data.startsWith("reject:")) {
         await handleDecision(env, "reject", data.slice(7), cb.from.id, cb.id, cb.message);
       } else if (data.startsWith("areply:")) {
-        await handleAdminReplyStart(env, chatId, data.slice(7), cb.from.id, cb.id);
+        await handleAdminReplyStart(env, chatId, data.slice(7), cb.from.id, cb.id, cb.message);
       }
       return new Response("ok");
     }
@@ -464,7 +520,7 @@ export async function handleTelegramWebhook(request, env) {
     const hasContent = Boolean(text || (message.photo && message.photo.length));
 
     if (pending && pending.step === "admin_reply" && hasContent) {
-      await handleAdminReplyMessage(env, message, pending.buyerChatId);
+      await handleAdminReplyMessage(env, message, pending);
     } else if (pending && pending.step === "awaiting_hint" && text && !text.startsWith("/")) {
       await handleHintReply(env, message);
     } else if (text.startsWith("/cancel")) {
@@ -477,7 +533,8 @@ export async function handleTelegramWebhook(request, env) {
     } else if (text.startsWith("/start")) {
       // Диплинк с сайта: t.me/c4faq_bot?start=basic -> Telegram шлёт "/start basic"
       const payload = text.slice(6).trim();
-      const tariff = payload ? TARIFFS.find((t) => t.id === payload) : null;
+      const id = LEGACY_TARIFF_IDS[payload] || payload;
+      const tariff = id ? TARIFFS.find((t) => t.id === id) : null;
       if (tariff) {
         await startTariffFlow(env, chatId, tariff);
       } else {
@@ -494,7 +551,7 @@ export async function handleTelegramWebhook(request, env) {
     } else if (message.photo && message.photo.length) {
       await handleReceiptPhoto(env, message);
     } else {
-      await tg(env, "sendMessage", { chat_id: chatId, text: "Чтобы получить доступ к базе доноров, отправьте /start." });
+      await tg(env, "sendMessage", { chat_id: chatId, text: "Чтобы выбрать тариф, отправьте /start." });
     }
   } catch (e) {
     console.error("telegram webhook error", e);

@@ -815,13 +815,14 @@ function renderTokenMain() {
         <div class="fg">
           <label>Тип доступа</label>
           <select id="tok-scope-type" onchange="document.getElementById('tok-sheet-row').style.display=this.value==='single'?'block':'none'">
-            <option value="full">Полный доступ</option>
+            <option value="pro">Расширенный (4500 сом): база + архив + fund4pro</option>
+            <option value="db">Базовый (1500 сом): только база</option>
             <option value="single">Один раздел (разовый, 200 сом)</option>
           </select>
         </div>
         <div class="fg">
-          <label>Действует до (пусто = бессрочно)</label>
-          <input type="date" id="tok-expires">
+          <label>Действует до (пусто = бессрочно; по тарифам — 6 месяцев)</label>
+          <input type="date" id="tok-expires" value="${(() => { const d = new Date(); d.setMonth(d.getMonth() + 6); return d.toISOString().slice(0, 10); })()}">
         </div>
         <div class="fg full" id="tok-sheet-row" style="display:none">
           <label>Раздел</label>
@@ -850,7 +851,7 @@ function renderTokenMain() {
     <div class="section-label">Детали</div>
     <div class="form-grid">
       <div class="fg full"><label>Заметка</label><input type="text" readonly value="${t.note ? escapeHtmlAdm(t.note) : '—'}"></div>
-      <div class="fg full"><label>Доступ</label><input type="text" readonly value="${t.scope && t.scope.sheet ? 'Только раздел: ' + t.scope.sheet : 'Полный'}"></div>
+      <div class="fg full"><label>Доступ</label><input type="text" readonly value="${t.scope && t.scope.sheet ? 'Только раздел: ' + t.scope.sheet : ({ db: 'Базовый (только база)', pro: 'Расширенный (база + архив + fund4pro)' }[t.tier] || 'Полный (старый тариф: база + архив)')}"></div>
       <div class="fg"><label>Выдан</label><input type="text" readonly value="${new Date(t.issued_at).toLocaleString('ru-RU')}"></div>
       <div class="fg"><label>Истекает</label><input type="text" readonly value="${exp}"></div>
     </div>`;
@@ -862,11 +863,12 @@ async function issueTokenFromForm() {
   const expires_at = expiresDate ? new Date(expiresDate + 'T23:59:59').toISOString() : null;
   const scopeType = document.getElementById('tok-scope-type').value;
   const scope = scopeType === 'single' ? { sheet: document.getElementById('tok-sheet').value } : null;
+  const tier = scopeType === 'single' ? 'single' : scopeType;
   try {
     const data = await adminApiFetch('/api/admin/tokens', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tier: 'full', note, expires_at, scope }),
+      body: JSON.stringify({ tier, note, expires_at, scope }),
     });
     toast('Токен выдан ✓', 'ok');
     await loadTokens();
