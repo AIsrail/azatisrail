@@ -18,8 +18,8 @@
 - Поиск по базе: https://azatisrail.cc/#search
 - Тарифы: https://azatisrail.cc/#pricing
 - Оплата и доступ: https://t.me/c4faq_bot
-- Мероприятия: https://azatisrail.cc/events.html
-- Публикации: https://azatisrail.cc/publications.html
+- Мероприятия: https://azatisrail.cc/events
+- Публикации: https://azatisrail.cc/publications
 - Автор и консультационные услуги: https://azatisrail.org
 - Оригинальный каталог (Tilda): https://connect4baza.tilda.ws/
 
