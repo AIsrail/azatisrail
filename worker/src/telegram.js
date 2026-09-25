@@ -406,7 +406,9 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
   }
 
   if (req.tariffId === "single") {
-    // Подбор с LLM занимает 10-20 с — вебхук Telegram отвечаем сразу, работа идёт в фоне.
+    // Подбор с LLM занимает 10-25 с. Ждём прямо в обработчике вебхука (не в waitUntil: у фоновой
+    // работы лимит ~30 с после ответа). Если Telegram не дождётся и повторит вызов, заявка уже
+    // удалена из KV — повтор ничего не отправит второй раз.
     const job = (async () => {
       if (callbackMessage) {
         await tg(env, "editMessageText", {
@@ -427,8 +429,7 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
         });
       }
     })().catch((e) => console.error("single delivery failed", e));
-    if (ctx) ctx.waitUntil(job);
-    else await job;
+    await job;
     return;
   }
 

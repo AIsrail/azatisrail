@@ -4,25 +4,26 @@
  * Эмбеддинги (semantic.js) хорошо находят "про что" запись, но плохо различают, кому она
  * реально доступна: на "инвестиции стартап КР" рядом оказываются кино-фонд и гонконгский
  * венчур. Поэтому в два шага:
- *   1. по смыслу берём ~40 кандидатов со всей базы (не из одного раздела: акселератор АП и
- *      Enactus лежат в других разделах, чем инвестфонды), закрытые по дедлайну — выкидываем;
+ *   1. по смыслу берём ~30 кандидатов со всей базы (не из одного раздела: акселератор АП и
+ *      Enactus лежат в других разделах, чем инвестфонды); закрытые по дедлайну — только запасом;
  *   2. LLM выбирает 5 по правилам владельца: сначала Кыргызстан, затем регион (ЦА/Азия/
  *      Евразия), международные — только если действительно подходят и приём не закрыт.
- * Итог сортируется по географии (КР → регион → мир), внутри — в порядке, выбранном LLM.
+ * Итог: сначала открытый приём, затем постоянный, закрытые в конце; внутри — КР → регион → мир.
  * Если LLM недоступна или ответила мусором — те же кандидаты по близости и географии.
  */
 
 import { semanticScores } from "./semantic.js";
-import { isRecordDeadlinePassed, normalizeRu, matchesQueryLoose } from "./extract.js";
+import { recordDeadlineClass, DEADLINE_CLASS_RANK, normalizeRu, matchesQueryLoose } from "./extract.js";
 
 const PICK_MODEL = "@cf/openai/gpt-oss-120b";
 const LOCAL_CANDIDATES = 28; // КР + регион
 const INTL_CANDIDATES = 12;
 // Близость ниже этого у лучшей записи — по теме в базе по сути ничего нет (см. SEM_WEAK в index.js).
 const WEAK_TOP = 0.2;
-// Фоновой работе после ответа вебхуку дают ~30 с (waitUntil); gpt-oss-120b отвечает за 10-20 с.
-// Не успела — подборка по близости и географии без отбора LLM.
-const LLM_TIMEOUT_MS = 22000;
+// Качество важнее скорости (решение владельца): ждём LLM до ~55 с. Не успела — подборка по
+// близости и географии без LLM.
+const LLM_TIMEOUT_MS = 55000;
+const MIN_LIVE_CANDIDATES = 12;
 const CRYPTO_QUERY_RE = /крипто|blockchain|блокчейн|биткоин|bitcoin|ethereum|web3|nft|defi/i;
 
 export const REGION_LABEL = { kg: "Кыргызстан", regional: "Центральная Азия / регион", international: "международная" };
@@ -39,14 +40,20 @@ const SYSTEM_PROMPT = (today) => `Ты — эксперт-фандрайзер C
 1. Запись должна реально подходить запросу: тип поддержки (грант, инвестиции, кредит, акселератор), сфера и кто может подать. Узкопрофильные программы не по теме (например, кино-фонд на запрос про стартапы) не выбирай. Для стартапов подходят и инвестфонды, и бизнес-ангелы, и акселераторы, и конкурсы стартапов.
    Предпочитай тех, кто реально даёт деньги или программу с финансированием. Госагентства и посредники, которые только "помогают найти инвесторов", справочные сайты и агрегаторы — только если настоящих источников не хватает.
    Программу, привязанную к конкретной области или городу Кыргызстана, выбирай только если запрос про эту же местность.
-2. География: сначала Кыргызстан, затем регион (Центральная Азия, Азия, Евразия). Международные программы выбирай, только если они явно подходят запросу, открыты для заявителей из КР и приём не закрыт (дедлайн впереди, регулярный или без дедлайна).
-3. Не выбирай записи с прошедшим дедлайном без признаков регулярного приёма.
-4. Если по-настоящему подходящих меньше 5 — всё равно верни 5, слабые в конце.
+2. География: сначала Кыргызстан, затем регион (Центральная Азия, Азия, Евразия). Международные программы — если они подходят запросу, открыты для заявителей из КР и приём не закрыт (дедлайн впереди, регулярный или без дедлайна). Если такие есть, включи 1-2 из них в пятёрку вместо самых слабых местных: пользователь должен увидеть и реальные международные шансы.
+   Программа не обязана быть посвящена именно теме запроса: широкие доноры, которые не запрещают такой профиль (например, гранты НКО на любые социальные проекты), подходят.
+3. Сроки: в первую очередь выбирай записи со статусом «ОТКРЫТ» (дедлайн впереди), затем «ПОСТОЯННЫЙ» (регулярный приём или без дедлайна). Записи «ЗАКРЫТ» — только если иначе не набрать 5, и тогда в "why" прямо напиши, что приём закрыт и стоит следить за новым циклом.
+4. В "why" не выдумывай сроки и условия: про сроки пиши только то, что есть в поле «дедлайн». Если там ежегодный приём, а последняя дата уже прошла — так и напиши: «приём ежегодный, следующий цикл ожидается».
+5. Если по-настоящему подходящих меньше 5 — всё равно верни 5, слабые в конце.
 Ответь ТОЛЬКО JSON без пояснений: {"picks":[{"id":"...","why":"одно короткое предложение по-русски: почему подходит именно под этот запрос"}]}`;
+
+const STATUS_LABEL = { open: "ОТКРЫТ", rolling: "ПОСТОЯННЫЙ", passed: "ЗАКРЫТ" };
 
 function candidateLine(r) {
   const desc = (r.description || "").replace(/\s+/g, " ").slice(0, 220);
-  return `id=${r.id} | ${r.name.replace(/\s+/g, " ").slice(0, 90)} | география: ${REGION_LABEL[r.region] || "?"} | дедлайн: ${
+  return `id=${r.id} | ${r.name.replace(/\s+/g, " ").slice(0, 90)} | география: ${REGION_LABEL[r.region] || "?"} | приём: ${
+    STATUS_LABEL[r._dl]
+  } | дедлайн: ${
     (r.deadline || "не указан").replace(/\s+/g, " ").slice(0, 70)
   } | ${desc}`;
 }
@@ -73,6 +80,8 @@ async function llmPick(env, q, candidates, count) {
     ],
     max_tokens: 4000,
     temperature: 0.2,
+    // Владелец: покупатель платит за качество, ожидание до минуты допустимо — думаем тщательно.
+    reasoning: { effort: "medium" },
   });
   // Разные модели Workers AI отвечают в разных форматах: {response} или OpenAI-подобный {choices}.
   const text =
@@ -99,7 +108,8 @@ async function llmPick(env, q, candidates, count) {
 export async function pickForBuyer(env, ctx, q, { exclude = new Set(), count = 5 } = {}) {
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
   const cryptoOk = CRYPTO_QUERY_RE.test(q);
-  let pool = all.filter((r) => !isRecordDeadlinePassed(r.deadline) && (cryptoOk || !r.is_crypto));
+  const now = Date.now();
+  let pool = all.filter((r) => cryptoOk || !r.is_crypto).map((r) => ({ ...r, _dl: recordDeadlineClass(r.deadline, now) }));
   const fresh = pool.filter((r) => !exclude.has(r.id));
   if (fresh.length >= count * 4) pool = fresh;
 
@@ -116,9 +126,12 @@ export async function pickForBuyer(env, ctx, q, { exclude = new Set(), count = 5
     weak = ranked.length < count;
   }
 
-  const local = ranked.filter((r) => regionRank(r) < 2).slice(0, LOCAL_CANDIDATES);
-  const intl = ranked.filter((r) => regionRank(r) === 2).slice(0, INTL_CANDIDATES);
-  const candidates = [...local, ...intl];
+  // Закрытые по сроку — только запасом, если живых кандидатов мало.
+  const live = ranked.filter((r) => r._dl !== "passed");
+  const local = live.filter((r) => regionRank(r) < 2).slice(0, LOCAL_CANDIDATES);
+  const intl = live.filter((r) => regionRank(r) === 2).slice(0, INTL_CANDIDATES);
+  const reserve = local.length + intl.length < MIN_LIVE_CANDIDATES ? ranked.filter((r) => r._dl === "passed").slice(0, 8) : [];
+  const candidates = [...local, ...intl, ...reserve];
 
   let picks = null;
   if (env.AI && candidates.length > count) {
@@ -134,10 +147,13 @@ export async function pickForBuyer(env, ctx, q, { exclude = new Set(), count = 5
   if (!picks || picks.length < count) {
     // Добор (или весь выбор, если LLM не ответила): по близости, местные вперёд.
     const have = new Set((picks || []).map((p) => p.r.id));
-    const rest = [...local, ...intl].filter((r) => !have.has(r.id)).map((r) => ({ r, why: "" }));
+    const rest = candidates.filter((r) => !have.has(r.id)).map((r) => ({ r, why: "" }));
     picks = [...(picks || []), ...rest].slice(0, count);
   }
-  // КР → регион → мир; внутри группы — порядок LLM (sort стабильный).
-  picks.sort((a, b) => regionRank(a.r) - regionRank(b.r));
+  // Сначала открытый приём, затем постоянный, закрытые в конце; внутри — КР → регион → мир,
+  // а при равенстве — порядок LLM (sort стабильный).
+  picks.sort(
+    (a, b) => DEADLINE_CLASS_RANK[a.r._dl] - DEADLINE_CLASS_RANK[b.r._dl] || regionRank(a.r) - regionRank(b.r)
+  );
   return { picks, weak };
 }

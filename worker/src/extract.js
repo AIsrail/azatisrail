@@ -100,9 +100,7 @@ const CHECKED_RE = /(проверено|обновлено|checked)\s*:?\s*\d{1,
 const NUM_DATE_RE = /(\d{1,2})\.(\d{1,2})\.(\d{4})/g;
 const WORD_DATE_RE = /(\d{1,2})\s+([а-яё]+)\s+(\d{4})/gi;
 
-export function isRecordDeadlinePassed(deadline, now = Date.now()) {
-  const t = (deadline || "").trim();
-  if (!t || RECORD_ROLLING_RE.test(t)) return false;
+function deadlineDates(t) {
   const dates = [];
   // "28.04–30.05.2026": у первой даты год не указан — берём год из следующей.
   const t2 = t.replace(CHECKED_RE, "").replace(/(\d{1,2})\.(\d{1,2})\s*[–—-]\s*(\d{1,2})\.(\d{1,2})\.(\d{4})/g, "$1.$2.$5 – $3.$4.$5");
@@ -111,7 +109,28 @@ export function isRecordDeadlinePassed(deadline, now = Date.now()) {
     const month = MONTHS_RU[m[2].toLowerCase()];
     if (month !== undefined) dates.push(Date.UTC(+m[3], month, +m[1], 23, 59, 59));
   }
-  return dates.length > 0 && dates.every((d) => d < now);
+  return dates;
+}
+
+export function isRecordDeadlinePassed(deadline, now = Date.now()) {
+  return recordDeadlineClass(deadline, now) === "passed";
+}
+
+// Приоритет владельца (2026-09-25): сначала то, где приём открыт и дедлайн ещё впереди (всегда
+// свежее), затем постоянный/регулярный приём и записи без дедлайна (NED, D-Prize), и только в
+// самом конце прошедшие — чтобы выдача не была пустой.
+//   "open"    — в тексте есть дата, которая ещё не наступила;
+//   "rolling" — регулярный приём, нет дат или неоднозначно;
+//   "passed"  — все даты прошли и нет признаков регулярности.
+export const DEADLINE_CLASS_RANK = { open: 0, rolling: 1, passed: 2 };
+
+export function recordDeadlineClass(deadline, now = Date.now()) {
+  const t = (deadline || "").trim();
+  if (!t) return "rolling";
+  const dates = deadlineDates(t);
+  if (dates.some((d) => d >= now)) return "open";
+  if (RECORD_ROLLING_RE.test(t) || !dates.length) return "rolling";
+  return "passed";
 }
 
 const KG_KW =/кыргызстан|кыргызск|\bкр\b|бишкек|\bош\b|таласск|нарынск|джалал-абад|баткен/i;

@@ -25,6 +25,7 @@ import {
   matchesQueryLoose,
   makeRelevanceScorer,
   normalizeRu,
+  recordDeadlineClass,
 } from "./extract.js";
 import { semanticScores, reindex, dbInfo } from "./semantic.js";
 import { pickForBuyer } from "./pick.js";
@@ -202,7 +203,11 @@ function suppressCryptoRecords(records, q) {
 // Целевой микс результатов: примерно 50% Кыргызстан / 30% региональные (ЦА) / 20% международные —
 // по просьбе владельца, чтобы местные и близкие возможности не терялись среди тысяч глобальных.
 function rerankByRegion(records, q) {
-  const { rest, cryptoTail } = suppressCryptoRecords(records, q);
+  const { rest: all, cryptoTail } = suppressCryptoRecords(records, q);
+  // Прошедшие по сроку — после всех живых (см. deadlineAdjust).
+  const now = Date.now();
+  const passed = all.filter((r) => recordDeadlineClass(r.deadline, now) === "passed");
+  const rest = all.filter((r) => recordDeadlineClass(r.deadline, now) !== "passed");
 
   const kg = rest.filter((r) => r.region === "kg");
   const regional = rest.filter((r) => r.region === "regional");
@@ -226,7 +231,7 @@ function rerankByRegion(records, q) {
       }
     }
   }
-  out.push(...cryptoTail);
+  out.push(...passed, ...cryptoTail);
   return out;
 }
 
@@ -252,8 +257,19 @@ const REGIONAL_BONUS = 0.5;
 // список, а не соревнуются на равных с записями, реально упомянувшими тему запроса.
 const GENERALIST_BASE_SCORE = 0.5;
 
+// Приоритет владельца по срокам: открытый приём (дедлайн впереди) — выше, постоянный/без
+// дедлайна — как есть, прошедший — в самый конец (штраф больше любой разницы в релевантности),
+// чтобы показывался, только когда живых вариантов нет.
+const OPEN_DEADLINE_BONUS = 1.5;
+const PASSED_DEADLINE_PENALTY = 20;
+
+function deadlineAdjust(r) {
+  const c = recordDeadlineClass(r.deadline);
+  return c === "open" ? OPEN_DEADLINE_BONUS : c === "passed" ? -PASSED_DEADLINE_PENALTY : 0;
+}
+
 function accessRegionBonus(r) {
-  let bonus = r.access_tier === "easy" ? EASY_BONUS : 0;
+  let bonus = (r.access_tier === "easy" ? EASY_BONUS : 0) + deadlineAdjust(r);
   if (r.region === "kg") bonus += KG_BONUS;
   else if (r.region === "regional") bonus += REGIONAL_BONUS;
   return bonus;
