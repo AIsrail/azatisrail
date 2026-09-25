@@ -86,6 +86,16 @@ async function loadIndex(env) {
   return { meta, vec: new Int8Array(buf) };
 }
 
+// Для метки "Обновлено ... · N возможностей" на сайте: дата последнего изменения базы (когда
+// векторы пересчитывались из-за новых/изменённых записей) и число записей — без разбора
+// всего "records" на каждую загрузку страницы.
+export async function dbInfo(env) {
+  const meta = await env.FUNDING_KV.get(META_KEY, "json");
+  if (meta) return { count: meta.ids.length, updated_at: meta.updated_at || null };
+  const records = (await env.FUNDING_KV.get("records", "json")) || [];
+  return { count: records.length, updated_at: null };
+}
+
 export async function reindex(env, { force = false } = {}) {
   const records = (await env.FUNDING_KV.get("records", "json")) || [];
   const old = force ? null : await loadIndex(env);
@@ -139,7 +149,9 @@ async function scheduleReindex(env, ctx) {
 // Map id → косинусная близость (≈ -1..1) для записей, у которых есть актуальный вектор.
 // null — семантика недоступна (нет индекса, AI не ответил): вызывающий откатывается на поиск
 // по словам, сайт при этом продолжает работать.
-export async function semanticScores(env, ctx, records, q) {
+// allCount — сколько всего записей в "records": если меньше/больше, чем векторов, значит записи
+// удалили или добавили (удаление само по себе не делает ни одну запись "устаревшей").
+export async function semanticScores(env, ctx, records, q, allCount) {
   if (!env.AI) return null;
   try {
     const idx = await loadIndex(env);
@@ -149,7 +161,7 @@ export async function semanticScores(env, ctx, records, q) {
     }
     const { meta, vec } = idx;
     const pos = new Map(meta.ids.map((id, i) => [id, i]));
-    let stale = false;
+    let stale = allCount !== undefined && allCount !== meta.ids.length;
     const [qv] = await embedTexts(env, [expandQuery(q)], true);
     const dim = meta.dim;
     const out = new Map();

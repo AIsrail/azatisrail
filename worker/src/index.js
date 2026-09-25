@@ -26,7 +26,7 @@ import {
   makeRelevanceScorer,
   normalizeRu,
 } from "./extract.js";
-import { semanticScores, reindex } from "./semantic.js";
+import { semanticScores, reindex, dbInfo } from "./semantic.js";
 
 const PAGE_SIZE_FULL = 15;
 const ARCHIVE_RESULTS_LIMIT = 3;
@@ -81,6 +81,9 @@ async function handleApi(request, env, url, ctx) {
   try {
     if (url.pathname === "/api/search" && request.method === "GET") {
       return await search(env, url, request, ctx);
+    }
+    if (url.pathname === "/api/db-info" && request.method === "GET") {
+      return json(await dbInfo(env));
     }
     if (url.pathname === "/api/archive-search" && request.method === "GET") {
       return await archiveSearch(env, url);
@@ -449,7 +452,7 @@ async function search(env, url, request, ctx) {
   let relevanceRanked = null;
   let scoreById = null;
   let queryFallback = false;
-  const sem = q ? await semanticScores(env, ctx, base, q) : null;
+  const sem = q ? await semanticScores(env, ctx, base, q, all.length) : null;
   if (q && sem) {
     // Основной путь: ранжирование по смыслу (см. SEM_* выше). Поиск по словам ниже — запасной,
     // на случай если Workers AI недоступен или индекс векторов ещё строится.
