@@ -97,7 +97,15 @@
 .fs-more-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;background:transparent;border:1.5px solid var(--border);color:var(--mid);padding:12px 26px;border-radius:2px;cursor:pointer;transition:all .2s}
 .fs-more-btn:hover{border-color:var(--sap);color:var(--sap)}
 .no-results{grid-column:1/-1;padding:60px;text-align:center;color:var(--muted);font-size:15px;font-weight:300}
-.pricing-g{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-top:20px}
+.pricing-g{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:1px;background:var(--border);margin-top:20px}
+.access-card{background:var(--sect)}
+.access-steps{margin:10px 0 16px 18px;padding:0;font-size:13px;color:var(--mid);line-height:1.65}
+.access-steps li{margin-bottom:4px}
+.access-card .token-panel{margin:0 0 10px;padding:0;background:none;border:none}
+.access-help{font-size:12px;color:var(--muted);line-height:1.6}
+.access-help a{color:var(--sap)}
+.token-line{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;margin:6px 0 22px}
+.token-jump{font-size:12px;color:var(--sap);font-weight:500}
 .price-card{background:var(--white);padding:26px 22px;display:flex;flex-direction:column;text-align:left}
 .price-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:6px}
 .price-val{font-size:22px;font-weight:500;color:var(--sap);margin-bottom:12px}
@@ -109,7 +117,7 @@
 .faq-a{font-size:13.5px;color:var(--mid);line-height:1.7;font-weight:300}
 .about-box{max-width:640px;margin:0 auto;text-align:center;font-size:13.5px;color:var(--mid);line-height:1.85}
 .about-box a{color:var(--sap)}
-@media(max-width:1100px){.fs-grid{grid-template-columns:1fr}.pricing-g{grid-template-columns:1fr 1fr}}
+@media(max-width:1100px){.fs-grid{grid-template-columns:1fr}.pricing-g{grid-template-columns:1fr 1fr}.access-card{grid-column:1/-1}}
 @media(max-width:640px){.pricing-g{grid-template-columns:1fr}}
 </style>
 </head>
@@ -156,16 +164,6 @@
 </section>
 
 <section class="sw">
-  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 8px">Бесплатно — из архива публикаций Connect4Pro</div>
-  <div style="font-size:12px;color:var(--muted);margin:0 0 12px;max-width:560px">Примеры уже неактуальных или международных возможностей — ориентир по формату. Актуальные и по Кыргызстану — в структурированной базе ниже.</div>
-  <div class="fs-grid" id="archive-grid"></div>
-</section>
-
-<div class="db-origin">
-  Проект вырос из каталога <a href="https://connect4baza.tilda.ws/" target="_blank">connect4baza.tilda.ws</a> и практического опыта фандрайзинга <a href="https://azatisrail.org" target="_blank">Азата Исраилова</a> — консультанта, тренера и основателя Connect4Pro.
-</div>
-
-<section class="sw">
   <div class="fs-bar">
     <select class="fs-select" id="fs-category">
       <option value="">Любая категория</option>
@@ -186,12 +184,10 @@
 
   <div id="access-note" class="note-bar" style="display:none"></div>
 
-  <div class="token-panel">
-    <div class="token-label">Уже оплатили в Telegram? Введите код доступа, который прислал бот:</div>
-    <input type="text" id="fs-token" placeholder="Код доступа">
-    <button onclick="applyToken()">Активировать доступ</button>
+  <div class="token-line">
+    <span class="token-status" id="token-status">Полная база — по коду доступа.</span>
+    <a href="#access-code" class="token-jump" id="token-jump">Ввести код доступа →</a>
   </div>
-  <div class="token-status" id="token-status">Полная база — по коду доступа.</div>
 
   <div class="fs-count" id="fs-count"></div>
   <div class="fs-grid" id="fs-grid"></div>
@@ -200,6 +196,16 @@
   </div>
   <div class="fs-fresh-note" id="fs-fresh-note" style="display:none"></div>
 </section>
+
+<section class="sw">
+  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 8px">Бесплатно — из архива публикаций Connect4Pro</div>
+  <div style="font-size:12px;color:var(--muted);margin:0 0 12px;max-width:560px">Примеры уже неактуальных или международных возможностей — ориентир по формату. Актуальные и по Кыргызстану — в структурированной базе выше.</div>
+  <div class="fs-grid" id="archive-grid"></div>
+</section>
+
+<div class="db-origin">
+  Проект вырос из каталога <a href="https://connect4baza.tilda.ws/" target="_blank">connect4baza.tilda.ws</a> и практического опыта фандрайзинга <a href="https://azatisrail.org" target="_blank">Азата Исраилова</a> — консультанта, тренера и основателя Connect4Pro.
+</div>
 
 <section class="sw sw-alt" id="calendar-section">
   <div class="reveal"><div class="sec-tag">Тариф «Расширенный»</div><h2 class="sec-ttl">Календарь<br><em>фандрайзинга</em></h2></div>
@@ -264,6 +270,20 @@
       <div class="price-val">4500 сом</div>
       <div class="price-desc">Всё из Базового + персональный календарь фандрайзинга, архив публикаций Connect4Pro, пособия и шаблоны по грантам, ИИ и бизнесу + ИИ-помощник fund4pro для разработки проектного предложения (2 проекта). Доступ на 6 месяцев.</div>
       <a class="price-btn" target="_blank" href="https://t.me/c4faq_bot?start=pro">Оплатить →</a>
+    </div>
+    <div class="price-card access-card" id="access-code">
+      <div class="price-name">Уже оплатили?</div>
+      <ol class="access-steps">
+        <li>Нажмите «Оплатить» у нужного тарифа — откроется наш Telegram-бот.</li>
+        <li>Переведите оплату и отправьте боту фото или скриншот чека.</li>
+        <li>Бот пришлёт код доступа — обычно в течение дня.</li>
+        <li>Вставьте код сюда и нажмите «Активировать». Браузер запомнит его, вводить заново не нужно.</li>
+      </ol>
+      <div class="token-panel">
+        <input type="text" id="fs-token" placeholder="Код доступа, например 3F9A1C27B0D4E856" autocomplete="off">
+        <button onclick="applyToken()">Активировать</button>
+      </div>
+      <div class="access-help">Не пришёл код или что-то не работает — напишите боту <a href="https://t.me/c4faq_bot" target="_blank">@c4faq_bot</a>.</div>
     </div>
   </div>
   <p style="font-size:13px;color:var(--mid);font-weight:300;max-width:560px;margin-top:20px;line-height:1.8">
@@ -383,6 +403,8 @@ function updateTokenStatus(tier, scope, plan, expiresAt){
       el.textContent = 'Код не найден или истёк.';
     }
   }
+  const jump = document.getElementById('token-jump');
+  if(jump) jump.textContent = tier === 'teaser' ? 'Ввести код доступа →' : 'Сменить код';
 }
 
 async function maybeFillHint(){
@@ -628,7 +650,7 @@ async function runCalendar(){
   const note = document.getElementById('cal-note');
   const box = document.getElementById('cal-months');
   const legend = document.getElementById('cal-legend');
-  btn.disabled = true; btn.textContent = 'Строим…';
+  btn.disabled = true; btn.textContent = 'Строим… это может занять до минуты';
   let data;
   try{
     const params = new URLSearchParams();

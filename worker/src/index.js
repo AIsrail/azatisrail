@@ -26,6 +26,7 @@ import {
   makeRelevanceScorer,
   normalizeRu,
   recordDeadlineClass,
+  isHiddenRecord,
 } from "./extract.js";
 import { semanticScores, reindex, dbInfo } from "./semantic.js";
 import { pickForBuyer } from "./pick.js";
@@ -526,7 +527,7 @@ export async function performSearch(env, ctx, { q = "", category = "", token = "
   const sheet = tier === "single" ? scope.sheet : sheetParam;
 
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
-  let base = all;
+  let base = all.filter((r) => !isHiddenRecord(r));
   if (sheet) base = base.filter((r) => r.sheet === sheet);
   if (category) base = base.filter((r) => Array.isArray(r.categories) && r.categories.includes(category));
 

@@ -15,7 +15,7 @@
  */
 
 import { semanticScores } from "./semantic.js";
-import { deadlineDates, recordDeadlineClass } from "./extract.js";
+import { deadlineDates, recordDeadlineClass, isHiddenRecord } from "./extract.js";
 
 const MONTH_NAMES = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 const REGION_RANK = { kg: 0, regional: 1 };
@@ -86,8 +86,8 @@ function item(r, kind, date) {
 // Кто покупатель — по словам профиля. Эмбеддинги путают "молодёжный ОФ" с "молодёжным
 // стартапом", а поле categories в базе это различает (ngo / business / individual).
 const PROFILE_CATEGORY = [
-  ["ngo", /\bнко\b|\bнпо\b|\bоф\b|обществен\w* (фонд|объединен|организац)|некоммерч|ngo|\bкоо\b/i],
-  ["business", /бизнес|\bип\b|\bоосо\b|\bосо\b|компани|стартап|предприним|фермер|цех|производств|магазин/i],
+  ["ngo", /(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))нко(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))|(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))нпо(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))|(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))оф(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))|обществен[а-яёa-z0-9_]* (фонд|объединен|организац)|некоммерч|ngo|(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))коо(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))/i],
+  ["business", /бизнес|(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))ип(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))|(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))оосо(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))|(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))осо(?:(?<![а-яёa-z0-9])(?=[а-яёa-z0-9])|(?<=[а-яёa-z0-9])(?![а-яёa-z0-9]))|компани|стартап|предприним|фермер|цех|производств|магазин/i],
   ["individual", /стипенд|магистрат|учёб|учеб|стажировк|аспирант|phd|студент/i],
 ];
 
@@ -95,10 +95,84 @@ function profileCategories(profile) {
   return PROFILE_CATEGORY.filter(([, re]) => re.test(profile)).map(([c]) => c);
 }
 
+// --- Проверка ИИ: эмбеддинги находят «про что» запись, но не понимают, может ли этот заявитель
+// реально подать (олимпиады, культурное наследие, программы только для Таласа — «близко по
+// словам», но не для реабилитационного центра в Токмаке). Та же модель, что в подборе за 200 сом
+// (pick.js). Результат кэшируется в KV по отпечатку профиля и версии базы: календарь открывается
+// при каждом входе с кодом, а платить за одну и ту же проверку много раз незачем.
+const FILTER_MODEL = "@cf/openai/gpt-oss-120b";
+const FILTER_TIMEOUT_MS = 55000;
+const FILTER_CACHE_TTL = 7 * 86400;
+
+function fnv(s) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(36);
+}
+
+const FILTER_PROMPT = `Ты — эксперт-фандрайзер в Кыргызстане. Ниже описание заявителя и список программ финансирования.
+Оставь только те программы, на которые ЭТОТ заявитель реально может подать и которые подходят его деятельности:
+- совпадает тип заявителя (НКО / бизнес / частное лицо) и сфера;
+- широкие доноры, не запрещающие такую деятельность (социальные проекты, дети, уязвимые группы, образование, местные сообщества), — подходят;
+- программы, привязанные к другой области или городу Кыргызстана, чем у заявителя, — не подходят;
+- узкие программы про другое (олимпиады, культурное наследие, журналистика, стартапы и венчур для НКО без бизнеса и т.п.) — не подходят.
+Ответь ТОЛЬКО JSON: {"keep":["id1","id2",...]} — id подходящих, от самых подходящих к менее.`;
+
+async function llmKeep(env, profile, pool) {
+  const lines = pool.map((r) => {
+    const desc = (r.description || "").replace(/\s+/g, " ").slice(0, 260);
+    return `id=${r.id} | ${r.name.replace(/\s+/g, " ").slice(0, 90)} | ${desc}`;
+  });
+  const res = await env.AI.run(FILTER_MODEL, {
+    messages: [
+      { role: "system", content: FILTER_PROMPT },
+      { role: "user", content: `Заявитель: ${profile}\n\nПрограммы:\n${lines.join("\n")}` },
+    ],
+    max_tokens: 4000,
+    temperature: 0.1,
+    reasoning: { effort: "medium" },
+  });
+  const text =
+    (res && res.response) ||
+    (res && res.choices && res.choices[0] && res.choices[0].message && res.choices[0].message.content) ||
+    "";
+  const t = typeof text === "string" ? text : JSON.stringify(text);
+  const a = t.indexOf("{");
+  const b = t.lastIndexOf("}");
+  if (a < 0 || b <= a) return null;
+  const j = JSON.parse(t.slice(a, b + 1));
+  return Array.isArray(j.keep) ? j.keep.map(String) : null;
+}
+
+async function filterWithLlm(env, profile, pool) {
+  if (!env.AI || pool.length < 6) return pool;
+  const meta = await env.FUNDING_KV.get("emb_meta", "json");
+  const key = `cal_keep:${fnv(profile.toLowerCase())}:${fnv((meta && meta.updated_at) || "")}`;
+  let keep = await env.FUNDING_KV.get(key, "json");
+  if (!keep) {
+    try {
+      keep = await Promise.race([
+        llmKeep(env, profile, pool),
+        new Promise((resolve) => setTimeout(() => resolve(null), FILTER_TIMEOUT_MS)),
+      ]);
+    } catch (e) {
+      keep = null;
+    }
+    if (!keep) return pool; // ИИ не ответил — лучше полный список по смыслу, чем пусто
+    await env.FUNDING_KV.put(key, JSON.stringify(keep), { expirationTtl: FILTER_CACHE_TTL });
+  }
+  const byId = new Map(pool.map((r) => [r.id, r]));
+  const kept = keep.map((id) => byId.get(id)).filter(Boolean);
+  return kept.length ? kept : pool;
+}
+
 export async function buildCalendar(env, ctx, profile) {
   const now = Date.now();
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
-  let pool = all.filter((r) => !r.is_crypto);
+  let pool = all.filter((r) => !r.is_crypto && !isHiddenRecord(r));
   const cats = profile ? profileCategories(profile) : [];
   if (cats.length) {
     // Записи без категорий не отбрасываем — лучше показать лишнее, чем потерять донора.
@@ -113,6 +187,7 @@ export async function buildCalendar(env, ctx, profile) {
         .filter((r) => sem.has(r.id) && sem.get(r.id) >= top * PROFILE_REL_MIN)
         .sort((a, b) => sem.get(b.id) - sem.get(a.id))
         .slice(0, PROFILE_MAX_RECORDS);
+      pool = await filterWithLlm(env, profile, pool);
       personal = true;
     }
   }

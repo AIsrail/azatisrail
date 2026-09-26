@@ -13,7 +13,7 @@
  */
 
 import { semanticScores } from "./semantic.js";
-import { recordDeadlineClass, DEADLINE_CLASS_RANK, normalizeRu, matchesQueryLoose } from "./extract.js";
+import { recordDeadlineClass, DEADLINE_CLASS_RANK, normalizeRu, matchesQueryLoose, isHiddenRecord } from "./extract.js";
 
 const PICK_MODEL = "@cf/openai/gpt-oss-120b";
 const LOCAL_CANDIDATES = 28; // КР + регион
@@ -113,7 +113,7 @@ export async function pickForBuyer(env, ctx, q, { exclude = new Set(), count = 5
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
   const cryptoOk = CRYPTO_QUERY_RE.test(q);
   const now = Date.now();
-  let pool = all.filter((r) => cryptoOk || !r.is_crypto).map((r) => ({ ...r, _dl: recordDeadlineClass(r.deadline, now) }));
+  let pool = all.filter((r) => !isHiddenRecord(r) && (cryptoOk || !r.is_crypto)).map((r) => ({ ...r, _dl: recordDeadlineClass(r.deadline, now) }));
   const fresh = pool.filter((r) => !exclude.has(r.id));
   if (fresh.length >= count * 4) pool = fresh;
 
