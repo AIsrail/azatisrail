@@ -3,369 +3,570 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>База доноров, грантов и инвесторов — Connect4Pro (fundan.cc)</title>
-<meta name="description" content="450+ доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии. Бесплатный поиск, платный доступ от 1500 сом на 6 месяцев.">
+<title>Fundan — ИИ-поиск грантов и инвесторов для Кыргызстана и Центральной Азии</title>
+<meta name="description" content="460 грантов, инвесторов, акселераторов и программ поддержки для НКО, бизнеса и стартапов Кыргызстана и Центральной Азии. ИИ-поиск по смыслу, персональный календарь фандрайзинга. От 1500 сом на 6 месяцев.">
+<meta name="theme-color" content="#030b16">
 <link rel="canonical" href="https://fundan.cc/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Connect4Pro — база доноров">
-<meta property="og:title" content="База доноров, грантов и инвесторов — Connect4Pro">
-<meta property="og:description" content="450+ доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии.">
+<meta property="og:site_name" content="Fundan · Connect4Pro">
+<meta property="og:title" content="Fundan — финансирование для вашего проекта за секунды">
+<meta property="og:description" content="ИИ-поиск по 460 грантам, инвесторам и программам поддержки Кыргызстана и Центральной Азии.">
 <meta property="og:url" content="https://fundan.cc/">
 <meta property="og:locale" content="ru_RU">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="База доноров, грантов и инвесторов — Connect4Pro">
-<meta name="twitter:description" content="450+ доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии.">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Connect4Pro — база доноров","url":"https://fundan.cc/","description":"Поисковая база доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии.","publisher":{"@type":"Organization","name":"Connect4Pro","founder":{"@type":"Person","name":"Азат Исраилов","url":"https://azatisrail.org"},"url":"https://fundan.cc","sameAs":["https://azatisrail.org","https://www.facebook.com/connect4kg","https://t.me/connect4_pro"]},"potentialAction":{"@type":"SearchAction","target":"https://fundan.cc/?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"База доноров, инвесторов и грантов Connect4Pro","description":"450+ записей: доноры и гранты (с явным делением на бизнес и НКО), международные и местные инвесторы, акселераторы, финансы для МСБ Кыргызстана, стажировки и стипендии.","keywords":["гранты","доноры","инвесторы","акселераторы","фандрайзинг","Кыргызстан","Центральная Азия","НКО","стартапы"],"creator":{"@type":"Organization","name":"Connect4Pro"},"license":"https://fundan.cc/#pricing"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Что входит в базу доноров?","acceptedAnswer":{"@type":"Answer","text":"450+ записей: международные и местные доноры и гранты (для бизнеса и НКО), инвесторы (международные и в Кыргызстане), акселераторы, программы финансирования МСБ в КР, стажировки и стипендии."}},{"@type":"Question","name":"Сколько стоит доступ к базе доноров?","acceptedAnswer":{"@type":"Answer","text":"Без оплаты доступен бесплатный поиск по архиву публикаций Connect4Pro (примеры, не гарантия точного совпадения). Доступ к структурированной базе на 6 месяцев — 1500 сом (Базовый) или 4500 сом (Расширенный: + архив публикаций, пособия и шаблоны, ИИ-помощник fund4pro для разработки проектного предложения). Разовый подбор 5 вариантов — 200 сом в Telegram-боте @c4faq_bot."}},{"@type":"Question","name":"Как получить доступ после оплаты?","acceptedAnswer":{"@type":"Answer","text":"Оплата и выдача кода проходят в Telegram-боте @c4faq_bot: выбираете тариф, оплачиваете и присылаете чек, бот сам присылает код доступа после подтверждения. Код активируется прямо на странице поиска."}},{"@type":"Question","name":"Как часто обновляется база?","acceptedAnswer":{"@type":"Answer","text":"База основана на 15-летнем практическом опыте фандрайзинга Азата Исраилова и регулярно пополняется новыми донорами, инвесторами и программами."}}]}</script>
+<meta name="twitter:title" content="Fundan — финансирование для вашего проекта за секунды">
+<meta name="twitter:description" content="ИИ-поиск по 460 грантам, инвесторам и программам поддержки Кыргызстана и Центральной Азии.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M10 9h12M10 16h8M10 9v14' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Fundan · Connect4Pro","url":"https://fundan.cc/","description":"ИИ-поиск по базе доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии.","publisher":{"@type":"Organization","name":"Connect4Pro","url":"https://fundan.cc","sameAs":["https://www.facebook.com/connect4kg","https://t.me/connect4_pro"]},"potentialAction":{"@type":"SearchAction","target":"https://fundan.cc/?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Что входит в базу?","acceptedAnswer":{"@type":"Answer","text":"Более 450 записей: международные и местные доноры и гранты для бизнеса и НКО, инвесторы (международные, региональные и в Кыргызстане), акселераторы, программы финансирования МСБ в КР, стажировки и стипендии."}},{"@type":"Question","name":"Сколько стоит доступ?","acceptedAnswer":{"@type":"Answer","text":"Доступ на 6 месяцев — 1500 сом (Базовый) или 4500 сом (Расширенный: + календарь фандрайзинга, архив публикаций, пособия и шаблоны, ИИ-помощник fund4pro). Разовый подбор 5 вариантов — 200 сом в Telegram-боте @c4faq_bot."}},{"@type":"Question","name":"Как получить доступ после оплаты?","acceptedAnswer":{"@type":"Answer","text":"Оплата и выдача кода проходят в Telegram-боте @c4faq_bot: выбираете тариф, оплачиваете и присылаете чек, бот присылает код доступа. Код вводится на сайте, без регистрации и пароля."}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-.db-hero{padding:64px 0 40px;text-align:center;border-bottom:0.5px solid var(--border)}
-.db-tag{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--sap);font-weight:500;margin-bottom:14px}
-.db-ttl{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4.5vw,44px);font-weight:300;line-height:1.15;margin-bottom:16px}
-.db-ttl em{color:var(--sap);font-style:italic}
-.db-desc{font-size:15px;color:var(--mid);font-weight:300;max-width:520px;margin:0 auto 28px;line-height:1.8}
-.db-search{display:flex;max-width:540px;margin:0 auto 16px;border:1.5px solid var(--sap);border-radius:2px;overflow:hidden}
-.db-search input{flex:1;border:none;padding:14px 16px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white)}
-.db-search input:focus{outline:none}
-.db-search button{background:var(--sap);color:#fff;border:none;padding:0 26px;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s,transform .1s}
-.db-search button:hover{background:var(--sap2)}
-.db-search button:active{transform:scale(.96)}
-.db-search button:disabled{opacity:.7;cursor:default}
-.db-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.db-fresh{font-size:12px;color:var(--muted);margin:-10px auto 18px;max-width:520px}
-.fs-fresh-note{font-size:12px;color:var(--muted);text-align:center;max-width:560px;margin:18px auto 0;line-height:1.7}
-.db-chip{font-size:11px;letter-spacing:.04em;border:1px solid var(--border);border-radius:20px;padding:6px 14px;color:var(--mid);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
-.db-chip:hover,.db-chip.active{border-color:var(--sap);color:var(--sap)}
-.db-origin{padding:22px 24px;font-size:13px;color:var(--mid);line-height:1.8;text-align:center;max-width:640px;margin:0 auto;border-bottom:0.5px solid var(--border)}
-.db-origin a{color:var(--sap)}
-.fs-bar{display:flex;gap:10px;flex-wrap:wrap;margin:36px 0 18px;align-items:center}
-.fs-input,.fs-select{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--white);border:1.5px solid var(--border);border-radius:2px;padding:10px 12px;transition:border-color .2s}
-.fs-input:focus,.fs-select:focus{outline:none;border-color:var(--sap)}
-.fs-select{min-width:170px}
-.note-bar{background:var(--sect);border-left:3px solid var(--sap);padding:16px 20px;margin-bottom:28px;font-size:13px;color:var(--mid);line-height:1.6;border-radius:0 2px 2px 0}
-.note-bar a{color:var(--sap)}
-.token-panel{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0 24px;padding:18px 20px;background:var(--sect);border:1.5px solid var(--sap);border-radius:4px}
-.token-panel .token-label{font-size:13.5px;color:var(--ink);font-weight:500;flex:1 1 100%}
-.token-panel input{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--white);border:1.5px solid var(--border);border-radius:2px;padding:13px 14px;flex:1;min-width:180px}
-.token-panel input:focus{outline:none;border-color:var(--sap)}
-.token-panel button{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;background:var(--sap);color:#fff;border:none;padding:13px 26px;border-radius:2px;cursor:pointer;transition:background .2s,transform .15s;white-space:nowrap}
-.token-panel button:hover{background:var(--sap2);transform:translateY(-2px)}
-.token-status{font-size:12px;color:var(--muted)}
-.token-status.unlocked{color:var(--sap)}
-.fs-count{font-size:12px;color:var(--muted);margin-bottom:18px}
-.fs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border)}
-.fs-card{background:var(--white);padding:30px;display:flex;flex-direction:column;min-width:0}
-.fs-card:hover{background:#FDFCF9}
-.fs-top-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
-.fs-section{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--sap);font-weight:500}
-.fs-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;line-height:1.3;margin-bottom:10px}
-.fs-meta-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--mid);margin-bottom:12px;min-width:0}
+/* Главная fundan.cc — тёмная тема «глубокий океан» (2026-09-26). Остальные страницы сайта
+   живут на shared.css/shared.js и эту тему не используют. */
+:root{
+  --bg:#030b16;--bg2:#061426;--surf:#0a1b30;--surf2:#0d2238;
+  --line:rgba(125,211,252,.12);--line2:rgba(125,211,252,.22);
+  --ink:#e8f1fb;--mid:#a9bcd2;--muted:#6f86a0;
+  --c1:#22d3ee;--c2:#3b82f6;--c3:#818cf8;
+  --ok:#34d399;--warn:#fbbf24;--bad:#fb7185;
+  --r:16px;
+  --grad:linear-gradient(90deg,var(--c1),var(--c2));
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+::selection{background:rgba(34,211,238,.3)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(3,11,22,.72);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.logo small{font-weight:500;font-size:11px;color:var(--muted);letter-spacing:.02em;margin-left:2px}
+.menu{display:flex;align-items:center;gap:28px;font-size:14px}
+.menu a{color:var(--mid);transition:color .2s}
+.menu a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .2s,background .2s,opacity .2s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-ghost{padding:9px 16px;font-size:14px;background:rgba(255,255,255,.06);border:1px solid var(--line2);color:var(--ink)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-main{padding:13px 22px;font-size:15px;background:var(--grad);color:#021018;box-shadow:0 8px 30px -8px rgba(34,211,238,.55)}
+.btn-main:hover{box-shadow:0 10px 38px -6px rgba(34,211,238,.75)}
+.btn:disabled{opacity:.6;cursor:default}
+.burger{display:none;background:none;border:1px solid var(--line2);border-radius:10px;width:40px;height:40px;cursor:pointer}
+.burger span{display:block;width:16px;height:1.5px;background:var(--ink);margin:4px auto}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding:72px 0 88px}
+.hero .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(125,211,252,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(125,211,252,.06) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 75% 70% at 65% 25%,#000 25%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse 75% 70% at 65% 25%,#000 25%,transparent 80%)}
+.glow{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
+.glow.g1{width:640px;height:640px;right:-160px;top:-220px;background:radial-gradient(circle,rgba(34,211,238,.32),transparent 65%);animation:float 14s ease-in-out infinite alternate}
+.glow.g2{width:520px;height:520px;left:-200px;bottom:-260px;background:radial-gradient(circle,rgba(59,130,246,.26),transparent 65%);animation:float 18s ease-in-out infinite alternate-reverse}
+@keyframes float{to{transform:translate(40px,30px) scale(1.08)}}
+.hero-g{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:56px;align-items:center}
+.hero-g>*{min-width:0}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mid);border:1px solid var(--line2);background:rgba(10,27,48,.6);padding:6px 12px 6px 8px;border-radius:999px;margin-bottom:22px}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(52,211,153,.18);animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(52,211,153,.06)}}
+h1{font-size:clamp(32px,8.6vw,68px);overflow-wrap:break-word;font-weight:800;letter-spacing:-.045em;line-height:1.02}
+.grad-t{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:18px;color:var(--mid);max-width:540px;margin:22px 0 30px;line-height:1.6}
+.search{display:flex;align-items:center;gap:8px;max-width:580px;padding:7px 7px 7px 16px;border-radius:16px;background:rgba(10,27,48,.72);border:1px solid var(--line2);box-shadow:0 0 0 6px rgba(34,211,238,.05),0 20px 60px -20px rgba(0,0,0,.6);transition:border-color .2s,box-shadow .2s}
+.search:focus-within{border-color:rgba(34,211,238,.55);box-shadow:0 0 0 6px rgba(34,211,238,.12),0 20px 60px -20px rgba(0,0,0,.6)}
+.search svg{flex:0 0 auto;opacity:.6}
+.search input{flex:1;min-width:0;background:none;border:none;outline:none;font-size:16px;padding:10px 4px}
+.search input::placeholder{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:12.5px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--mid);cursor:pointer;transition:all .2s}
+.chip:hover{border-color:rgba(34,211,238,.5);color:var(--ink)}
+.fresh{font-size:12.5px;color:var(--muted);margin-top:14px}
+.stats{display:flex;gap:36px;margin-top:38px;flex-wrap:wrap}
+.stats b{display:block;font-size:26px;font-weight:700;letter-spacing:-.03em}
+.stats span{font-size:12.5px;color:var(--muted)}
+
+.demo{position:relative}
+.term{font-size:12.5px;color:var(--c1);margin-bottom:14px;display:flex;gap:10px;align-items:center}
+.term i{display:inline-block;width:7px;height:14px;background:var(--c1);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.dcard{background:rgba(10,27,48,.78);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;backdrop-filter:blur(10px);opacity:0;transform:translateY(16px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards;position:relative;overflow:hidden}
+.dcard::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(34,211,238,.07) 50%,transparent 70%);transform:translateX(-100%);animation:scan 3.6s ease-in-out infinite;animation-delay:inherit}
+@keyframes scan{60%,100%{transform:translateX(100%)}}
+@keyframes rise{to{opacity:1;transform:none}}
+.drow{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.02em;padding:4px 8px;border-radius:6px;white-space:nowrap}
+.t-open{background:rgba(52,211,153,.12);color:#6ee7b7}
+.t-roll{background:rgba(129,140,248,.14);color:#a5b4fc}
+.t-exp{background:rgba(251,191,36,.12);color:#fcd34d}
+.t-geo{background:rgba(34,211,238,.1);color:#67e8f9}
+.dname{font-weight:600;font-size:15px;margin:10px 0 3px;letter-spacing:-.01em}
+.dmeta{font-size:12.5px;color:var(--muted)}
+.match{height:3px;border-radius:3px;background:rgba(255,255,255,.06);margin-top:12px;overflow:hidden}
+.match b{display:block;height:100%;background:var(--grad);width:0;animation:fill 1.2s .9s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes fill{to{width:var(--w)}}
+
+/* sections */
+section{position:relative}
+.sec{padding:96px 0}
+.sec-alt{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--c1);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+h2{font-size:clamp(30px,3.6vw,44px);font-weight:700;letter-spacing:-.035em;line-height:1.08}
+.sec-lead{font-size:16.5px;color:var(--mid);max-width:620px;margin-top:14px;line-height:1.65}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* results */
+.results-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.fs-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fs-input,.fs-select{background:var(--surf);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font-size:13.5px;color:var(--ink);outline:none;transition:border-color .2s}
+.fs-input:focus,.fs-select:focus{border-color:rgba(34,211,238,.55)}
+.fs-select{min-width:0;max-width:100%;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236f86a0' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.fs-select option{background:#0a1b30}
+.note-bar{border:1px solid var(--line2);background:linear-gradient(90deg,rgba(34,211,238,.08),rgba(59,130,246,.04));border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:14px;color:var(--mid);line-height:1.6}
+.note-bar a{color:var(--c1);font-weight:500}
+.token-line{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;margin-bottom:18px}
+.token-status{font-size:13px;color:var(--muted)}
+.token-status.unlocked{color:var(--ok)}
+.token-jump{font-size:13px;color:var(--c1);font-weight:500}
+.fs-count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:14px}
+.fs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.fs-card{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;min-width:0;transition:border-color .25s,transform .25s,background .25s}
+.fs-card:hover{border-color:rgba(34,211,238,.35);transform:translateY(-2px);background:var(--surf2)}
+.fs-top-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:8px}
+.fs-section{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--c1)}
+.fs-title{font-size:17px;font-weight:600;letter-spacing:-.015em;line-height:1.35;margin-bottom:10px}
+.fs-meta-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--mid);margin-bottom:10px;min-width:0}
 .fs-meta-row span{word-break:break-word;max-width:100%}
-.fs-desc{font-size:13.5px;color:var(--mid);line-height:1.7;font-weight:300;flex:1;margin-bottom:16px}
-.fs-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.fs-tag{font-size:10px;padding:3px 8px;border:1px solid var(--border);color:var(--muted);border-radius:1px}
-.fs-link{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sap);font-weight:500;width:fit-content}
-.fs-link:hover{color:var(--sap2)}
-.cal-form{display:flex;flex-direction:column;gap:10px;max-width:720px;margin:20px 0 24px}
-.cal-form textarea{min-height:84px;resize:vertical;line-height:1.6}
-.fs-go{background:var(--sap);color:#fff;border:none;border-radius:2px;padding:11px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s}
-.fs-go:hover{background:var(--sap2)}
+.fs-desc{font-size:13.5px;color:var(--mid);line-height:1.65;flex:1;margin-bottom:14px}
+.fs-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.fs-tag{font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--mid)}
+.fs-link{font-size:13px;color:var(--c1);font-weight:600;width:fit-content}
+.fs-link:hover{text-decoration:underline}
+.fs-more-row{text-align:center;padding:26px 0 0}
+.fs-more-btn{background:rgba(255,255,255,.04);border:1px solid var(--line2);color:var(--ink);padding:11px 22px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:500}
+.fs-more-btn:hover{border-color:rgba(34,211,238,.5)}
+.no-results{grid-column:1/-1;padding:44px 20px;text-align:center;color:var(--mid);font-size:15px;border:1px dashed var(--line2);border-radius:var(--r)}
+.fs-fresh-note{font-size:12.5px;color:var(--muted);text-align:center;max-width:600px;margin:22px auto 0;line-height:1.7}
+.fs-go{background:var(--grad);color:#021018;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer}
 .fs-go:disabled{opacity:.6;cursor:default}
-.cal-form .fs-go{align-self:flex-start}
-.cal-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:var(--muted);margin-bottom:18px}
-.cal-months{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
-.cal-month{background:var(--white);padding:22px 22px 18px;min-width:0}
-.cal-month h3{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin-bottom:12px}
-.cal-item{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--sect);font-size:13px;line-height:1.5}
+
+/* how + features */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:44px}
+.step{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+.step .n{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--c1);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.step .n::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.step h3{font-size:18px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px}
+.step p{font-size:14px;color:var(--mid);line-height:1.6}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:44px}
+.tile{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:24px 26px 26px;position:relative;overflow:hidden;min-height:210px;display:flex;flex-direction:column;gap:6px}
+.tile h3{margin-top:20px}
+.tile.w3{grid-column:span 3}.tile.w2{grid-column:span 2}.tile.w4{grid-column:span 4}
+.tile .ico{margin-bottom:auto;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25)}
+.tile h3{font-size:18px;font-weight:600;letter-spacing:-.02em;margin-bottom:6px}
+.tile p{font-size:14px;color:var(--mid);line-height:1.6}
+.tile.hl{background:radial-gradient(120% 120% at 100% 0%,rgba(34,211,238,.16),transparent 55%),var(--surf)}
+.geo{display:flex;gap:6px;margin-bottom:auto}
+
+/* calendar */
+.cal-form{display:flex;gap:10px;align-items:stretch;max-width:880px;margin:30px 0 20px}
+.cal-form textarea{flex:1;min-height:76px;resize:vertical;line-height:1.55;font-size:14px}
+.cal-form .fs-go{align-self:flex-end;padding:13px 22px}
+.cal-legend{display:flex;flex-wrap:wrap;gap:18px;font-size:12.5px;color:var(--muted);margin-bottom:16px}
+.cal-months{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cal-month{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
+.cal-month h3{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px;display:flex;justify-content:space-between}
+.cal-item{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px;line-height:1.5}
 .cal-item:first-of-type{border-top:none}
-.cal-badge{flex:0 0 auto;font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:2px;height:fit-content;white-space:nowrap}
-.cal-deadline{background:#FBE9E7;color:#A0331F}
-.cal-expected{background:#FFF6DC;color:#8A6A12}
-.cal-plan{background:#E8F4EC;color:#2B6B3F}
-.cal-name{color:var(--ink);word-break:break-word}
-.cal-name a{color:var(--ink);border-bottom:1px solid var(--border)}
-.cal-name a:hover{color:var(--sap)}
+.cal-badge{flex:0 0 auto;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.03em;text-transform:uppercase;padding:3px 7px;border-radius:6px;height:fit-content;white-space:nowrap}
+.cal-deadline{background:rgba(251,113,133,.14);color:#fda4af}
+.cal-expected{background:rgba(251,191,36,.12);color:#fcd34d}
+.cal-plan{background:rgba(52,211,153,.12);color:#6ee7b7}
+.cal-name{word-break:break-word}
+.cal-name a{border-bottom:1px solid var(--line2)}
+.cal-name a:hover{color:var(--c1)}
 .cal-meta{display:block;font-size:11.5px;color:var(--muted)}
 .cal-empty{font-size:12.5px;color:var(--muted)}
-@media(max-width:1100px){.cal-months{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.cal-months{grid-template-columns:1fr}}
-.fs-more-row{text-align:center;padding:34px 0}
-.fs-more-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;background:transparent;border:1.5px solid var(--border);color:var(--mid);padding:12px 26px;border-radius:2px;cursor:pointer;transition:all .2s}
-.fs-more-btn:hover{border-color:var(--sap);color:var(--sap)}
-.no-results{grid-column:1/-1;padding:60px;text-align:center;color:var(--muted);font-size:15px;font-weight:300}
-.pricing-g{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:1px;background:var(--border);margin-top:20px}
-.access-card{background:var(--sect)}
-.access-steps{margin:10px 0 16px 18px;padding:0;font-size:13px;color:var(--mid);line-height:1.65}
-.access-steps li{margin-bottom:4px}
-.access-card .token-panel{margin:0 0 10px;padding:0;background:none;border:none}
-.access-help{font-size:12px;color:var(--muted);line-height:1.6}
-.access-help a{color:var(--sap)}
-.token-line{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;margin:6px 0 22px}
-.token-jump{font-size:12px;color:var(--sap);font-weight:500}
-.price-card{background:var(--white);padding:26px 22px;display:flex;flex-direction:column;text-align:left}
-.price-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:6px}
-.price-val{font-size:22px;font-weight:500;color:var(--sap);margin-bottom:12px}
-.price-desc{font-size:13px;color:var(--mid);line-height:1.6;font-weight:300;flex:1;margin-bottom:18px}
-.price-btn{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;background:var(--sap);color:white;padding:10px 16px;border-radius:2px;width:fit-content;transition:background .2s,transform .15s}
-.price-btn:hover{background:var(--sap2);transform:translateY(-2px)}
-.faq-item{border-top:0.5px solid var(--border);padding:18px 0}
-.faq-q{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;margin-bottom:8px}
-.faq-a{font-size:13.5px;color:var(--mid);line-height:1.7;font-weight:300}
-.about-box{max-width:640px;margin:0 auto;text-align:center;font-size:13.5px;color:var(--mid);line-height:1.85}
-.about-box a{color:var(--sap)}
-@media(max-width:1100px){.fs-grid{grid-template-columns:1fr}.pricing-g{grid-template-columns:1fr 1fr}.access-card{grid-column:1/-1}}
-@media(max-width:640px){.pricing-g{grid-template-columns:1fr}}
+
+/* pricing */
+.pricing-g{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:14px;margin-top:44px;align-items:stretch}
+.price-card{background:var(--surf);border:1px solid var(--line);border-radius:20px;padding:28px;display:flex;flex-direction:column;min-width:0}
+.price-card.best{border-color:rgba(34,211,238,.45);background:radial-gradient(120% 90% at 100% 0%,rgba(34,211,238,.14),transparent 55%),var(--surf);box-shadow:0 30px 80px -40px rgba(34,211,238,.45)}
+.price-name{font-size:15px;font-weight:600;color:var(--mid);display:flex;justify-content:space-between;align-items:center}
+.badge-best{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#021018;background:var(--grad);padding:3px 8px;border-radius:6px}
+.price-val{font-size:40px;font-weight:800;letter-spacing:-.04em;margin:14px 0 2px}
+.price-val small{font-size:15px;font-weight:500;color:var(--muted);letter-spacing:0}
+.price-list{list-style:none;margin:18px 0 24px;display:flex;flex-direction:column;gap:10px;flex:1}
+.price-list li{font-size:14px;color:var(--mid);display:flex;gap:10px;line-height:1.5}
+.price-list li::before{content:'';flex:0 0 16px;height:16px;margin-top:2px;border-radius:50%;background:rgba(34,211,238,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8'%3E%3Cpath d='M1 4l2.5 2.5L9 1' stroke='%2322d3ee' stroke-width='1.6' fill='none'/%3E%3C/svg%3E") center no-repeat}
+.price-btn{display:flex;justify-content:center;padding:13px;border-radius:12px;font-weight:600;font-size:15px;background:rgba(255,255,255,.06);border:1px solid var(--line2);transition:all .2s}
+.price-btn:hover{background:rgba(255,255,255,.1)}
+.best .price-btn{background:var(--grad);color:#021018;border:none}
+.access-card{background:var(--bg2)}
+.access-steps{margin:16px 0 18px;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+.access-steps li{counter-increment:s;font-size:13.5px;color:var(--mid);display:flex;gap:10px;line-height:1.5}
+.access-steps li::before{content:counter(s);flex:0 0 22px;height:22px;border-radius:7px;background:rgba(34,211,238,.1);color:var(--c1);font:600 12px 'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center}
+.token-panel{display:flex;gap:8px;margin-bottom:10px}
+.token-panel input{flex:1;min-width:0;background:var(--surf);border:1px solid var(--line2);border-radius:10px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none}
+.token-panel input:focus{border-color:rgba(34,211,238,.55)}
+.token-panel button{background:var(--grad);color:#021018;border:none;border-radius:10px;padding:0 16px;font-weight:600;font-size:14px;cursor:pointer}
+.access-help{font-size:12.5px;color:var(--muted);line-height:1.6}
+.access-help a,.single a{color:var(--c1)}
+.single{margin-top:22px;font-size:14px;color:var(--mid);text-align:center}
+
+/* faq */
+.faq{max-width:780px;margin-top:36px}
+.faq details{border-bottom:1px solid var(--line);padding:20px 0}
+.faq summary{cursor:pointer;list-style:none;font-size:17px;font-weight:600;letter-spacing:-.01em;display:flex;justify-content:space-between;gap:20px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';color:var(--c1);font-weight:400;font-size:22px;line-height:1;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq p{font-size:14.5px;color:var(--mid);line-height:1.7;margin-top:12px}
+
+/* cta + footer */
+.cta-box{border-radius:24px;padding:56px 40px;text-align:center;background:radial-gradient(80% 120% at 50% 0%,rgba(34,211,238,.18),transparent 60%),var(--surf);border:1px solid var(--line2);position:relative;overflow:hidden}
+.cta-box h2{max-width:720px;margin:0 auto}
+.cta-box .search{margin:28px auto 0}
+footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;color:var(--muted)}
+.foot{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+.foot-links{display:flex;flex-wrap:wrap;gap:10px 22px}
+.foot-links a:hover{color:var(--ink)}
+
+@media(max-width:980px){
+  .hero-g{grid-template-columns:minmax(0,1fr);gap:40px}
+  .steps{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr 1fr}.tile.w3,.tile.w2,.tile.w4{grid-column:span 2}
+  .pricing-g{grid-template-columns:minmax(0,1fr)}
+  .fs-bar{width:100%}
+  .fs-bar .fs-select{flex:1 1 200px}
+  .cal-months{grid-template-columns:1fr 1fr}
+  .fs-grid{grid-template-columns:minmax(0,1fr)}
+  .steps,.cal-months{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:720px){
+  .menu{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:rgba(3,11,22,.97);border-bottom:1px solid var(--line);padding:8px 24px 16px}
+  .menu.open{display:flex}
+  .menu a{padding:12px 0;border-bottom:1px solid var(--line)}
+  .menu .btn-ghost{margin-top:12px}
+  .burger{display:block}
+  .hero{padding:44px 0 64px}
+  .lead{font-size:16px}
+  .sec{padding:68px 0}
+  .cal-form{flex-direction:column}
+  .cal-form .fs-go{align-self:stretch}
+  .cal-months{grid-template-columns:1fr}
+  .search{flex-wrap:nowrap}
+  .search .btn-main{padding:12px 16px}
+  .stats{gap:24px}
+  .cta-box{padding:40px 20px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.dcard,.reveal{opacity:1;transform:none}.match b{width:var(--w)}}
 </style>
 </head>
 <body>
-<div id="page">
 
-<nav id="nb">
-  <a href="/" class="logo">Азат <b>Исраилов</b></a>
-  <div class="nav-r">
-    <ul class="nl" id="nl">
-      <li><a href="/#search" data-i="nav_fund">База доноров</a></li>
-      <li><a href="/#pricing" data-i="nav_price">Тарифы</a></li>
-      <li><a href="events.html" data-i="nav_ev">Мероприятия</a></li>
-      <li><a href="publications.html" data-i="nav_pub">Публикации</a></li>
-      <li><a href="https://t.me/c4faq_bot" target="_blank" class="nl-cta" data-i="nav_con">Связаться</a></li>
-    </ul>
-    <div class="lang-sw">
-      <button class="lang-btn active" onclick="setLang('ru')" id="lb-ru">RU</button>
-      <div class="lsep"></div>
-      <button class="lang-btn" onclick="setLang('kg')" id="lb-kg">KG</button>
-      <div class="lsep"></div>
-      <button class="lang-btn" onclick="setLang('en')" id="lb-en">EN</button>
-    </div>
-    <div class="nm" onclick="navToggle()"><span></span><span></span><span></span></div>
+<header class="nav">
+  <div class="wrap">
+    <a href="/" class="logo" aria-label="Fundan — на главную">
+      <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs><rect width="32" height="32" rx="9" fill="url(#lg)"/><path d="M10 9h12M10 16h8M10 9v14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+      Fundan<small>by Connect4Pro</small>
+    </a>
+    <nav class="menu" id="menu">
+      <a href="#search">Поиск</a>
+      <a href="#features">Возможности</a>
+      <a href="#calendar-section">Календарь</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#faq">Вопросы</a>
+      <a href="#access-code" class="btn btn-ghost">Войти по коду</a>
+    </nav>
+    <button class="burger" aria-label="Меню" onclick="document.getElementById('menu').classList.toggle('open')"><span></span><span></span><span></span></button>
   </div>
-</nav>
+</header>
 
-<section class="db-hero" id="search">
-  <div class="db-tag">База данных Connect4Pro</div>
-  <h1 class="db-ttl">Найди финансирование<br><em>за минуты, не недели</em></h1>
-  <p class="db-desc"><span class="db-count">450+</span> грантов, инвесторов, акселераторов и программ поддержки для бизнеса и НКО в Кыргызстане и Центральной Азии.</p>
-  <div class="db-search">
-    <input id="fs-q" type="text" placeholder="Например: гранты для НКО в сфере экологии">
-    <button id="db-search-btn" onclick="runAllSearches(true)">Найти</button>
-  </div>
-  <div class="db-fresh" id="db-fresh">База регулярно пополняется</div>
-  <div class="db-chips">
-    <button class="db-chip" onclick="quickFilter('category','business')">Бизнес</button>
-    <button class="db-chip" onclick="quickFilter('category','ngo')">НКО</button>
-    <button class="db-chip" onclick="quickFilter('category','individual')">Стажировки</button>
-    <button class="db-chip" onclick="quickFilter('q','климат')">Климат</button>
-    <button class="db-chip" onclick="quickFilter('q','технолог')">Технологии</button>
-  </div>
-</section>
-
-<section class="sw">
-  <div class="fs-bar">
-    <select class="fs-select" id="fs-category">
-      <option value="">Любая категория</option>
-      <option value="business">Бизнес / МСБ</option>
-      <option value="ngo">НКО</option>
-      <option value="individual">Для физлиц</option>
-    </select>
-    <select class="fs-select" id="fs-sheet">
-      <option value="">Любой тип</option>
-      <option value="Доноры">Доноры и гранты</option>
-      <option value="Инвесторы межд">Инвесторы — международные и региональные</option>
-      <option value="Инвесторы КР">Инвесторы — в Кыргызстане</option>
-      <option value="Финансы МСБ КР">Финансирование для МСБ в Кыргызстане</option>
-      <option value="Акселераторы и др.">Акселераторы и центры поддержки бизнеса</option>
-      <option value="Стажировки и стипендии">Стажировки и стипендии</option>
-    </select>
-  </div>
-
-  <div id="access-note" class="note-bar" style="display:none"></div>
-
-  <div class="token-line">
-    <span class="token-status" id="token-status">Полная база — по коду доступа.</span>
-    <a href="#access-code" class="token-jump" id="token-jump">Ввести код доступа →</a>
-  </div>
-
-  <div class="fs-count" id="fs-count"></div>
-  <div class="fs-grid" id="fs-grid"></div>
-  <div class="fs-more-row" id="fs-more-row" style="display:none">
-    <button class="fs-more-btn" id="fs-more-btn" onclick="loadMore()">Показать ещё</button>
-  </div>
-  <div class="fs-fresh-note" id="fs-fresh-note" style="display:none"></div>
-</section>
-
-<section class="sw">
-  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 8px">Бесплатно — из архива публикаций Connect4Pro</div>
-  <div style="font-size:12px;color:var(--muted);margin:0 0 12px;max-width:560px">Примеры уже неактуальных или международных возможностей — ориентир по формату. Актуальные и по Кыргызстану — в структурированной базе выше.</div>
-  <div class="fs-grid" id="archive-grid"></div>
-</section>
-
-<div class="db-origin">
-  Проект вырос из каталога <a href="https://connect4baza.tilda.ws/" target="_blank">connect4baza.tilda.ws</a> и практического опыта фандрайзинга <a href="https://azatisrail.org" target="_blank">Азата Исраилова</a> — консультанта, тренера и основателя Connect4Pro.
-</div>
-
-<section class="sw sw-alt" id="calendar-section">
-  <div class="reveal"><div class="sec-tag">Тариф «Расширенный»</div><h2 class="sec-ttl">Календарь<br><em>фандрайзинга</em></h2></div>
-  <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:620px;margin-top:16px;line-height:1.8">
-    Что подавать и когда — на ближайшие месяцы, под вашу организацию или проект: реальные дедлайны конкурсов, ежегодные программы, которые скоро откроются, и план обращений к постоянно открытым донорам и инвесторам.
-  </p>
-  <div class="cal-form">
-    <textarea class="fs-input" id="cal-profile" placeholder="Кратко о себе: кто вы (НКО, ИП/компания, стартап, частное лицо), где работаете, чем занимаетесь, на что нужны деньги. Например: «Общественный фонд в Нарыне, работаем с молодёжью, нужны гранты на тренинги по профориентации»"></textarea>
-    <button class="fs-go" id="cal-btn" onclick="runCalendar()">Построить календарь</button>
-  </div>
-  <div id="cal-note" class="note-bar" style="display:none"></div>
-  <div class="cal-legend" id="cal-legend" style="display:none">
-    <span><span class="cal-badge cal-deadline">Дедлайн</span> реальная дата приёма</span>
-    <span><span class="cal-badge cal-expected">Ожидается</span> ежегодная программа, прошлый цикл был в этом месяце</span>
-    <span><span class="cal-badge cal-plan">План</span> открыты постоянно — рекомендуем обратиться в этом месяце</span>
-  </div>
-  <div class="cal-months" id="cal-months"></div>
-</section>
-
-<section class="sw" id="archive-full-section">
-  <div class="reveal"><div class="sec-tag">По коду доступа</div><h2 class="sec-ttl">Архив<br><em>публикаций</em></h2></div>
-  <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:560px;margin-top:16px;line-height:1.8">
-    339 реальных постов из истории Connect4Pro — гранты (бизнес и НКО отдельно), инвестиции, обучение. Входит в тариф «Расширенный» (4500 сом).
-  </p>
-  <div class="fs-bar">
-    <input class="fs-input" id="af-q" type="text" placeholder="Поиск по архиву публикаций…">
-    <select class="fs-select" id="af-category">
-      <option value="">Любая категория</option>
-      <option value="Гранты">Гранты</option>
-      <option value="Инвестиции">Инвестиции</option>
-      <option value="Обучение">Обучение</option>
-    </select>
-    <select class="fs-select" id="af-subcategory">
-      <option value="">Любая аудитория</option>
-      <option value="Бизнес">Бизнес</option>
-      <option value="НКО">НКО</option>
-      <option value="Бизнес + НКО">Бизнес + НКО</option>
-    </select>
-    <button class="fs-go" onclick="runArchiveFull(true)">Найти</button>
-  </div>
-  <div class="fs-count" id="af-count"></div>
-  <div class="fs-grid" id="af-grid"></div>
-  <div class="fs-more-row" id="af-more-row" style="display:none">
-    <button class="fs-more-btn" id="af-more-btn" onclick="loadMoreArchiveFull()">Показать ещё</button>
-  </div>
-</section>
-
-<section class="sw sw-alt" id="pricing">
-  <div class="reveal"><div class="sec-tag">Доступ</div><h2 class="sec-ttl">Тарифы</h2></div>
-  <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:560px;margin-top:16px;line-height:1.8">
-    Бесплатно доступны примеры из архива публикаций (см. выше). Структурированная база с фильтрами, суммами и дедлайнами — по коду доступа: оплатите один из вариантов ниже в Telegram-боте @c4faq_bot.
-  </p>
-  <div class="pricing-g">
-    <div class="price-card">
-      <div class="price-name">Базовый</div>
-      <div class="price-val">1500 сом</div>
-      <div class="price-desc">Поиск по всей базе доноров, инвесторов, акселераторов и программ поддержки — с суммами, дедлайнами и фильтрами. Доступ на 6 месяцев.</div>
-      <a class="price-btn" target="_blank" href="https://t.me/c4faq_bot?start=db">Оплатить →</a>
-    </div>
-    <div class="price-card">
-      <div class="price-name">Расширенный</div>
-      <div class="price-val">4500 сом</div>
-      <div class="price-desc">Всё из Базового + персональный календарь фандрайзинга, архив публикаций Connect4Pro, пособия и шаблоны по грантам, ИИ и бизнесу + ИИ-помощник fund4pro для разработки проектного предложения (2 проекта). Доступ на 6 месяцев.</div>
-      <a class="price-btn" target="_blank" href="https://t.me/c4faq_bot?start=pro">Оплатить →</a>
-    </div>
-    <div class="price-card access-card" id="access-code">
-      <div class="price-name">Уже оплатили?</div>
-      <ol class="access-steps">
-        <li>Нажмите «Оплатить» у нужного тарифа — откроется наш Telegram-бот.</li>
-        <li>Переведите оплату и отправьте боту фото или скриншот чека.</li>
-        <li>Бот пришлёт код доступа — обычно в течение дня.</li>
-        <li>Вставьте код сюда и нажмите «Активировать». Браузер запомнит его, вводить заново не нужно.</li>
-      </ol>
-      <div class="token-panel">
-        <input type="text" id="fs-token" placeholder="Код доступа, например 3F9A1C27B0D4E856" autocomplete="off">
-        <button onclick="applyToken()">Активировать</button>
+<section class="hero" id="search">
+  <div class="grid"></div><div class="glow g1"></div><div class="glow g2"></div>
+  <div class="wrap hero-g">
+    <div>
+      <div class="pill"><span class="dot"></span><span id="db-fresh">База регулярно пополняется</span></div>
+      <h1>Финансирование<br>для вашего проекта —<br><span class="grad-t">за секунды.</span></h1>
+      <p class="lead">ИИ-поиск по <span class="db-count">450+</span> грантам, инвесторам и программам поддержки Кыргызстана и Центральной Азии. Опишите задачу своими словами — Fundan найдёт то, что подходит именно вам.</p>
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="fs-q" type="text" autocomplete="off" aria-label="Что вы ищете" placeholder="Например: НКО в Токмаке, дети с инвалидностью">
+        <button class="btn btn-main" id="db-search-btn" onclick="runAllSearches(true);goResults()">Найти</button>
       </div>
-      <div class="access-help">Не пришёл код или что-то не работает — напишите боту <a href="https://t.me/c4faq_bot" target="_blank">@c4faq_bot</a>.</div>
+      <div class="chips">
+        <button class="chip" onclick="quickFilter('q','грант для НКО')">Гранты для НКО</button>
+        <button class="chip" onclick="quickFilter('q','льготный кредит для малого бизнеса')">Кредиты для бизнеса</button>
+        <button class="chip" onclick="quickFilter('q','инвестиции в стартап')">Инвестиции в стартап</button>
+        <button class="chip" onclick="quickFilter('q','стипендия на обучение за рубежом')">Стипендии</button>
+        <button class="chip" onclick="quickFilter('q','климат и экология')">Климат</button>
+      </div>
+      <div class="stats">
+        <div><b><span class="db-count">450+</span></b><span>программ в базе</span></div>
+        <div><b>&lt; 1 с</b><span>на поиск</span></div>
+        <div><b>КР → ЦА → мир</b><span>местные — первыми</span></div>
+      </div>
     </div>
-  </div>
-  <p style="font-size:13px;color:var(--mid);font-weight:300;max-width:560px;margin-top:20px;line-height:1.8">
-    Нужно всего несколько подходящих вариантов? <a href="https://t.me/c4faq_bot?start=single" target="_blank">Разовый подбор за 200 сом</a> — 5 вариантов под вашу задачу прямо в Telegram-боте.
-  </p>
-</section>
-
-<section class="sw">
-  <div class="reveal"><div class="sec-tag">Вопросы</div><h2 class="sec-ttl">Частые<br><em>вопросы</em></h2></div>
-  <div style="max-width:640px;margin-top:20px">
-    <div class="faq-item">
-      <div class="faq-q">Что входит в базу доноров?</div>
-      <div class="faq-a">Более 450 записей: международные и местные доноры и гранты (для бизнеса и НКО), инвесторы (международные и в Кыргызстане), акселераторы, программы финансирования МСБ в КР, стажировки и стипендии.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q">Как получить доступ после оплаты?</div>
-      <div class="faq-a">Оплата и выдача кода проходят в Telegram-боте @c4faq_bot — код активируется прямо на этой странице, без регистрации и пароля.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q">Как часто обновляется база?</div>
-      <div class="faq-a">База основана на 15-летнем практическом опыте фандрайзинга Азата Исраилова и регулярно пополняется новыми донорами, инвесторами и программами.</div>
+    <div class="demo" aria-hidden="true">
+      <div class="term mono">› поиск по смыслу · <span class="db-count">450+</span> записей <i></i></div>
+      <div class="dcard" style="animation-delay:.25s"><div class="drow"><span class="tag t-open">ДЕДЛАЙН 15 ОКТ</span><span class="tag t-geo">КЫРГЫЗСТАН</span></div><div class="dname">FAO BIA — акселератор для горных районов</div><div class="dmeta">Гранты $15 000 – $50 000 · бизнес-инкубация</div><div class="match"><b style="--w:96%"></b></div></div>
+      <div class="dcard" style="animation-delay:.5s"><div class="drow"><span class="tag t-roll">ПОСТОЯННО</span><span class="tag t-geo">ЦЕНТР. АЗИЯ</span></div><div class="dname">Most Ventures</div><div class="dmeta">Инвестиции $20 000 – $700 000 · технологии</div><div class="match"><b style="--w:88%"></b></div></div>
+      <div class="dcard" style="animation-delay:.75s"><div class="drow"><span class="tag t-open">ДЕДЛАЙН 27 ЯНВ</span><span class="tag t-geo">МИР</span></div><div class="dname">NED — гранты гражданскому обществу</div><div class="dmeta">Ежеквартальные окна · для НКО</div><div class="match"><b style="--w:81%"></b></div></div>
     </div>
   </div>
 </section>
 
-<section class="sw sw-alt" id="res">
-  <div class="reveal"><div class="sec-tag" data-i="res_tag">Ещё от Connect4Pro</div><h2 class="sec-ttl" data-i="res_ttl">Всё в <em>одном месте</em></h2></div>
-  <div class="res-g">
-    <a class="rc reveal d1" href="https://connect4funds.tilda.ws/" target="_blank"><div class="rc-ico">🎓</div><div class="rc-ttl" data-i="r1t">Курс по фандрайзингу</div><p class="rc-dsc" data-i="r1d">От понимания доноров до выигрышной заявки.</p><div class="rc-lnk" data-i="r_open">Открыть →</div></a>
-    <a class="rc reveal d2" href="https://grantmanual.tilda.ws/" target="_blank"><div class="rc-ico">📖</div><div class="rc-ttl" data-i="r2t">Руководство по грантам</div><p class="rc-dsc" data-i="r2d">Пошаговый гид для тех, кто впервые ищет гранты.</p><div class="rc-lnk" data-i="r_read">Читать →</div></a>
-    <a class="rc reveal d1" href="https://pro4dev.tilda.ws/" target="_blank"><div class="rc-ico">🚀</div><div class="rc-ttl" data-i="r4t">Тренинги Pro4Dev</div><p class="rc-dsc" data-i="r4d">Программы для НКО и предпринимателей.</p><div class="rc-lnk" data-i="r_view">Смотреть →</div></a>
-    <a class="rc reveal d2" href="https://www.facebook.com/connect4kg" target="_blank"><div class="rc-ico">💡</div><div class="rc-ttl" data-i="r5t">Connect4KG</div><p class="rc-dsc" data-i="r5d">Возможности финансирования для Кыргызстана.</p><div class="rc-lnk" data-i="r_sub">Подписаться →</div></a>
+<section class="sec" id="results">
+  <div class="wrap">
+    <div class="results-head">
+      <div><div class="eyebrow">Результаты</div><h2>Что нашлось по запросу</h2></div>
+      <div class="fs-bar">
+        <select class="fs-select" id="fs-category" onchange="runSearch(true)" aria-label="Категория">
+          <option value="">Любая категория</option>
+          <option value="business">Бизнес / МСБ</option>
+          <option value="ngo">НКО</option>
+          <option value="individual">Для физлиц</option>
+        </select>
+        <select class="fs-select" id="fs-sheet" onchange="runSearch(true)" aria-label="Тип">
+          <option value="">Любой тип</option>
+          <option value="Доноры">Доноры и гранты</option>
+          <option value="Инвесторы межд">Инвесторы — международные и региональные</option>
+          <option value="Инвесторы КР">Инвесторы — в Кыргызстане</option>
+          <option value="Финансы МСБ КР">Финансирование для МСБ в КР</option>
+          <option value="Акселераторы и др.">Акселераторы и центры поддержки</option>
+          <option value="Стажировки и стипендии">Стажировки и стипендии</option>
+        </select>
+      </div>
+    </div>
+    <div id="access-note" class="note-bar" style="display:none"></div>
+    <div class="token-line">
+      <span class="token-status" id="token-status">Полная база — по коду доступа.</span>
+      <a href="#access-code" class="token-jump" id="token-jump">Ввести код доступа →</a>
+    </div>
+    <div class="fs-count" id="fs-count"></div>
+    <div class="fs-grid" id="fs-grid"></div>
+    <div class="fs-more-row" id="fs-more-row" style="display:none">
+      <button class="fs-more-btn" id="fs-more-btn" onclick="loadMore()">Показать ещё</button>
+    </div>
+    <div class="fs-fresh-note" id="fs-fresh-note" style="display:none"></div>
+
+    <div style="margin-top:56px">
+      <div class="eyebrow">Бесплатно · из архива публикаций</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;max-width:620px">Примеры уже прошедших или международных возможностей — ориентир по формату. Актуальные и по Кыргызстану — в базе выше.</p>
+      <div class="fs-grid" id="archive-grid"></div>
+    </div>
   </div>
 </section>
 
-<section class="sw" id="about">
-  <div class="about-box">
-    <p>Азат Исраилов — консультант, тренер и фандрайзер с 15-летним опытом в международном развитии, автор этой базы и платформы Connect4Pro. Полный профиль, услуги и консультации — на <a href="https://azatisrail.org" target="_blank">azatisrail.org</a>.</p>
+<section class="sec sec-alt" id="how">
+  <div class="wrap">
+    <div class="reveal"><div class="eyebrow">Как это работает</div><h2>Три шага от идеи<br>до подачи заявки</h2></div>
+    <div class="steps">
+      <div class="step reveal"><div class="n">01</div><h3>Опишите задачу</h3><p>Обычными словами: кто вы, где работаете и на что нужны деньги. Никаких фильтров и сложных форм.</p></div>
+      <div class="step reveal"><div class="n">02</div><h3>ИИ находит по смыслу</h3><p>Fundan понимает синонимы и контекст: «цех», «производство» и «оборудование» — одна тема. Открытые конкурсы — первыми.</p></div>
+      <div class="step reveal"><div class="n">03</div><h3>Подавайте вовремя</h3><p>Календарь покажет, что подавать в каждом месяце, а ИИ-помощник fund4pro поможет подготовить заявку.</p></div>
+    </div>
   </div>
 </section>
 
-<!-- EVENTS PREVIEW — обновляй вместе с events.html -->
-<div class="preview-s" id="ev-preview">
-  <div class="preview-hd reveal">
-    <div><div class="sec-tag" data-i="pev_tag">Мероприятия</div><h2 class="sec-ttl" data-i="pev_ttl">Ближайшие<br><em>события</em></h2></div>
-    <a href="events.html" class="see-all" data-i="pev_all">Все мероприятия →</a>
+<section class="sec" id="features">
+  <div class="wrap">
+    <div class="reveal"><div class="eyebrow">Возможности</div><h2>Всё для фандрайзинга —<br>в одном окне</h2></div>
+    <div class="bento">
+      <div class="tile w4 hl reveal">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8 11h6M11 8v6"/></svg></div>
+        <h3>Поиск по смыслу, а не по словам</h3><p>Модель ИИ сравнивает ваш запрос с каждой программой базы — находит нужное, даже если вы описали задачу совсем другими словами.</p>
+      </div>
+      <div class="tile w2 reveal">
+        <div class="geo"><span class="tag t-geo">КР</span><span class="tag t-roll">ЦА</span><span class="tag t-exp">МИР</span></div>
+        <h3>Местные — первыми</h3><p>Сначала Кыргызстан, затем регион, международные — когда они реально подходят.</p>
+      </div>
+      <div class="tile w2 reveal">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+        <h3>Календарь фандрайзинга</h3><p>Дедлайны, ежегодные программы и план обращений — по месяцам, под ваш профиль.</p>
+      </div>
+      <div class="tile w2 reveal">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M21 4L3 11l6 2 2 6 3-4 5 4z"/></svg></div>
+        <h3>Подбор в Telegram</h3><p>5 вариантов под задачу за 200 сом — ИИ выбирает и объясняет, почему подходит.</p>
+      </div>
+      <div class="tile w2 reveal">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></div>
+        <h3>ИИ-помощник fund4pro</h3><p>Помогает разработать проектное предложение под конкретного донора.</p>
+      </div>
+      <div class="tile w3 reveal">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M4 12a8 8 0 0114-5.3M20 12a8 8 0 01-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></div>
+        <h3>Живая база</h3><p>Новые конкурсы добавляются регулярно, закрытые уходят вниз — вы видите только актуальное.</p>
+      </div>
+      <div class="tile w3 reveal">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div>
+        <h3>Мгновенно и без регистрации</h3><p>Поиск за доли секунды. Доступ — по коду из Telegram, без паролей и личных кабинетов.</p>
+      </div>
+    </div>
   </div>
-  <div class="cards-g" id="ev-cards"></div>
-</div>
+</section>
 
-<!-- PUBLICATIONS PREVIEW -->
-<div class="preview-s sw-alt" id="pub-preview">
-  <div class="preview-hd reveal">
-    <div><div class="sec-tag" data-i="ppb_tag">Публикации</div><h2 class="sec-ttl" data-i="ppb_ttl">Руководства и<br><em>материалы</em></h2></div>
-    <a href="publications.html" class="see-all" data-i="ppb_all">Все публикации →</a>
+<section class="sec sec-alt" id="calendar-section">
+  <div class="wrap">
+    <div class="reveal"><div class="eyebrow">Тариф «Расширенный»</div><h2>Календарь фандрайзинга</h2>
+    <p class="sec-lead">Что подавать и когда — на ближайшие месяцы, под вашу организацию: реальные дедлайны, ежегодные программы, которые скоро откроются, и план обращений к постоянно открытым донорам и инвесторам.</p></div>
+    <div class="cal-form">
+      <textarea class="fs-input" id="cal-profile" placeholder="Кратко о себе: кто вы (НКО, ИП/компания, стартап, частное лицо), где работаете, чем занимаетесь, на что нужны деньги. Например: «Общественный фонд в Нарыне, работаем с молодёжью, нужны гранты на тренинги по профориентации»"></textarea>
+      <button class="fs-go" id="cal-btn" onclick="runCalendar()">Построить календарь</button>
+    </div>
+    <div id="cal-note" class="note-bar" style="display:none"></div>
+    <div class="cal-legend" id="cal-legend" style="display:none">
+      <span><span class="cal-badge cal-deadline">Дедлайн</span> реальная дата приёма</span>
+      <span><span class="cal-badge cal-expected">Ожидается</span> ежегодная программа</span>
+      <span><span class="cal-badge cal-plan">План</span> открыты постоянно — обратитесь в этом месяце</span>
+    </div>
+    <div class="cal-months" id="cal-months"></div>
   </div>
-  <div class="cards-g" id="pub-cards"></div>
-</div>
+</section>
+
+<section class="sec" id="archive-full-section">
+  <div class="wrap">
+    <div class="reveal"><div class="eyebrow">Тариф «Расширенный»</div><h2>Архив публикаций</h2>
+    <p class="sec-lead">339 реальных постов из истории Connect4Pro — гранты для бизнеса и НКО, инвестиции, обучение.</p></div>
+    <div class="fs-bar" style="margin:26px 0 18px">
+      <input class="fs-input" id="af-q" type="text" placeholder="Поиск по архиву…" style="flex:1;min-width:200px">
+      <select class="fs-select" id="af-category" aria-label="Категория архива">
+        <option value="">Любая категория</option>
+        <option value="Гранты">Гранты</option>
+        <option value="Инвестиции">Инвестиции</option>
+        <option value="Обучение">Обучение</option>
+      </select>
+      <select class="fs-select" id="af-subcategory" aria-label="Аудитория">
+        <option value="">Любая аудитория</option>
+        <option value="Бизнес">Бизнес</option>
+        <option value="НКО">НКО</option>
+        <option value="Бизнес + НКО">Бизнес + НКО</option>
+      </select>
+      <button class="fs-go" onclick="runArchiveFull(true)">Найти</button>
+    </div>
+    <div class="fs-count" id="af-count"></div>
+    <div class="fs-grid" id="af-grid"></div>
+    <div class="fs-more-row" id="af-more-row" style="display:none">
+      <button class="fs-more-btn" id="af-more-btn" onclick="loadMoreArchiveFull()">Показать ещё</button>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-alt" id="pricing">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center"><div class="eyebrow">Тарифы</div><h2>Доступ на 6 месяцев</h2>
+    <p class="sec-lead" style="margin-left:auto;margin-right:auto">Оплата — в Telegram-боте @c4faq_bot. Без регистрации: бот пришлёт код, вы вводите его здесь.</p></div>
+    <div class="pricing-g">
+      <div class="price-card reveal">
+        <div class="price-name">Базовый</div>
+        <div class="price-val">1500 <small>сом</small></div>
+        <ul class="price-list">
+          <li>Поиск по всей базе с суммами и дедлайнами</li>
+          <li>Фильтры по типу и категории</li>
+          <li>ИИ-поиск по смыслу без ограничений</li>
+        </ul>
+        <a class="price-btn" target="_blank" rel="noopener" href="https://t.me/c4faq_bot?start=db">Оплатить в Telegram</a>
+      </div>
+      <div class="price-card best reveal">
+        <div class="price-name">Расширенный <span class="badge-best">ВЫГОДНО</span></div>
+        <div class="price-val">4500 <small>сом</small></div>
+        <ul class="price-list">
+          <li>Всё из Базового</li>
+          <li>Персональный календарь фандрайзинга</li>
+          <li>ИИ-помощник fund4pro — 2 проектных предложения</li>
+          <li>Архив публикаций Connect4Pro</li>
+          <li>Пособия и шаблоны по грантам, ИИ и бизнесу</li>
+        </ul>
+        <a class="price-btn" target="_blank" rel="noopener" href="https://t.me/c4faq_bot?start=pro">Оплатить в Telegram</a>
+      </div>
+      <div class="price-card access-card reveal" id="access-code">
+        <div class="price-name">Уже оплатили?</div>
+        <ol class="access-steps">
+          <li>Нажмите «Оплатить» — откроется наш Telegram-бот.</li>
+          <li>Переведите оплату и отправьте боту фото чека.</li>
+          <li>Бот пришлёт код доступа — обычно в течение дня.</li>
+          <li>Вставьте код ниже. Браузер его запомнит.</li>
+        </ol>
+        <div class="token-panel">
+          <input type="text" id="fs-token" placeholder="Код доступа" autocomplete="off" aria-label="Код доступа">
+          <button onclick="applyToken()">Активировать</button>
+        </div>
+        <div class="access-help">Код не пришёл или что-то не работает — напишите <a href="https://t.me/c4faq_bot" target="_blank" rel="noopener">@c4faq_bot</a>.</div>
+      </div>
+    </div>
+    <p class="single">Нужно всего несколько вариантов? <a href="https://t.me/c4faq_bot?start=single" target="_blank" rel="noopener">Разовый подбор за 200 сом</a> — 5 вариантов под вашу задачу прямо в Telegram.</p>
+  </div>
+</section>
+
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="reveal"><div class="eyebrow">Вопросы</div><h2>Частые вопросы</h2></div>
+    <div class="faq">
+      <details><summary>Что входит в базу?</summary><p>Более 450 программ: международные и местные доноры и гранты для НКО и бизнеса, инвесторы (международные, региональные и в Кыргызстане), акселераторы, льготное финансирование для МСБ в КР, стажировки и стипендии.</p></details>
+      <details><summary>Чем поиск Fundan отличается от обычного?</summary><p>Обычный поиск ищет совпадение слов. Fundan понимает смысл: на «теплица, своих денег мало» найдёт агрокредиты и лизинг, даже если в описании программы таких слов нет. Открытые конкурсы и местные программы показываются первыми.</p></details>
+      <details><summary>Как получить доступ после оплаты?</summary><p>Оплата и выдача кода проходят в Telegram-боте @c4faq_bot. Вы выбираете тариф, оплачиваете и присылаете чек — бот пришлёт код. Введите его в блоке «Уже оплатили?» — без регистрации и пароля.</p></details>
+      <details><summary>Как часто обновляется база?</summary><p>Регулярно: добавляем новые конкурсы и убираем закрытые. Дата последнего обновления указана в самом верху страницы.</p></details>
+      <details><summary>Что такое разовый подбор за 200 сом?</summary><p>Вы описываете задачу боту, и ИИ подбирает 5 самых подходящих вариантов по всей базе — с объяснением, почему каждый подходит, и практическим советом, с чего начать.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-box reveal">
+      <div class="glow g1" style="width:420px;height:420px;right:-120px;top:-200px"></div>
+      <h2>Найдите своё финансирование<br><span class="grad-t">прямо сейчас</span></h2>
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="cta-q" type="text" autocomplete="off" aria-label="Что вы ищете" placeholder="Опишите задачу своими словами">
+        <button class="btn btn-main" onclick="ctaSearch()">Найти</button>
+      </div>
+    </div>
+  </div>
+</section>
 
 <footer>
-  <div class="flogo">Азат <b>Исраилов</b></div>
-  <ul class="flinks">
-    <li><a href="/#search" data-i="nav_fund">База доноров</a></li>
-    <li><a href="events.html" data-i="nav_ev">Мероприятия</a></li>
-    <li><a href="publications.html" data-i="nav_pub">Публикации</a></li>
-    <li><a href="https://azatisrail.org" target="_blank">azatisrail.org</a></li>
-    <li><a href="https://www.youtube.com/@connect4fund" target="_blank">YouTube</a></li>
-  </ul>
-  <div class="fcopy">© 2026 · fundan.cc</div>
+  <div class="wrap foot">
+    <div>
+      <div class="logo" style="margin-bottom:8px"><svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="url(#lg)"/><path d="M10 9h12M10 16h8M10 9v14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>Fundan</div>
+      <div>© 2026 · fundan.cc · проект Connect4Pro</div>
+    </div>
+    <div class="foot-links">
+      <a href="https://t.me/c4faq_bot" target="_blank" rel="noopener">Telegram-бот</a>
+      <a href="https://t.me/connect4_pro" target="_blank" rel="noopener">Канал Connect4Pro</a>
+      <a href="https://www.facebook.com/connect4kg" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://connect4funds.tilda.ws/" target="_blank" rel="noopener">Курс по фандрайзингу</a>
+      <a href="https://grantmanual.tilda.ws/" target="_blank" rel="noopener">Руководство по грантам</a>
+      <a href="events.html">Мероприятия</a>
+      <a href="publications.html">Публикации</a>
+    </div>
+  </div>
 </footer>
-</div>
-<script src="shared.js"></script>
+
 <script>
 let TOKEN = localStorage.getItem('azat-funding-token') || '';
 let PAGE = 1;
 let ALL_LOADED = [];
 
+function goResults(){
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
 function quickFilter(kind, value){
   if(kind === 'q'){ document.getElementById('fs-q').value = value; }
   if(kind === 'category'){ document.getElementById('fs-category').value = value; }
   runAllSearches(true);
-  document.getElementById('search').scrollIntoView({behavior:'smooth'});
+  goResults();
+}
+
+function ctaSearch(){
+  const v = document.getElementById('cta-q').value.trim();
+  if(v) document.getElementById('fs-q').value = v;
+  runAllSearches(true);
+  goResults();
 }
 
 async function runAllSearches(reset){
@@ -387,14 +588,14 @@ function initToken(){
 function updateTokenStatus(tier, scope, plan, expiresAt){
   const el = document.getElementById('token-status');
   if(tier === 'full'){
-    const what = plan === 'db' ? 'Доступ к базе доноров активен' : 'Полный доступ активен';
+    const what = plan === 'db' ? 'Доступ к базе активен' : 'Полный доступ активен';
     const until = expiresAt
       ? ' до ' + new Date(expiresAt).toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric', timeZone:'Asia/Bishkek' })
       : '';
-    el.textContent = what + until + '.';
+    el.textContent = '✓ ' + what + until + '.';
     el.classList.add('unlocked');
   } else if(tier === 'single'){
-    el.textContent = 'Разовый доступ активен — раздел «' + (scope && scope.sheet || '') + '», до 5 подходящих совпадений.';
+    el.textContent = '✓ Разовый доступ активен — раздел «' + (scope && scope.sheet || '') + '», до 5 подходящих совпадений.';
     el.classList.add('unlocked');
   } else {
     el.textContent = 'Полная база — по коду доступа.';
@@ -425,6 +626,7 @@ async function applyToken(){
   runSearch(true);
   runArchiveFull(true);
   runCalendar();
+  goResults();
 }
 
 async function runArchiveSearch(){
@@ -447,15 +649,16 @@ async function runArchiveSearch(){
       <div class="fs-desc">${escapeHtml(r.excerpt||'')}</div>
       ${r.url ? `<a class="fs-link" href="${escapeAttr(r.url)}" target="_blank" rel="noopener">Подробнее →</a>` : ''}
     </div>`);
-  cards.push(`<div class="fs-card" style="background:var(--sect)">
+  cards.push(`<div class="fs-card" style="border-color:rgba(34,211,238,.35)">
       <div class="fs-top-row"><span class="fs-section">Полная база</span></div>
-      <div class="fs-title">Возможно, более подходящий вариант есть в базе</div>
-      <div class="fs-desc">В структурированной базе Connect4Pro — <span class="db-count">450+</span> доноров, инвесторов и программ с суммами, дедлайнами и фильтрами по разделам. Архив постов выше — лишь примеры, не гарантия точного совпадения.</div>
+      <div class="fs-title">Возможно, более подходящий вариант уже есть в базе</div>
+      <div class="fs-desc">В базе Fundan — <span class="db-count">450+</span> доноров, инвесторов и программ с суммами, дедлайнами и ИИ-поиском по смыслу. Архив постов — лишь примеры.</div>
       <a class="fs-link" href="#pricing">Открыть доступ →</a>
     </div>`);
   grid.innerHTML = items.length
     ? cards.join('')
     : `<div class="no-results">По этому запросу в архиве публикаций пока пусто.</div>` + cards[cards.length-1];
+  applyDbCount();
 }
 
 async function runSearch(reset){
@@ -503,7 +706,7 @@ async function runSearch(reset){
   }
 
   document.getElementById('fs-count').textContent = (data.tier !== 'teaser' && data.total)
-    ? `Совпадений: ${data.total}`
+    ? `// совпадений: ${data.total}`
     : '';
 
   document.getElementById('fs-more-row').style.display = data.hasMore ? 'block' : 'none';
@@ -527,15 +730,20 @@ function pluralOpp(n){
   return 'возможностей';
 }
 
+let DB_COUNT_TEXT = null;
+function applyDbCount(){
+  if(DB_COUNT_TEXT) document.querySelectorAll('.db-count').forEach(el => { el.textContent = DB_COUNT_TEXT; });
+}
+
 async function loadDbInfo(){
   try{
     const res = await fetch('/api/db-info');
     const info = await res.json();
     // "450+ грантов" склоняется правильно при любом числе, "451 грантов" — нет.
-    if(info.count >= 10) document.querySelectorAll('.db-count').forEach(el => { el.textContent = `${Math.floor(info.count / 10) * 10}+`; });
+    if(info.count >= 10){ DB_COUNT_TEXT = `${Math.floor(info.count / 10) * 10}+`; applyDbCount(); }
     if(info.updated_at){
       const d = new Date(info.updated_at).toLocaleDateString('ru-RU', { day:'numeric', month:'long', timeZone:'Asia/Bishkek' });
-      document.getElementById('db-fresh').textContent = `Обновлено ${d}${info.count ? ` · ${info.count} ${pluralOpp(info.count)}` : ''} · база регулярно пополняется`;
+      document.getElementById('db-fresh').textContent = `Обновлено ${d}${info.count ? ` · ${info.count} ${pluralOpp(info.count)}` : ''}`;
     }
   }catch(e){}
 }
@@ -573,7 +781,7 @@ async function runArchiveFull(reset){
   const grid = document.getElementById('af-grid');
   if(!AF_LOADED.length){
     grid.innerHTML = (data.tier === 'teaser' || data.tier === 'single' || data.archiveLocked) && data.total > 0
-      ? `<div class="no-results">🔒 ${data.total} совпадений в архиве публикаций — входит в тариф «Расширенный» (4500 сом).</div>`
+      ? `<div class="no-results">🔒 ${data.total} публикаций в архиве — входит в тариф «Расширенный» (4500 сом). <a class="fs-link" href="#pricing" style="display:inline">Тарифы →</a></div>`
       : '<div class="no-results">Ничего не найдено. Попробуйте другой запрос или снимите фильтры.</div>';
   } else {
     grid.innerHTML = AF_LOADED.map(r => {
@@ -588,7 +796,7 @@ async function runArchiveFull(reset){
   }
 
   document.getElementById('af-count').textContent = (data.tier !== 'teaser' && data.total)
-    ? `Совпадений: ${data.total}`
+    ? `// совпадений: ${data.total}`
     : '';
   document.getElementById('af-more-row').style.display = data.hasMore ? 'block' : 'none';
 }
@@ -602,9 +810,9 @@ function renderGrid(tier, total){
   const grid = document.getElementById('fs-grid');
   if(!ALL_LOADED.length){
     if(tier === 'teaser' && total > 0){
-      grid.innerHTML = `<div class="no-results">🔒 ${total} совпадений скрыто — активируйте код доступа выше, чтобы увидеть их.</div>`;
+      grid.innerHTML = `<div class="no-results">🔒 Ещё ${total} совпадений в базе — откройте доступ, чтобы увидеть все. <a class="fs-link" href="#pricing" style="display:inline">Тарифы →</a></div>`;
     } else if(tier === 'teaser'){
-      grid.innerHTML = '<div class="no-results">По этому запросу в базе ничего нет. Попробуйте другие слова — или загляните в примеры из архива выше.</div>';
+      grid.innerHTML = '<div class="no-results">По этому запросу в базе ничего нет. Попробуйте описать задачу другими словами.</div>';
     } else {
       grid.innerHTML = '<div class="no-results">Ничего не найдено. Попробуйте другой запрос или снимите фильтры.</div>';
     }
@@ -650,7 +858,7 @@ async function runCalendar(){
   const note = document.getElementById('cal-note');
   const box = document.getElementById('cal-months');
   const legend = document.getElementById('cal-legend');
-  btn.disabled = true; btn.textContent = 'Строим… это может занять до минуты';
+  btn.disabled = true; btn.textContent = 'ИИ строит календарь… до минуты';
   let data;
   try{
     const params = new URLSearchParams();
@@ -667,15 +875,15 @@ async function runCalendar(){
   if(data.locked){
     box.innerHTML = ''; legend.style.display = 'none';
     note.style.display = 'block';
-    note.innerHTML = `🔒 Календарь входит в тариф «Расширенный» (4500 сом). Только в ближайшие 3 месяца в базе ${data.deadlinesNext3Months} конкурсов с дедлайнами — календарь покажет, какие из них подходят именно вам. <a href="#pricing">Тарифы →</a>`;
+    note.innerHTML = `🔒 Календарь входит в тариф «Расширенный». Только в ближайшие 3 месяца в базе ${data.deadlinesNext3Months} конкурсов с дедлайнами — календарь покажет, какие из них подходят именно вам. <a href="#pricing">Тарифы →</a>`;
     return;
   }
   legend.style.display = 'flex';
   note.style.display = 'block';
   note.textContent = data.personal
-    ? 'Календарь собран под ваше описание. Сохраните его и проверяйте условия и сроки на сайте каждой программы перед подачей.'
+    ? 'Календарь собран под ваше описание. Проверяйте условия и сроки на сайте каждой программы перед подачей.'
     : 'Опишите себя выше — календарь покажет только подходящее вам и добавит план обращений. Сейчас показаны все конкурсы с датами из базы.';
-  box.innerHTML = data.months.map(m => `<div class="cal-month"><h3>${escapeHtml(m.label)}</h3>${
+  box.innerHTML = data.months.map(m => `<div class="cal-month"><h3>${escapeHtml(m.label)}<span class="mono" style="color:var(--muted);font-weight:400">${m.items.length || ''}</span></h3>${
     m.items.length ? m.items.map(calItemHtml).join('') : '<div class="cal-empty">Пока нет подходящих дат.</div>'
   }</div>`).join('');
 }
@@ -690,40 +898,26 @@ function escapeHtml(s){
 }
 function escapeAttr(s){ return escapeHtml(s); }
 
-document.getElementById('fs-q').addEventListener('keydown', e => { if(e.key === 'Enter') runAllSearches(true); });
+document.getElementById('fs-q').addEventListener('keydown', e => { if(e.key === 'Enter'){ runAllSearches(true); goResults(); } });
+document.getElementById('cta-q').addEventListener('keydown', e => { if(e.key === 'Enter') ctaSearch(); });
+document.querySelectorAll('#menu a').forEach(a => a.addEventListener('click', () => document.getElementById('menu').classList.remove('open')));
 
-async function loadAndInit() {
-  let evData = [], pubData = [];
-  try {
-    const [evRes, pubRes] = await Promise.all([
-      fetch('events.json?_=' + Date.now()),
-      fetch('publications.json?_=' + Date.now())
-    ]);
-    evData = await evRes.json();
-    pubData = await pubRes.json();
-  } catch(e) {}
+// Появление блоков при прокрутке.
+const io = 'IntersectionObserver' in window
+  ? new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' })
+  : null;
+document.querySelectorAll('.reveal').forEach(el => io ? io.observe(el) : el.classList.add('in'));
 
-  const evCards = evData.slice(0,3).map(ev=>({
-    status: ev.status,
-    date: ev.date, date_kg: ev.date_kg, date_en: ev.date_en,
-    title: {ru:ev.title_ru, kg:ev.title_kg, en:ev.title_en},
-    desc:  {ru:ev.desc_ru,  kg:ev.desc_kg,  en:ev.desc_en},
-    location: {ru:ev.location_ru, kg:ev.location_kg, en:ev.location_en},
-    register: ev.register
-  }));
+// Подсказки в поле поиска сменяются — сразу видно, что можно писать обычным языком.
+const HINTS = ['Например: НКО в Токмаке, дети с инвалидностью', 'Например: швейный цех, нужен льготный кредит', 'Например: IT-стартап, ищу инвестора в ЦА', 'Например: теплица в Чуйской области', 'Например: магистратура по IT за рубежом'];
+let hintIdx = 0;
+setInterval(() => {
+  const q = document.getElementById('fs-q');
+  if(document.activeElement === q || q.value) return;
+  hintIdx = (hintIdx + 1) % HINTS.length;
+  q.placeholder = HINTS[hintIdx];
+}, 3200);
 
-  const pubCards = pubData.slice(0,3).map(p=>({
-    title: {ru:p.title_ru, kg:p.title_kg, en:p.title_en},
-    desc:  {ru:p.desc_ru,  kg:p.desc_kg,  en:p.desc_en},
-    year: p.year,
-    langs: ['ru','kg','en'].filter(l=>p['lang_'+l]),
-    files: {ru:p.file_ru, kg:p.file_kg, en:p.file_en}
-  }));
-
-  initPage({eventsData: evCards, pubsData: pubCards});
-}
-
-loadAndInit();
 initToken();
 initCalendar();
 
