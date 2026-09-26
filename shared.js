@@ -1,4 +1,4 @@
-/* azatisrail.cc — shared JS */
+/* fundan.cc — shared JS */
 
 /* ═══════════════════════════════
    TRANSLATIONS

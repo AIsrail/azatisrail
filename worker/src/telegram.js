@@ -469,7 +469,7 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
     let text =
       `Оплата подтверждена! Код доступа: ${tokenRec.token}\n` +
       `Действует до ${until}.\n\n` +
-      `Введите его в поле «Код доступа» на azatisrail.cc.`;
+      `Введите его в поле «Код доступа» на fundan.cc.`;
     if (req.tariffId === "pro") {
       text += `\n\n${fund4proText(env)}\nПособия и шаблоны пришлю сюда отдельно.`;
     }

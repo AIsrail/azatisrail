@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 
-Sitemap: https://azatisrail.cc/sitemap.xml
+Sitemap: https://fundan.cc/sitemap.xml

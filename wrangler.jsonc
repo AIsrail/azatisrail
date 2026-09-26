@@ -8,7 +8,10 @@
   },
   "assets": {
     "directory": ".",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // Иначе статику (index.html и т.п.) Cloudflare отдаёт в обход Worker'а, и переадресация
+    // со старого azatisrail.cc на fundan.cc (LEGACY_HOSTS в index.js) не срабатывает.
+    "run_worker_first": true
   },
   "compatibility_flags": [
     "nodejs_compat"
@@ -26,10 +29,14 @@
   ],
   // Оставляем *.workers.dev как запасной адрес для проверки/отладки.
   "workers_dev": true,
-  // Route (не Custom Domain!) — домен уже проксируется через Cloudflare с внешним DNS
-  // (CNAME на GitHub Pages), Custom Domain пытается сам завести DNS-запись и конфликтует
-  // с существующей. Route просто перехватывает запросы на уровне прокси, DNS не трогает.
+  // fundan.cc — основной домен (куплен в Cloudflare Registrar, своих DNS-записей нет), поэтому
+  // Custom Domain: Cloudflare сам заводит DNS и сертификат.
+  // azatisrail.cc — старый домен: Route (не Custom Domain!), т.к. он проксируется с внешним DNS
+  // (CNAME на GitHub Pages), и Custom Domain конфликтовал бы с существующей записью. Worker
+  // переадресует его страницы на fundan.cc (см. LEGACY_HOSTS в worker/src/index.js).
   "routes": [
+    { "pattern": "fundan.cc", "custom_domain": true },
+    { "pattern": "www.fundan.cc", "custom_domain": true },
     { "pattern": "azatisrail.cc/*", "zone_name": "azatisrail.cc" }
   ]
 }

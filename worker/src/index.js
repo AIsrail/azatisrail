@@ -1,5 +1,5 @@
 /**
- * azatisrail.cc — единый Worker: отдаёт статику сайта (env.ASSETS) и API базы доноров (/api/*).
+ * fundan.cc (с 2026-09-26; раньше azatisrail.cc) — единый Worker: отдаёт статику сайта (env.ASSETS) и API базы доноров (/api/*).
  * Полный массив записей никогда не уходит клиенту целиком — только отфильтрованная страница.
  *
  * Три независимых поиска:
@@ -29,6 +29,9 @@ import {
 } from "./extract.js";
 import { semanticScores, reindex, dbInfo } from "./semantic.js";
 import { pickForBuyer } from "./pick.js";
+
+const PRIMARY_HOST = "fundan.cc";
+const LEGACY_HOSTS = new Set(["azatisrail.cc", "www.azatisrail.cc", "www.fundan.cc"]);
 
 const PAGE_SIZE_FULL = 15;
 const ARCHIVE_RESULTS_LIMIT = 3;
@@ -69,6 +72,13 @@ const SEM_WEAK = 0.2;
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    // Основной домен — fundan.cc. Страницы со старого azatisrail.cc и с www навсегда (301)
+    // переадресуются туда же с сохранением пути — старые ссылки из постов продолжают работать,
+    // а поисковики переносят позиции. /api/* на старых адресах НЕ переадресуем: вебхук
+    // Telegram и уже открытые у людей страницы шлют туда POST/fetch, а редирект их сломает.
+    if (LEGACY_HOSTS.has(url.hostname) && !url.pathname.startsWith("/api/")) {
+      return Response.redirect(`https://${PRIMARY_HOST}${url.pathname}${url.search}`, 301);
+    }
     if (url.pathname === "/funding" || url.pathname === "/funding.html") {
       return Response.redirect(url.origin + "/", 301);
     }

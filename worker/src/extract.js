@@ -17,6 +17,7 @@ export const HOUSE_DOMAINS = [
   "fund4.pro",
   "fund4pro",
   "azatisrail.cc",
+  "fundan.cc",
   "azatisrail.org",
 ];
 

@@ -1,4 +1,4 @@
-# Connect4Pro — база доноров (azatisrail.cc)
+# Connect4Pro — база доноров (fundan.cc)
 
 > Поисковая база из 450+ доноров, инвесторов, акселераторов и программ поддержки бизнеса и НКО в Кыргызстане и Центральной Азии. Создана Азатом Исраиловым (Connect4Pro) на основе 15-летнего практического опыта фандрайзинга.
 
@@ -15,11 +15,11 @@
 - Платно, доступ на 6 месяцев: «Базовый» 1500 сом (вся база) или «Расширенный» 4500 сом (+ архив публикаций, пособия и шаблоны, ИИ-помощник fund4pro для разработки проектного предложения). Разовый подбор 5 вариантов — 200 сом, только в Telegram. Оплата и выдача кода — через Telegram-бота @c4faq_bot, код активации вводится на сайте.
 
 ## Ссылки
-- Поиск по базе: https://azatisrail.cc/#search
-- Тарифы: https://azatisrail.cc/#pricing
+- Поиск по базе: https://fundan.cc/#search
+- Тарифы: https://fundan.cc/#pricing
 - Оплата и доступ: https://t.me/c4faq_bot
-- Мероприятия: https://azatisrail.cc/events.html
-- Публикации: https://azatisrail.cc/publications.html
+- Мероприятия: https://fundan.cc/events.html
+- Публикации: https://fundan.cc/publications.html
 - Автор и консультационные услуги: https://azatisrail.org
 - Оригинальный каталог (Tilda): https://connect4baza.tilda.ws/
 
