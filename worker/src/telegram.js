@@ -21,14 +21,15 @@ const PAY_REQUISITES = "MBank или О!Деньги: 0702 271 827";
 // Тарифы с 2026-09-25. id уходит в rec.tier токена (см. PLAN_DB / FUND4PRO_PROJECTS в index.js).
 // "single" — только в Telegram: 5 вариантов сразу в чат, кода для сайта покупатель не получает.
 const TARIFFS = [
-  { id: "db", label: "Базовый", price: "1500 сом", what: "поиск по всей базе доноров на сайте, 6 месяцев" },
+  { id: "db", label: "Базовый", price: "1500 сом", amount: 1500, what: "вся база для вашего профиля (НКО или бизнес и стартапы) + стажировки, 6 месяцев" },
   {
     id: "pro",
     label: "Расширенный",
     price: "4500 сом",
+    amount: 4500,
     what: "база + персональный календарь фандрайзинга + архив публикаций + пособия и шаблоны + ИИ-помощник fund4pro для разработки проектного предложения (2 проекта), 6 месяцев",
   },
-  { id: "single", label: "Разовый подбор (5 вариантов)", price: "200 сом", what: "5 вариантов под вашу задачу по всей базе — сразу сюда в чат" },
+  { id: "single", label: "Разовый подбор (5 вариантов)", price: "200 сом", amount: 200, what: "5 вариантов под вашу задачу по всей базе — сразу сюда в чат; 200 сом засчитываются, если в течение 7 дней перейдёте на Базовый или Расширенный" },
 ];
 
 // Старые диплинки (t.me/c4faq_bot?start=basic и т.п. — в постах, на старых страницах) ведут
@@ -36,6 +37,19 @@ const TARIFFS = [
 const LEGACY_TARIFF_IDS = { basic: "db", standard: "pro", premium: "pro" };
 
 const ACCESS_MONTHS = 6;
+
+// Профиль для тарифа 1500: какая часть базы открывается (categories записи). Стажировки
+// открыты всем, кто заплатил, независимо от профиля (см. performSearch в index.js).
+const AUDIENCES = [
+  { id: "ngo", label: "НКО / общественная организация" },
+  { id: "business", label: "Бизнес и стартапы" },
+];
+
+// Зачёт разового подбора: 200 сом, оплаченные с этого Telegram-аккаунта, засчитываются при
+// покупке 1500/4500 в течение 7 дней. Запись в KV живёт ровно 7 дней и снимается при зачёте.
+const SINGLE_CREDIT = 200;
+const CREDIT_TTL = 7 * 86400;
+const creditKey = (chatId) => `credit200:${chatId}`;
 
 function accessUntil() {
   const d = new Date();
@@ -197,16 +211,42 @@ function greeting() {
   return "Здравствуйте! 🙏 Спасибо за интерес к базе доноров, инвесторов и грантов Connect4Pro.\n\n";
 }
 
-function paymentText(tariffLabel, price, sheet) {
-  const sheetLine = sheet ? `Раздел: «${sheet}»\n` : "";
+function paymentText(tariffLabel, price, isSingle, extraLine) {
   return (
     greeting() +
-    `Тариф: «${tariffLabel}» — ${price}\n${sheetLine}\n` +
+    `Тариф: «${tariffLabel}» — ${price}\n${extraLine ? extraLine + "\n" : ""}\n` +
     `Оплатите переводом на ${PAY_REQUISITES}\n\n` +
-    (sheet
+    (isSingle
       ? `После оплаты пришлите сюда фото или скриншот чека — как только увижу, сразу пришлю подборку.`
       : `После оплаты пришлите сюда фото или скриншот чека — как только увижу, сразу пришлю код доступа.`)
   );
+}
+
+// Переход к оплате 1500/4500: здесь же проверяем зачёт 200 сом за разовый подбор.
+async function startPayment(env, chatId, tariff, audience) {
+  const credit = await env.TOKENS_KV.get(creditKey(chatId), "json");
+  const due = credit ? tariff.amount - SINGLE_CREDIT : tariff.amount;
+  const price = credit ? `${due} сом (зачтено ${SINGLE_CREDIT} сом за разовый подбор)` : tariff.price;
+  const aud = AUDIENCES.find((a) => a.id === audience);
+  await setPending(env, chatId, {
+    step: "await_receipt",
+    tariffId: tariff.id,
+    tariffLabel: tariff.label,
+    price,
+    audience: aud ? aud.id : null,
+    credit: credit ? credit.paid_at : null,
+  });
+  await tg(env, "sendMessage", {
+    chat_id: chatId,
+    text: paymentText(tariff.label, price, false, aud ? `Профиль: ${aud.label} (+ стажировки)` : ""),
+  });
+}
+
+async function handleAudienceChoice(env, chatId, audienceId, callbackQueryId) {
+  await tg(env, "answerCallbackQuery", { callback_query_id: callbackQueryId });
+  const tariff = TARIFFS.find((t) => t.id === "db");
+  if (!AUDIENCES.some((a) => a.id === audienceId)) return;
+  await startPayment(env, chatId, tariff, audienceId);
 }
 
 async function handleStart(env, chatId) {
@@ -228,8 +268,18 @@ async function startTariffFlow(env, chatId, tariff) {
     await tg(env, "sendMessage", { chat_id: chatId, text: greeting() + HINT_PROMPT });
     return;
   }
-  await setPending(env, chatId, { step: "await_receipt", tariffId: tariff.id, tariffLabel: tariff.label, price: tariff.price });
-  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(tariff.label, tariff.price) });
+  if (tariff.id === "db") {
+    await setPending(env, chatId, { step: "choose_audience", tariffId: tariff.id });
+    await tg(env, "sendMessage", {
+      chat_id: chatId,
+      text:
+        greeting() +
+        "Тариф «Базовый» открывает базу для вашего профиля (стажировки — в любом случае). Кто вы?",
+      reply_markup: { inline_keyboard: AUDIENCES.map((a) => [{ text: a.label, callback_data: `aud:${a.id}` }]) },
+    });
+    return;
+  }
+  await startPayment(env, chatId, tariff, null);
 }
 
 async function handleTariffChoice(env, chatId, tariffId, callbackQueryId) {
@@ -293,7 +343,7 @@ async function handleHintReply(env, message) {
     hintRaw: raw || null,
     hint,
   });
-  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(pending.tariffLabel, pending.price, pending.sheetLabel) });
+  await tg(env, "sendMessage", { chat_id: chatId, text: paymentText(pending.tariffLabel, pending.price, true) });
 }
 
 async function handleReceiptPhoto(env, message) {
@@ -325,6 +375,8 @@ async function handleReceiptPhoto(env, message) {
       sheetLabel: pending.sheetLabel || null,
       hint: pending.hint || null,
       hintRaw: pending.hintRaw || null,
+      audience: pending.audience || null,
+      credit: pending.credit || null,
       created_at: new Date().toISOString(),
     }),
     { expirationTtl: 86400 }
@@ -333,7 +385,12 @@ async function handleReceiptPhoto(env, message) {
   await tg(env, "forwardMessage", { chat_id: admin.chat_id, from_chat_id: chatId, message_id: message.message_id });
   await tg(env, "sendMessage", {
     chat_id: admin.chat_id,
-    text: `Новый чек от ${buyerLabel}\nТариф: ${pending.tariffLabel} — ${pending.price}${pending.sheetLabel ? "\nРаздел: " + pending.sheetLabel : ""}${pending.hintRaw ? "\nЗапрос: " + pending.hintRaw.slice(0, 300) : ""}\nЗаявка: ${requestId}`,
+    text:
+      `Новый чек от ${buyerLabel}\nТариф: ${pending.tariffLabel} — ${pending.price}` +
+      (pending.audience ? `\nПрофиль: ${(AUDIENCES.find((a) => a.id === pending.audience) || {}).label}` : "") +
+      (pending.credit ? `\nЗачтено ${SINGLE_CREDIT} сом от разового подбора ${formatDateRu(pending.credit)}` : "") +
+      (pending.hintRaw ? "\nЗапрос: " + pending.hintRaw.slice(0, 300) : "") +
+      `\nЗаявка: ${requestId}`,
     reply_markup: {
       inline_keyboard: [
         [
@@ -441,6 +498,10 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
       }
       await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text: "Оплата подтверждена! Подбираю варианты — это займёт до минуты." });
       const n = await deliverSinglePicks(env, req);
+      // 200 сом засчитываются при переходе на 1500/4500 в течение 7 дней (см. startPayment).
+      await env.TOKENS_KV.put(creditKey(req.buyer_chat_id), JSON.stringify({ paid_at: new Date().toISOString() }), {
+        expirationTtl: CREDIT_TTL,
+      });
       if (callbackMessage) {
         await tg(env, "editMessageText", {
           chat_id: callbackMessage.chat.id,
@@ -462,7 +523,9 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
     expires_at,
     buyer_chat_id: req.buyer_chat_id,
     buyer_label: req.buyer_label,
+    audience: req.audience || undefined,
   });
+  if (req.credit) await env.TOKENS_KV.delete(creditKey(req.buyer_chat_id));
 
   {
     const until = formatDateRu(expires_at);
@@ -470,6 +533,8 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
       `Оплата подтверждена! Код доступа: ${tokenRec.token}\n` +
       `Действует до ${until}.\n\n` +
       `Введите его в поле «Код доступа» на fundan.cc.`;
+    const aud = AUDIENCES.find((a) => a.id === req.audience);
+    if (aud) text += `\n\nОткрыто: база для профиля «${aud.label}» + раздел «Стажировки».`;
     if (req.tariffId === "pro") {
       text += `\n\n${fund4proText(env)}\nПособия и шаблоны пришлю сюда отдельно.`;
     }
@@ -542,6 +607,8 @@ export async function handleTelegramWebhook(request, env, ctx) {
       const data = cb.data || "";
       if (data.startsWith("tariff:")) {
         await handleTariffChoice(env, chatId, data.slice(7), cb.id);
+      } else if (data.startsWith("aud:")) {
+        await handleAudienceChoice(env, chatId, data.slice(4), cb.id);
       } else if (data.startsWith("sheet:")) {
         await handleSheetChoice(env, chatId, parseInt(data.slice(6), 10), cb.id);
       } else if (data.startsWith("confirm:")) {

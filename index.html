@@ -192,7 +192,18 @@ h2{font-size:clamp(30px,3.6vw,44px);font-weight:700;letter-spacing:-.035em;line-
 .cal-empty{font-size:12.5px;color:var(--muted)}
 
 /* pricing */
-.pricing-g{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:14px;margin-top:44px;align-items:stretch}
+.pricing-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:44px;align-items:stretch}
+.access-card{grid-column:1/-1;display:grid !important;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:8px 36px;align-items:center}
+.access-card .price-name{grid-column:1/-1}
+.access-card .access-steps{margin:6px 0 0;grid-row:span 2}
+.access-card .token-panel{align-self:end;margin:0}
+.access-card .access-help{grid-column:2;align-self:start}
+.courses-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:40px}
+.course{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:26px;display:flex;flex-direction:column;gap:10px;transition:border-color .25s,transform .25s}
+a.course:hover{border-color:rgba(34,211,238,.4);transform:translateY(-2px)}
+.course h3{font-size:19px;font-weight:600;letter-spacing:-.02em;margin-top:8px}
+.course p{font-size:14px;color:var(--mid);line-height:1.6;flex:1}
+.course-soon{border-style:dashed;background:transparent}
 .price-card{background:var(--surf);border:1px solid var(--line);border-radius:20px;padding:28px;display:flex;flex-direction:column;min-width:0}
 .price-card.best{border-color:rgba(34,211,238,.45);background:radial-gradient(120% 90% at 100% 0%,rgba(34,211,238,.14),transparent 55%),var(--surf);box-shadow:0 30px 80px -40px rgba(34,211,238,.45)}
 .price-name{font-size:15px;font-weight:600;color:var(--mid);display:flex;justify-content:space-between;align-items:center}
@@ -240,6 +251,10 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
   .steps{grid-template-columns:1fr}
   .bento{grid-template-columns:1fr 1fr}.tile.w3,.tile.w2,.tile.w4{grid-column:span 2}
   .pricing-g{grid-template-columns:minmax(0,1fr)}
+  .access-card{grid-template-columns:minmax(0,1fr)}
+  .access-card .access-help{grid-column:auto}
+  .access-card .access-steps{grid-row:auto}
+  .courses-g{grid-template-columns:minmax(0,1fr)}
   .fs-bar{width:100%}
   .fs-bar .fs-select{flex:1 1 200px}
   .cal-months{grid-template-columns:1fr 1fr}
@@ -278,6 +293,7 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
       <a href="#search">Поиск</a>
       <a href="#features">Возможности</a>
       <a href="#calendar-section">Календарь</a>
+      <a href="#courses">Курсы</a>
       <a href="#pricing">Тарифы</a>
       <a href="#faq">Вопросы</a>
       <a href="#access-code" class="btn btn-ghost">Войти по коду</a>
@@ -302,7 +318,7 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
         <button class="chip" onclick="quickFilter('q','грант для НКО')">Гранты для НКО</button>
         <button class="chip" onclick="quickFilter('q','льготный кредит для малого бизнеса')">Кредиты для бизнеса</button>
         <button class="chip" onclick="quickFilter('q','инвестиции в стартап')">Инвестиции в стартап</button>
-        <button class="chip" onclick="quickFilter('q','стипендия на обучение за рубежом')">Стипендии</button>
+        <button class="chip" onclick="quickFilter('q','стажировка, обучение, обмен опытом')">Стажировки</button>
         <button class="chip" onclick="quickFilter('q','климат и экология')">Климат</button>
       </div>
       <div class="stats">
@@ -329,7 +345,6 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
           <option value="">Любая категория</option>
           <option value="business">Бизнес / МСБ</option>
           <option value="ngo">НКО</option>
-          <option value="individual">Для физлиц</option>
         </select>
         <select class="fs-select" id="fs-sheet" onchange="runSearch(true)" aria-label="Тип">
           <option value="">Любой тип</option>
@@ -338,7 +353,7 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
           <option value="Инвесторы КР">Инвесторы — в Кыргызстане</option>
           <option value="Финансы МСБ КР">Финансирование для МСБ в КР</option>
           <option value="Акселераторы и др.">Акселераторы и центры поддержки</option>
-          <option value="Стажировки и стипендии">Стажировки и стипендии</option>
+          <option value="Стажировки и стипендии">Стажировки</option>
         </select>
       </div>
     </div>
@@ -351,6 +366,12 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
     <div class="fs-grid" id="fs-grid"></div>
     <div class="fs-more-row" id="fs-more-row" style="display:none">
       <button class="fs-more-btn" id="fs-more-btn" onclick="loadMore()">Показать ещё</button>
+    </div>
+    <div id="intern-block" style="display:none;margin-top:48px">
+      <div class="eyebrow">Для всех тарифов</div>
+      <h3 style="font-size:24px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px">Стажировки, обучение и обмен опытом</h3>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px">Только актуальные программы — с открытым или постоянным приёмом.</p>
+      <div class="fs-grid" id="intern-grid"></div>
     </div>
     <div class="fs-fresh-note" id="fs-fresh-note" style="display:none"></div>
 
@@ -455,18 +476,48 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
   </div>
 </section>
 
+<section class="sec" id="courses">
+  <div class="wrap">
+    <div class="reveal"><div class="eyebrow">Курсы</div><h2>Научитесь получать гранты</h2>
+    <p class="sec-lead">Практические курсы по фандрайзингу и проектам. Подборку полезных курсов — в том числе бесплатных, о которых мало кто знает, — пополняем.</p></div>
+    <div class="courses-g">
+      <a class="course reveal" href="https://connect4funds.tilda.ws/" target="_blank" rel="noopener">
+        <div class="drow"><span class="tag t-geo">CONNECT4PRO</span><span class="tag t-open">КУРС</span></div>
+        <h3>Курс по фандрайзингу</h3>
+        <p>От понимания доноров до выигрышной заявки: как искать финансирование, писать проект и строить отношения с донорами.</p>
+        <span class="fs-link">Перейти к курсу →</span>
+      </a>
+      <div class="course course-soon reveal">
+        <div class="drow"><span class="tag t-roll">СКОРО</span></div>
+        <h3>Подборка курсов</h3>
+        <p>Проверенные курсы по фандрайзингу, управлению проектами, ИИ и бизнесу — платные и бесплатные — появятся здесь.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="sec sec-alt" id="pricing">
   <div class="wrap">
-    <div class="reveal" style="text-align:center"><div class="eyebrow">Тарифы</div><h2>Доступ на 6 месяцев</h2>
-    <p class="sec-lead" style="margin-left:auto;margin-right:auto">Оплата — в Telegram-боте @c4faq_bot. Без регистрации: бот пришлёт код, вы вводите его здесь.</p></div>
+    <div class="reveal" style="text-align:center"><div class="eyebrow">Тарифы</div><h2>Выберите свой формат</h2>
+    <p class="sec-lead" style="margin-left:auto;margin-right:auto">Попробуйте за 200 сом или откройте базу на 6 месяцев. Оплата — в Telegram-боте @c4faq_bot, без регистрации: бот пришлёт код, вы вводите его здесь.</p></div>
     <div class="pricing-g">
+      <div class="price-card reveal">
+        <div class="price-name">Разовый подбор</div>
+        <div class="price-val">200 <small>сом</small></div>
+        <ul class="price-list">
+          <li>5 вариантов под вашу задачу — прямо в Telegram</li>
+          <li>ИИ объясняет, почему каждый подходит, и советует, с чего начать</li>
+          <li>200 сом засчитываются, если в течение 7 дней перейдёте на Базовый или Расширенный</li>
+        </ul>
+        <a class="price-btn" target="_blank" rel="noopener" href="https://t.me/c4faq_bot?start=single">Попробовать в Telegram</a>
+      </div>
       <div class="price-card reveal">
         <div class="price-name">Базовый</div>
         <div class="price-val">1500 <small>сом</small></div>
         <ul class="price-list">
-          <li>Поиск по всей базе с суммами и дедлайнами</li>
-          <li>Фильтры по типу и категории</li>
-          <li>ИИ-поиск по смыслу без ограничений</li>
+          <li>Вся база для вашего профиля: НКО или бизнес и стартапы</li>
+          <li>Раздел «Стажировки» — обучение и обмен опытом</li>
+          <li>ИИ-поиск по смыслу без ограничений, 6 месяцев</li>
         </ul>
         <a class="price-btn" target="_blank" rel="noopener" href="https://t.me/c4faq_bot?start=db">Оплатить в Telegram</a>
       </div>
@@ -474,10 +525,10 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
         <div class="price-name">Расширенный <span class="badge-best">ВЫГОДНО</span></div>
         <div class="price-val">4500 <small>сом</small></div>
         <ul class="price-list">
-          <li>Всё из Базового</li>
+          <li>Вся база — для НКО, бизнеса и стартапов</li>
           <li>Персональный календарь фандрайзинга</li>
           <li>ИИ-помощник fund4pro — 2 проектных предложения</li>
-          <li>Архив публикаций Connect4Pro</li>
+          <li>Архив публикаций и подборка курсов</li>
           <li>Пособия и шаблоны по грантам, ИИ и бизнесу</li>
         </ul>
         <a class="price-btn" target="_blank" rel="noopener" href="https://t.me/c4faq_bot?start=pro">Оплатить в Telegram</a>
@@ -497,7 +548,6 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
         <div class="access-help">Код не пришёл или что-то не работает — напишите <a href="https://t.me/c4faq_bot" target="_blank" rel="noopener">@c4faq_bot</a>.</div>
       </div>
     </div>
-    <p class="single">Нужно всего несколько вариантов? <a href="https://t.me/c4faq_bot?start=single" target="_blank" rel="noopener">Разовый подбор за 200 сом</a> — 5 вариантов под вашу задачу прямо в Telegram.</p>
   </div>
 </section>
 
@@ -509,7 +559,8 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
       <details><summary>Чем поиск Fundan отличается от обычного?</summary><p>Обычный поиск ищет совпадение слов. Fundan понимает смысл: на «теплица, своих денег мало» найдёт агрокредиты и лизинг, даже если в описании программы таких слов нет. Открытые конкурсы и местные программы показываются первыми.</p></details>
       <details><summary>Как получить доступ после оплаты?</summary><p>Оплата и выдача кода проходят в Telegram-боте @c4faq_bot. Вы выбираете тариф, оплачиваете и присылаете чек — бот пришлёт код. Введите его в блоке «Уже оплатили?» — без регистрации и пароля.</p></details>
       <details><summary>Как часто обновляется база?</summary><p>Регулярно: добавляем новые конкурсы и убираем закрытые. Дата последнего обновления указана в самом верху страницы.</p></details>
-      <details><summary>Что такое разовый подбор за 200 сом?</summary><p>Вы описываете задачу боту, и ИИ подбирает 5 самых подходящих вариантов по всей базе — с объяснением, почему каждый подходит, и практическим советом, с чего начать.</p></details>
+      <details><summary>Что такое разовый подбор за 200 сом?</summary><p>Вы описываете задачу боту, и ИИ подбирает 5 самых подходящих вариантов по всей базе — с объяснением, почему каждый подходит, и практическим советом, с чего начать. Если в течение 7 дней вы перейдёте на Базовый или Расширенный тариф, эти 200 сом засчитаются в оплату.</p></details>
+      <details><summary>Чем Базовый отличается от Расширенного?</summary><p>Базовый открывает базу для одного профиля — НКО или бизнес и стартапы — плюс раздел «Стажировки». Расширенный открывает всю базу и добавляет персональный календарь фандрайзинга, ИИ-помощник fund4pro, архив публикаций, курсы и пособия.</p></details>
     </div>
   </div>
 </section>
@@ -585,10 +636,14 @@ function initToken(){
   updateTokenStatus('teaser', null);
 }
 
-function updateTokenStatus(tier, scope, plan, expiresAt){
+const AUDIENCE_TEXT = { ngo: 'для НКО', business: 'для бизнеса и стартапов' };
+
+function updateTokenStatus(tier, scope, plan, expiresAt, audience){
   const el = document.getElementById('token-status');
   if(tier === 'full'){
-    const what = plan === 'db' ? 'Доступ к базе активен' : 'Полный доступ активен';
+    const what = plan === 'db'
+      ? 'Доступ к базе активен' + (AUDIENCE_TEXT[audience] ? ' — ' + AUDIENCE_TEXT[audience] + ' + стажировки' : '')
+      : 'Полный доступ активен';
     const until = expiresAt
       ? ' до ' + new Date(expiresAt).toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric', timeZone:'Asia/Bishkek' })
       : '';
@@ -684,7 +739,8 @@ async function runSearch(reset){
     return;
   }
 
-  updateTokenStatus(data.tier, data.scope, data.plan, data.expires_at);
+  updateTokenStatus(data.tier, data.scope, data.plan, data.expires_at, data.audience);
+  if(reset) renderInternships(data.internships || []);
   ALL_LOADED = reset ? data.results : ALL_LOADED.concat(data.results);
   renderGrid(data.tier, data.total, data.visibleTotal);
 
@@ -695,6 +751,9 @@ async function runSearch(reset){
   } else if(data.tier === 'teaser' && data.total > 0){
     note.style.display = 'block';
     note.innerHTML = `Бесплатный показ примеров исчерпан. В базе ${data.total} совпадений — <a href="#pricing">откройте доступ →</a>`;
+  } else if(data.lockedOther > 0){
+    note.style.display = 'block';
+    note.innerHTML = `Ещё ${data.lockedOther} подходящих программ — для другого профиля, в тарифе «Расширенный». <a href="#pricing">Тарифы →</a>`;
   } else if(data.tier === 'single' && data.queryFallback){
     note.style.display = 'block';
     note.innerHTML = `Точных совпадений по вашему запросу не нашлось — показаны самые близкие по смыслу варианты из раздела «${escapeHtml((data.scope&&data.scope.sheet)||'')}» (в первую очередь по Кыргызстану, затем регион и международные).`;
@@ -806,6 +865,28 @@ function loadMoreArchiveFull(){
   runArchiveFull(false);
 }
 
+function cardHtml(r){
+  const tags = (r.sectors||[]).map(s=>`<span class="fs-tag">${escapeHtml(s)}</span>`).join('');
+  const meta = [];
+  if(r.amount) meta.push(`<span>💰 ${escapeHtml(r.amount)}</span>`);
+  if(r.deadline) meta.push(`<span>📅 ${escapeHtml(r.deadline)}</span>`);
+  const link = r.url ? `<a class="fs-link" href="${escapeAttr(r.url)}" target="_blank" rel="noopener">Подробнее →</a>` : '';
+  return `<div class="fs-card">
+      <div class="fs-top-row"><span class="fs-section">${escapeHtml(r.section||'')}</span></div>
+      <div class="fs-title">${escapeHtml(r.name||'')}</div>
+      <div class="fs-meta-row">${meta.join('')}</div>
+      <div class="fs-desc">${escapeHtml((r.description||'').slice(0,220))}${(r.description||'').length>220?'…':''}</div>
+      <div class="fs-tags">${tags}</div>
+      ${link}
+    </div>`;
+}
+
+function renderInternships(items){
+  const block = document.getElementById('intern-block');
+  block.style.display = items.length ? 'block' : 'none';
+  document.getElementById('intern-grid').innerHTML = items.map(r => cardHtml({ ...r, section: 'Стажировки' })).join('');
+}
+
 function renderGrid(tier, total){
   const grid = document.getElementById('fs-grid');
   if(!ALL_LOADED.length){
@@ -818,21 +899,7 @@ function renderGrid(tier, total){
     }
     return;
   }
-  grid.innerHTML = ALL_LOADED.map(r => {
-    const tags = (r.sectors||[]).map(s=>`<span class="fs-tag">${escapeHtml(s)}</span>`).join('');
-    const meta = [];
-    if(r.amount) meta.push(`<span>💰 ${escapeHtml(r.amount)}</span>`);
-    if(r.deadline) meta.push(`<span>📅 ${escapeHtml(r.deadline)}</span>`);
-    const link = r.url ? `<a class="fs-link" href="${escapeAttr(r.url)}" target="_blank" rel="noopener">Подробнее →</a>` : '';
-    return `<div class="fs-card">
-      <div class="fs-top-row"><span class="fs-section">${escapeHtml(r.section||'')}</span></div>
-      <div class="fs-title">${escapeHtml(r.name||'')}</div>
-      <div class="fs-meta-row">${meta.join('')}</div>
-      <div class="fs-desc">${escapeHtml((r.description||'').slice(0,220))}${(r.description||'').length>220?'…':''}</div>
-      <div class="fs-tags">${tags}</div>
-      ${link}
-    </div>`;
-  }).join('');
+  grid.innerHTML = ALL_LOADED.map(cardHtml).join('');
 }
 
 // --- Календарь фандрайзинга (тариф «Расширенный») ---

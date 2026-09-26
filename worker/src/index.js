@@ -48,6 +48,13 @@ const SINGLE_TIER_CAP = 5; // разовый токен (200 сом, 1 разд�
 // Старые бессрочные коды ("basic"/"standard"/"premium", выданные вручную "full") сохраняют всё,
 // что им обещали при покупке: база + архив публикаций.
 const PLAN_DB = "db";
+// Тариф 1500 (с 2026-09-26) открывает базу для одного профиля, выбранного в боте: НКО или
+// бизнес/стартапы (поле categories записи). Стажировки — отдельный раздел, открытый всем, кто
+// заплатил (без прошедших дедлайнов), и показывается под основными результатами.
+// Коды 1500 без audience (выданы до этого) — вся база, как им и обещали.
+const AUDIENCE_LABEL = { ngo: "НКО", business: "бизнес и стартапы" };
+const INTERN_SHEET = "Стажировки и стипендии";
+const INTERN_LIMIT = 6;
 // Сколько проектов в fund4pro (ИИ-помощник по проектным предложениям) даёт код этого тарифа.
 // Старые "standard"/"premium" (4900/8900 сом) — не меньше нового "pro".
 const FUND4PRO_PROJECTS = { pro: 2, standard: 2, premium: 2 };
@@ -180,7 +187,7 @@ async function resolveAccess(env, token) {
   if (!rec) return { tier: "teaser", scope: null };
   if (rec.expires_at && new Date(rec.expires_at).getTime() < Date.now()) return { tier: "teaser", scope: null };
   const buyer = { buyer_chat_id: rec.buyer_chat_id, buyer_label: rec.buyer_label };
-  const meta = { plan: rec.tier || "full", expires_at: rec.expires_at || null };
+  const meta = { plan: rec.tier || "full", expires_at: rec.expires_at || null, audience: rec.audience || null };
   if (rec.scope && rec.scope.sheet) return { tier: "single", scope: rec.scope, ...buyer, ...meta };
   return { tier: "full", scope: null, ...buyer, ...meta };
 }
@@ -503,6 +510,26 @@ async function calendar(env, url, ctx) {
   return json({ locked: false, ...(await buildCalendar(env, ctx, profile)) });
 }
 
+// Раздел «Стажировки» для всех, кто заплатил: только актуальные (без прошедших дедлайнов),
+// при запросе — ближайшие по смыслу, без запроса — открытые первыми.
+async function pickInternships(env, ctx, all, q) {
+  const now = Date.now();
+  const pool = all.filter((r) => r.sheet === INTERN_SHEET && !isHiddenRecord(r) && recordDeadlineClass(r.deadline, now) !== "passed");
+  if (!pool.length) return [];
+  if (q) {
+    const sem = await semanticScores(env, ctx, pool, q, all.length);
+    if (sem && sem.size) {
+      const top = Math.max(...sem.values());
+      return pool
+        .filter((r) => sem.has(r.id) && sem.get(r.id) >= Math.max(SEM_MIN, top * 0.8))
+        .sort((a, b) => sem.get(b.id) - sem.get(a.id))
+        .slice(0, INTERN_LIMIT);
+    }
+  }
+  const rank = { open: 0, rolling: 1 };
+  return pool.sort((a, b) => rank[recordDeadlineClass(a.deadline, now)] - rank[recordDeadlineClass(b.deadline, now)]).slice(0, INTERN_LIMIT);
+}
+
 function recordHay(r) {
   return normalizeRu(
     [r.name, r.description, r.amount, (r.sectors || []).join(" "), (r.tags || []).join(" ")].filter(Boolean).join(" ")
@@ -522,13 +549,16 @@ async function search(env, url, request, ctx) {
 // Вынесено из search(): переиспользуется ботом (telegram.js) для мгновенной выдачи результатов
 // разового тарифа прямо в чат, без похода покупателя на сайт с кодом доступа.
 export async function performSearch(env, ctx, { q = "", category = "", token = "", page = 1, sheetParam = "", ip = "unknown" } = {}) {
-  const { tier, scope, buyer_chat_id, buyer_label, plan, expires_at } = await resolveAccess(env, token);
+  const { tier, scope, buyer_chat_id, buyer_label, plan, expires_at, audience } = await resolveAccess(env, token);
   // Разовый токен форсит свой раздел — запрос клиента по sheet игнорируется.
   const sheet = tier === "single" ? scope.sheet : sheetParam;
 
   const all = (await env.FUNDING_KV.get("records", "json")) || [];
   let base = all.filter((r) => !isHiddenRecord(r));
+  // Стажировки — отдельный раздел под основными результатами (см. internships ниже), если
+  // пользователь сам не выбрал его фильтром.
   if (sheet) base = base.filter((r) => r.sheet === sheet);
+  else if (tier !== "single") base = base.filter((r) => r.sheet !== INTERN_SHEET);
   if (category) base = base.filter((r) => Array.isArray(r.categories) && r.categories.includes(category));
 
   let candidates = base;
@@ -635,6 +665,16 @@ export async function performSearch(env, ctx, { q = "", category = "", token = "
     filtered = relevanceRanked || rerankByRegion(candidates, q);
   }
 
+  // Тариф 1500 с выбранным профилем: остальное не показываем, но честно считаем, сколько
+  // подходящего лежит в Расширенном — это подсказка, а не раздражитель.
+  let lockedOther = 0;
+  const audienceLimited = tier === "full" && plan === PLAN_DB && AUDIENCE_LABEL[audience];
+  if (audienceLimited) {
+    const allowed = (r) => r.sheet === INTERN_SHEET || (Array.isArray(r.categories) && r.categories.includes(audience));
+    lockedOther = filtered.filter((r) => !allowed(r)).length;
+    filtered = filtered.filter(allowed);
+  }
+
   const total = filtered.length;
 
   if (tier === "teaser") {
@@ -664,7 +704,11 @@ export async function performSearch(env, ctx, { q = "", category = "", token = "
   const start = (page - 1) * PAGE_SIZE_FULL;
   const end = Math.min(start + PAGE_SIZE_FULL, total);
   const results = start < total ? filtered.slice(start, end) : [];
-  return { total, visibleTotal: total, tier, scope, plan, expires_at, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results };
+  const internships = page === 1 && !sheet ? await pickInternships(env, ctx, all, q) : [];
+  return {
+    total, visibleTotal: total, tier, scope, plan, expires_at, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results,
+    audience: audience || null, lockedOther, internships,
+  };
 }
 
 function genToken() {
@@ -675,7 +719,7 @@ function genToken() {
     .toUpperCase();
 }
 
-export async function issueTokenRecord(env, { tier, scope, note, expires_at, buyer_chat_id, buyer_label } = {}) {
+export async function issueTokenRecord(env, { tier, scope, note, expires_at, buyer_chat_id, buyer_label, audience } = {}) {
   const token = genToken();
   const rec = {
     token,
@@ -689,6 +733,7 @@ export async function issueTokenRecord(env, { tier, scope, note, expires_at, buy
     // и ответить покупателю напрямую через бота, а не только показать ему подборку.
     buyer_chat_id: buyer_chat_id || undefined,
     buyer_label: buyer_label || undefined,
+    audience: AUDIENCE_LABEL[audience] ? audience : undefined,
   };
   await env.TOKENS_KV.put(token, JSON.stringify(rec));
   return rec;
