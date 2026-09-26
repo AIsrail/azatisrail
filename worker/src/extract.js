@@ -101,7 +101,7 @@ const CHECKED_RE = /(проверено|обновлено|checked)\s*:?\s*\d{1,
 const NUM_DATE_RE = /(\d{1,2})\.(\d{1,2})\.(\d{4})/g;
 const WORD_DATE_RE = /(\d{1,2})\s+([а-яё]+)\s+(\d{4})/gi;
 
-function deadlineDates(t) {
+export function deadlineDates(t) {
   const dates = [];
   // "28.04–30.05.2026": у первой даты год не указан — берём год из следующей.
   const t2 = t.replace(CHECKED_RE, "").replace(/(\d{1,2})\.(\d{1,2})\s*[–—-]\s*(\d{1,2})\.(\d{1,2})\.(\d{4})/g, "$1.$2.$5 – $3.$4.$5");

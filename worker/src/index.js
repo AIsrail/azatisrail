@@ -29,6 +29,7 @@ import {
 } from "./extract.js";
 import { semanticScores, reindex, dbInfo } from "./semantic.js";
 import { pickForBuyer } from "./pick.js";
+import { buildCalendar } from "./calendar.js";
 
 const PRIMARY_HOST = "fundan.cc";
 const LEGACY_HOSTS = new Set(["azatisrail.cc", "www.azatisrail.cc", "www.fundan.cc"]);
@@ -106,6 +107,9 @@ async function handleApi(request, env, url, ctx) {
     }
     if (url.pathname === "/api/db-info" && request.method === "GET") {
       return json(await dbInfo(env));
+    }
+    if (url.pathname === "/api/calendar" && request.method === "GET") {
+      return await calendar(env, url, ctx);
     }
     if (url.pathname === "/api/archive-search" && request.method === "GET") {
       return await archiveSearch(env, url);
@@ -481,6 +485,21 @@ async function archiveFullSearch(env, url) {
   const end = Math.min(start + PAGE_SIZE_FULL, total);
   const results = start < total ? filtered.slice(start, end) : [];
   return json({ total, tier, page, pageSize: PAGE_SIZE_FULL, hasMore: end < total, results });
+}
+
+// Календарь фандрайзинга (calendar.js) — только для «Расширенного» (4500) и старых полных кодов.
+// Остальным — счётчик ближайших дедлайнов как приманка, без самих записей.
+async function calendar(env, url, ctx) {
+  const token = url.searchParams.get("token") || "";
+  const profile = (url.searchParams.get("profile") || "").trim().slice(0, 2000);
+  const { tier, plan } = await resolveAccess(env, token);
+  const allowed = tier === "full" && plan !== PLAN_DB;
+  if (!allowed) {
+    const { months } = await buildCalendar(env, ctx, "");
+    const soon = months.slice(0, 3).reduce((n, m) => n + m.items.filter((i) => i.kind === "deadline").length, 0);
+    return json({ locked: true, tier, plan: plan || null, deadlinesNext3Months: soon });
+  }
+  return json({ locked: false, ...(await buildCalendar(env, ctx, profile)) });
 }
 
 function recordHay(r) {

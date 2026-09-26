@@ -70,6 +70,29 @@
 .fs-tag{font-size:10px;padding:3px 8px;border:1px solid var(--border);color:var(--muted);border-radius:1px}
 .fs-link{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sap);font-weight:500;width:fit-content}
 .fs-link:hover{color:var(--sap2)}
+.cal-form{display:flex;flex-direction:column;gap:10px;max-width:720px;margin:20px 0 24px}
+.cal-form textarea{min-height:84px;resize:vertical;line-height:1.6}
+.fs-go{background:var(--sap);color:#fff;border:none;border-radius:2px;padding:11px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s}
+.fs-go:hover{background:var(--sap2)}
+.fs-go:disabled{opacity:.6;cursor:default}
+.cal-form .fs-go{align-self:flex-start}
+.cal-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:var(--muted);margin-bottom:18px}
+.cal-months{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.cal-month{background:var(--white);padding:22px 22px 18px;min-width:0}
+.cal-month h3{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;margin-bottom:12px}
+.cal-item{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--sect);font-size:13px;line-height:1.5}
+.cal-item:first-of-type{border-top:none}
+.cal-badge{flex:0 0 auto;font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:2px;height:fit-content;white-space:nowrap}
+.cal-deadline{background:#FBE9E7;color:#A0331F}
+.cal-expected{background:#FFF6DC;color:#8A6A12}
+.cal-plan{background:#E8F4EC;color:#2B6B3F}
+.cal-name{color:var(--ink);word-break:break-word}
+.cal-name a{color:var(--ink);border-bottom:1px solid var(--border)}
+.cal-name a:hover{color:var(--sap)}
+.cal-meta{display:block;font-size:11.5px;color:var(--muted)}
+.cal-empty{font-size:12.5px;color:var(--muted)}
+@media(max-width:1100px){.cal-months{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.cal-months{grid-template-columns:1fr}}
 .fs-more-row{text-align:center;padding:34px 0}
 .fs-more-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;background:transparent;border:1.5px solid var(--border);color:var(--mid);padding:12px 26px;border-radius:2px;cursor:pointer;transition:all .2s}
 .fs-more-btn:hover{border-color:var(--sap);color:var(--sap)}
@@ -178,6 +201,24 @@
   <div class="fs-fresh-note" id="fs-fresh-note" style="display:none"></div>
 </section>
 
+<section class="sw sw-alt" id="calendar-section">
+  <div class="reveal"><div class="sec-tag">Тариф «Расширенный»</div><h2 class="sec-ttl">Календарь<br><em>фандрайзинга</em></h2></div>
+  <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:620px;margin-top:16px;line-height:1.8">
+    Что подавать и когда — на ближайшие месяцы, под вашу организацию или проект: реальные дедлайны конкурсов, ежегодные программы, которые скоро откроются, и план обращений к постоянно открытым донорам и инвесторам.
+  </p>
+  <div class="cal-form">
+    <textarea class="fs-input" id="cal-profile" placeholder="Кратко о себе: кто вы (НКО, ИП/компания, стартап, частное лицо), где работаете, чем занимаетесь, на что нужны деньги. Например: «Общественный фонд в Нарыне, работаем с молодёжью, нужны гранты на тренинги по профориентации»"></textarea>
+    <button class="fs-go" id="cal-btn" onclick="runCalendar()">Построить календарь</button>
+  </div>
+  <div id="cal-note" class="note-bar" style="display:none"></div>
+  <div class="cal-legend" id="cal-legend" style="display:none">
+    <span><span class="cal-badge cal-deadline">Дедлайн</span> реальная дата приёма</span>
+    <span><span class="cal-badge cal-expected">Ожидается</span> ежегодная программа, прошлый цикл был в этом месяце</span>
+    <span><span class="cal-badge cal-plan">План</span> открыты постоянно — рекомендуем обратиться в этом месяце</span>
+  </div>
+  <div class="cal-months" id="cal-months"></div>
+</section>
+
 <section class="sw" id="archive-full-section">
   <div class="reveal"><div class="sec-tag">По коду доступа</div><h2 class="sec-ttl">Архив<br><em>публикаций</em></h2></div>
   <p style="font-size:14px;color:var(--mid);font-weight:300;max-width:560px;margin-top:16px;line-height:1.8">
@@ -221,7 +262,7 @@
     <div class="price-card">
       <div class="price-name">Расширенный</div>
       <div class="price-val">4500 сом</div>
-      <div class="price-desc">Всё из Базового + архив публикаций Connect4Pro, пособия и шаблоны по грантам, ИИ и бизнесу + ИИ-помощник fund4pro для разработки проектного предложения (2 проекта). Доступ на 6 месяцев.</div>
+      <div class="price-desc">Всё из Базового + персональный календарь фандрайзинга, архив публикаций Connect4Pro, пособия и шаблоны по грантам, ИИ и бизнесу + ИИ-помощник fund4pro для разработки проектного предложения (2 проекта). Доступ на 6 месяцев.</div>
       <a class="price-btn" target="_blank" href="https://t.me/c4faq_bot?start=pro">Оплатить →</a>
     </div>
   </div>
@@ -361,6 +402,7 @@ async function applyToken(){
   await maybeFillHint();
   runSearch(true);
   runArchiveFull(true);
+  runCalendar();
 }
 
 async function runArchiveSearch(){
@@ -563,6 +605,64 @@ function renderGrid(tier, total){
   }).join('');
 }
 
+// --- Календарь фандрайзинга (тариф «Расширенный») ---
+const CAL_PROFILE_KEY = 'fundan-cal-profile';
+const REGION_SHORT = { kg: 'Кыргызстан', regional: 'регион', international: 'международная' };
+const KIND_LABEL = { deadline: 'Дедлайн', expected: 'Ожидается', plan: 'План' };
+
+function calItemHtml(i){
+  const date = i.date ? new Date(i.date + 'T00:00:00').toLocaleDateString('ru-RU', { day:'numeric', month:'short' }) : '';
+  const badge = `<span class="cal-badge cal-${i.kind}">${KIND_LABEL[i.kind]}${i.kind !== 'plan' && date ? ' ' + escapeHtml(date) : ''}</span>`;
+  const name = i.url
+    ? `<a href="${escapeAttr(i.url)}" target="_blank" rel="noopener">${escapeHtml(i.name)}</a>`
+    : escapeHtml(i.name);
+  const meta = [REGION_SHORT[i.region] || '', i.amount ? String(i.amount).replace(/\s+/g, ' ').slice(0, 80) : ''].filter(Boolean).join(' · ');
+  return `<div class="cal-item">${badge}<span class="cal-name">${name}<span class="cal-meta">${escapeHtml(meta)}</span></span></div>`;
+}
+
+async function runCalendar(){
+  const profileEl = document.getElementById('cal-profile');
+  const profile = profileEl.value.trim();
+  try{ localStorage.setItem(CAL_PROFILE_KEY, profile); }catch(e){}
+  const btn = document.getElementById('cal-btn');
+  const note = document.getElementById('cal-note');
+  const box = document.getElementById('cal-months');
+  const legend = document.getElementById('cal-legend');
+  btn.disabled = true; btn.textContent = 'Строим…';
+  let data;
+  try{
+    const params = new URLSearchParams();
+    if(TOKEN) params.set('token', TOKEN);
+    if(profile) params.set('profile', profile);
+    const res = await fetch('/api/calendar?' + params.toString());
+    data = await res.json();
+  }catch(e){
+    note.style.display = 'block'; note.textContent = 'Не удалось построить календарь, попробуйте ещё раз.';
+    return;
+  }finally{
+    btn.disabled = false; btn.textContent = 'Построить календарь';
+  }
+  if(data.locked){
+    box.innerHTML = ''; legend.style.display = 'none';
+    note.style.display = 'block';
+    note.innerHTML = `🔒 Календарь входит в тариф «Расширенный» (4500 сом). Только в ближайшие 3 месяца в базе ${data.deadlinesNext3Months} конкурсов с дедлайнами — календарь покажет, какие из них подходят именно вам. <a href="#pricing">Тарифы →</a>`;
+    return;
+  }
+  legend.style.display = 'flex';
+  note.style.display = 'block';
+  note.textContent = data.personal
+    ? 'Календарь собран под ваше описание. Сохраните его и проверяйте условия и сроки на сайте каждой программы перед подачей.'
+    : 'Опишите себя выше — календарь покажет только подходящее вам и добавит план обращений. Сейчас показаны все конкурсы с датами из базы.';
+  box.innerHTML = data.months.map(m => `<div class="cal-month"><h3>${escapeHtml(m.label)}</h3>${
+    m.items.length ? m.items.map(calItemHtml).join('') : '<div class="cal-empty">Пока нет подходящих дат.</div>'
+  }</div>`).join('');
+}
+
+function initCalendar(){
+  try{ const p = localStorage.getItem(CAL_PROFILE_KEY); if(p) document.getElementById('cal-profile').value = p; }catch(e){}
+  if(TOKEN) runCalendar();
+}
+
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -603,6 +703,7 @@ async function loadAndInit() {
 
 loadAndInit();
 initToken();
+initCalendar();
 
 const urlParams = new URLSearchParams(location.search);
 const urlQ = urlParams.get('q');
