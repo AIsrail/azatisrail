@@ -49,6 +49,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 ::selection{background:rgba(34,211,238,.3)}
 :focus-visible{outline:2px solid var(--c1);outline-offset:3px;border-radius:6px}
 .search input:focus-visible,.fs-input:focus-visible,.fs-select:focus-visible,.token-panel input:focus-visible{outline:none}
+.promo-bar{background:linear-gradient(90deg,rgba(34,211,238,.18),rgba(59,130,246,.18));border-bottom:1px solid var(--line2);text-align:center;font-size:13.5px;padding:9px 16px;color:var(--ink)}
+.promo-bar a{color:var(--c1);font-weight:600;margin-left:6px}
+.price-old{font-size:18px;color:var(--muted);text-decoration:line-through;margin-left:8px;font-weight:500}
 .skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--c1);color:#021018;padding:8px 14px;border-radius:8px;font-weight:600}
 .skip:focus{left:12px}
 
@@ -296,6 +299,7 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
 </head>
 <body>
 <a class="skip" href="#search">Перейти к поиску</a>
+<div class="promo-bar" id="promo-bar" hidden><span>🔥 Станьте тестировщиком Fundan: <b>разовый подбор за 90 сом</b> вместо 200 — до <span id="promo-end"></span>.</span> <a href="https://t.me/c4faq_bot?start=single" target="_blank" rel="noopener">Попробовать →</a></div>
 
 <header class="nav">
   <div class="wrap">
@@ -517,12 +521,12 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
     <p class="single" style="margin:18px 0 0">Оплачивая тариф, вы принимаете условия <a href="/offer">публичной оферты</a> и <a href="/privacy">политики конфиденциальности</a>.</p>
     <div class="pricing-g">
       <div class="price-card reveal">
-        <div class="price-name">Разовый подбор</div>
-        <div class="price-val">200 <small>сом</small></div>
+        <div class="price-name">Разовый подбор <span class="badge-best" id="promo-badge" hidden>АКЦИЯ</span></div>
+        <div class="price-val"><span id="single-price">200</span> <small>сом</small><span class="price-old" id="single-old" hidden>200</span></div>
         <ul class="price-list">
           <li>5 вариантов под вашу задачу — прямо в Telegram</li>
           <li>ИИ объясняет, почему каждый подходит, и советует, с чего начать</li>
-          <li>200 сом засчитываются, если в течение 7 дней перейдёте на Базовый или Расширенный</li>
+          <li>Оплата засчитывается, если в течение 7 дней перейдёте на Базовый или Расширенный</li>
         </ul>
         <a class="price-btn" target="_blank" rel="noopener" href="https://t.me/c4faq_bot?start=single">Попробовать в Telegram</a>
       </div>
@@ -818,6 +822,14 @@ async function loadDbInfo(){
     const info = await res.json();
     // "450+ грантов" склоняется правильно при любом числе, "451 грантов" — нет.
     if(info.count >= 10){ DB_COUNT_TEXT = `${Math.floor(info.count / 10) * 10}+`; applyDbCount(); }
+    if(info.promo && info.promo.active){
+      const end = new Date(info.promo.end).toLocaleString('ru-RU', { day:'numeric', month:'long', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Bishkek' });
+      document.getElementById('promo-end').textContent = end;
+      document.getElementById('promo-bar').hidden = false;
+      document.getElementById('single-price').textContent = info.promo.price;
+      document.getElementById('single-old').hidden = false;
+      document.getElementById('promo-badge').hidden = false;
+    }
     if(info.updated_at){
       const d = new Date(info.updated_at).toLocaleDateString('ru-RU', { day:'numeric', month:'long', timeZone:'Asia/Bishkek' });
       document.getElementById('db-fresh').textContent = `Обновлено ${d}${info.count ? ` · ${info.count} ${pluralOpp(info.count)}` : ''}`;

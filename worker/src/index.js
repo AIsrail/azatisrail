@@ -31,6 +31,7 @@ import {
 import { semanticScores, reindex, dbInfo } from "./semantic.js";
 import { pickForBuyer } from "./pick.js";
 import { buildCalendar } from "./calendar.js";
+import { runFeedbackCron, promoInfo } from "./feedback.js";
 
 const PRIMARY_HOST = "fundan.cc";
 const LEGACY_HOSTS = new Set(["azatisrail.cc", "www.azatisrail.cc", "www.fundan.cc"]);
@@ -79,6 +80,11 @@ const SEM_MIN_RESULTS = 5;
 const SEM_WEAK = 0.2;
 
 export default {
+  // Раз в 30 минут: отложенные вопросы обратной связи и вечерняя сводка владельцу (feedback.js).
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runFeedbackCron(env, event.scheduledTime));
+  },
+
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     // Основной домен — fundan.cc. Страницы со старого azatisrail.cc и с www навсегда (301)
@@ -126,7 +132,7 @@ async function handleApi(request, env, url, ctx) {
       return await search(env, url, request, ctx);
     }
     if (url.pathname === "/api/db-info" && request.method === "GET") {
-      return json(await dbInfo(env));
+      return json({ ...(await dbInfo(env)), promo: promoInfo() });
     }
     if (url.pathname === "/api/calendar" && request.method === "GET") {
       return await calendar(env, url, ctx);

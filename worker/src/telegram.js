@@ -14,6 +14,12 @@
 
 import { issueTokenRecord } from "./index.js";
 import { pickForBuyer, REGION_LABEL } from "./pick.js";
+import { singleAmount, promoLine, promoActive, PROMO, startFeedback, isFeedbackCallback, handleFeedbackCallback, handleFeedbackText } from "./feedback.js";
+
+// Цена разового подбора с учётом акции (см. PROMO в feedback.js).
+function singlePriceText() {
+  return promoActive() ? `${PROMO.price} сом (${PROMO.label}, обычно 200)` : "200 сом";
+}
 import { extractTitle, extractSourceUrl, extractExcerpt, extractQueryWords } from "./extract.js";
 
 const PAY_REQUISITES = "MBank или О!Деньги: 0702 271 827";
@@ -268,8 +274,9 @@ async function startPayment(env, chatId, tariff, audience) {
   } else {
     credit = await env.TOKENS_KV.get(creditKey(chatId), "json");
     if (credit) {
-      due = tariff.amount - SINGLE_CREDIT;
-      creditNote = `зачтено ${SINGLE_CREDIT} сом за разовый подбор`;
+      const paid = credit.amount || SINGLE_CREDIT;
+      due = tariff.amount - paid;
+      creditNote = `зачтено ${paid} сом за разовый подбор`;
     }
   }
   const price = creditNote ? `${due} сом (${creditNote})` : tariff.price;
@@ -299,7 +306,9 @@ async function handleAudienceChoice(env, chatId, audienceId, callbackQueryId) {
 
 async function handleStart(env, chatId) {
   await clearPending(env, chatId);
-  const list = TARIFFS.map((t) => `• ${t.label} — ${t.price}: ${t.what}`).join("\n");
+  const list =
+    (promoLine() ? promoLine() + "\n\n" : "") +
+    TARIFFS.map((t) => `• ${t.label} — ${t.id === "single" ? singlePriceText() : t.price}: ${t.what}`).join("\n");
   await tg(env, "sendMessage", {
     chat_id: chatId,
     text: greeting() + "Более 450 возможностей для бизнеса и НКО. Тарифы:\n\n" + list + "\n\nВыберите тариф:",
@@ -312,7 +321,7 @@ async function startTariffFlow(env, chatId, tariff) {
   if (tariff.id === "single") {
     // Подбор идёт по всей базе (см. pick.js) — раздел больше не спрашиваем: покупатель не
     // обязан знать, что акселератор и инвестфонд лежат в разных разделах.
-    await setPending(env, chatId, { step: "awaiting_hint", tariffId: tariff.id, tariffLabel: tariff.label, price: tariff.price });
+    await setPending(env, chatId, { step: "awaiting_hint", tariffId: tariff.id, tariffLabel: tariff.label, price: singlePriceText(), amount: singleAmount() });
     await tg(env, "sendMessage", { chat_id: chatId, text: greeting() + HINT_PROMPT });
     return;
   }
@@ -356,7 +365,7 @@ async function handleSheetChoice(env, chatId, sheetIndex, callbackQueryId) {
   if (!sheet) return;
   const pending = await getPending(env, chatId);
   const single = TARIFFS.find((t) => t.id === "single");
-  const price = (pending && pending.price) || single.price;
+  const price = (pending && pending.price) || singlePriceText();
   const tariffLabel = (pending && pending.tariffLabel) || single.label;
   await setPending(env, chatId, { step: "awaiting_hint", tariffId: "single", tariffLabel, price });
   await tg(env, "sendMessage", { chat_id: chatId, text: HINT_PROMPT });
@@ -431,6 +440,7 @@ async function handleReceiptPhoto(env, message) {
       audience: pending.audience || null,
       credit: pending.credit || null,
       due: pending.due || null,
+      amount: pending.amount || null,
       upgradeToken: pending.upgradeToken || null,
       created_at: new Date().toISOString(),
     }),
@@ -443,7 +453,7 @@ async function handleReceiptPhoto(env, message) {
     text:
       `Новый чек от ${buyerLabel}\nТариф: ${pending.tariffLabel} — ${pending.price}` +
       (pending.audience ? `\nПрофиль: ${(AUDIENCES.find((a) => a.id === pending.audience) || {}).label}` : "") +
-      (pending.credit ? `\nЗачтено ${SINGLE_CREDIT} сом от разового подбора ${formatDateRu(pending.credit)}` : "") +
+      (pending.credit ? `\nЗачтена оплата разового подбора от ${formatDateRu(pending.credit)}` : "") +
       (pending.upgradeToken ? `\nПовышение с «Базового» (код ${pending.upgradeToken}), к оплате ${pending.due} сом` : "") +
       (pending.hintRaw ? "\nЗапрос: " + pending.hintRaw.slice(0, 300) : "") +
       `\nЗаявка: ${requestId}`,
@@ -463,7 +473,7 @@ async function handleReceiptPhoto(env, message) {
 // Разовый тариф живёт только в Telegram: 5 вариантов сразу в чат (pick.js), кода для сайта нет.
 const SINGLE_SEEN_TTL = 7776000; // 90 дней: при повторной покупке показываем новое
 
-function formatSingleResult({ r, why }, i) {
+export function formatSingleResult({ r, why }, i) {
   const lines = [`${i + 1}. ${r.name.replace(/\s+/g, " ").trim()}`];
   lines.push(`🌍 ${REGION_LABEL[r.region] || "—"}`);
   if (why) lines.push(`✅ ${why}`);
@@ -503,6 +513,10 @@ async function deliverSinglePicks(env, req) {
     await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text: formatSingleResultsMessage(picks, tip), disable_web_page_preview: true });
     const next = Array.from(new Set([...seen, ...picks.map((p) => p.r.id)])).slice(-200);
     await env.TOKENS_KV.put(seenKey, JSON.stringify(next), { expirationTtl: SINGLE_SEEN_TTL });
+    // Обратная связь кнопками (feedback.js): заход 1 сразу, заходы 2–3 — по расписанию.
+    await startFeedback(env, { chatId: req.buyer_chat_id, buyerLabel: req.buyer_label, picks, q, amount: req.amount }).catch((e) =>
+      console.error("feedback start failed", e)
+    );
   }
   if (weak || picks.length < 5) {
     await notifyAdminFallback(env, { token: "—", sheet: "вся база", q, buyerLabel: req.buyer_label, buyerChatId: req.buyer_chat_id });
@@ -555,7 +569,7 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
       await tg(env, "sendMessage", { chat_id: req.buyer_chat_id, text: "Оплата подтверждена! Подбираю варианты — это займёт до минуты." });
       const n = await deliverSinglePicks(env, req);
       // 200 сом засчитываются при переходе на 1500/4500 в течение 7 дней (см. startPayment).
-      await env.TOKENS_KV.put(creditKey(req.buyer_chat_id), JSON.stringify({ paid_at: new Date().toISOString() }), {
+      await env.TOKENS_KV.put(creditKey(req.buyer_chat_id), JSON.stringify({ paid_at: new Date().toISOString(), amount: req.amount || SINGLE_CREDIT }), {
         expirationTtl: CREDIT_TTL,
       });
       if (callbackMessage) {
@@ -683,7 +697,9 @@ export async function handleTelegramWebhook(request, env, ctx) {
       if (!cb.message || !cb.message.chat || cb.message.chat.type !== "private") return new Response("ok");
       const chatId = cb.message.chat.id;
       const data = cb.data || "";
-      if (data.startsWith("tariff:")) {
+      if (isFeedbackCallback(data)) {
+        await handleFeedbackCallback(env, cb, setPending, clearPending);
+      } else if (data.startsWith("tariff:")) {
         await handleTariffChoice(env, chatId, data.slice(7), cb.id);
       } else if (data.startsWith("aud:")) {
         await handleAudienceChoice(env, chatId, data.slice(4), cb.id);
@@ -720,7 +736,9 @@ export async function handleTelegramWebhook(request, env, ctx) {
     const pending = await getPending(env, chatId);
     const hasContent = Boolean(text || (message.photo && message.photo.length));
 
-    if (pending && pending.step === "admin_reply" && hasContent) {
+    if (pending && pending.step === "fb_text" && text && !text.startsWith("/")) {
+      await handleFeedbackText(env, message, pending, clearPending);
+    } else if (pending && pending.step === "admin_reply" && hasContent) {
       await handleAdminReplyMessage(env, message, pending);
     } else if (pending && pending.step === "awaiting_hint" && text && !text.startsWith("/")) {
       await handleHintReply(env, message);
