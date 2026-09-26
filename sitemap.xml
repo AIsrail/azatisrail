@@ -3,4 +3,6 @@
 <url><loc>https://fundan.cc/</loc><priority>1.0</priority></url>
 <url><loc>https://fundan.cc/events</loc><priority>0.5</priority></url>
 <url><loc>https://fundan.cc/publications</loc><priority>0.5</priority></url>
+<url><loc>https://fundan.cc/offer</loc><priority>0.2</priority></url>
+<url><loc>https://fundan.cc/privacy</loc><priority>0.2</priority></url>
 </urlset>

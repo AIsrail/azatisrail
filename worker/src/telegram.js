@@ -215,7 +215,8 @@ function paymentText(tariffLabel, price, isSingle, extraLine) {
   return (
     greeting() +
     `Тариф: «${tariffLabel}» — ${price}\n${extraLine ? extraLine + "\n" : ""}\n` +
-    `Оплатите переводом на ${PAY_REQUISITES}\n\n` +
+    `Оплатите переводом на ${PAY_REQUISITES}\n` +
+    `Оплачивая, вы принимаете условия оферты: fundan.cc/offer\n\n` +
     (isSingle
       ? `После оплаты пришлите сюда фото или скриншот чека — как только увижу, сразу пришлю подборку.`
       : `После оплаты пришлите сюда фото или скриншот чека — как только увижу, сразу пришлю код доступа.`)
