@@ -97,9 +97,21 @@ export default {
     if (url.pathname.startsWith("/api/")) {
       return handleApi(request, env, url, ctx);
     }
-    return env.ASSETS.fetch(request);
+    return withSecurityHeaders(await env.ASSETS.fetch(request));
   },
 };
+
+// Базовые заголовки безопасности для страниц и статики: запрет встраивания сайта в чужие
+// фреймы (кликджекинг), угадывания типов файлов, лишней утечки адреса при переходах.
+function withSecurityHeaders(res) {
+  const h = new Headers(res.headers);
+  h.set("X-Content-Type-Options", "nosniff");
+  h.set("X-Frame-Options", "SAMEORIGIN");
+  h.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  h.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  h.set("Strict-Transport-Security", "max-age=31536000");
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+}
 
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
@@ -120,7 +132,7 @@ async function handleApi(request, env, url, ctx) {
       return await calendar(env, url, ctx);
     }
     if (url.pathname === "/api/archive-search" && request.method === "GET") {
-      return await archiveSearch(env, url);
+      return await archiveSearch(env, url, ctx);
     }
     if (url.pathname === "/api/archive-full" && request.method === "GET") {
       return await archiveFullSearch(env, url);
@@ -384,12 +396,19 @@ function diversifyTop(ranked, cap) {
   return picked;
 }
 
-async function fetchRecentFbPosts(env) {
+async function fetchRecentFbPosts(env, ctx) {
   if (!env.FB_PAGE_ID || !env.FB_PAGE_ACCESS_TOKEN) return [];
 
-  const cached = await env.FUNDING_KV.get("fb_recent_cache", "json");
-  if (cached) return cached;
+  const cached = await env.FUNDING_KV.get("fb_recent_cache_v2", "json");
+  if (cached && Array.isArray(cached.posts)) {
+    const stale = Date.now() - (cached.at || 0) > FB_CACHE_TTL * 1000;
+    if (stale && ctx) ctx.waitUntil(refreshFbPosts(env).catch(() => {}));
+    return cached.posts;
+  }
+  return refreshFbPosts(env);
+}
 
+async function refreshFbPosts(env) {
   try {
     // limit=50 — чем шире окно, тем меньше риск потерять тематический пост, если с момента
     // публикации вышло много постов на другие темы.
@@ -415,20 +434,20 @@ async function fetchRecentFbPosts(env) {
         };
       })
       .filter(Boolean);
-    // Короткий кэш — не дёргаем Graph API на каждый отдельный поиск.
-    await env.FUNDING_KV.put("fb_recent_cache", JSON.stringify(posts), { expirationTtl: FB_CACHE_TTL });
+    // Храним сутки, свежесть проверяем по полю at (см. fetchRecentFbPosts).
+    await env.FUNDING_KV.put("fb_recent_cache_v2", JSON.stringify({ at: Date.now(), posts }), { expirationTtl: 86400 });
     return posts;
   } catch (e) {
     return [];
   }
 }
 
-async function archiveSearch(env, url) {
+async function archiveSearch(env, url, ctx) {
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
 
   const [stored, recent] = await Promise.all([
     env.FUNDING_KV.get("archive", "json"),
-    fetchRecentFbPosts(env),
+    fetchRecentFbPosts(env, ctx),
   ]);
 
   const seenTitles = new Set();
@@ -676,6 +695,12 @@ export async function performSearch(env, ctx, { q = "", category = "", token = "
   }
 
   const total = filtered.length;
+
+  if (tier === "teaser" && !q) {
+    // Пустой запрос (например, загрузка страницы) не тратит бесплатные записи посетителя —
+    // только число; примеры он увидит на своём первом настоящем запросе.
+    return { total, visibleTotal: 0, tier, scope: null, page: 1, pageSize: PAGE_SIZE_FULL, hasMore: false, results: [] };
+  }
 
   if (tier === "teaser") {
     // Без токена — до DB_TEASER_CAP настоящих записей суммарно на IP (не за день — это

@@ -13,7 +13,12 @@
 <meta property="og:description" content="ИИ-поиск по 460 грантам, инвесторам и программам поддержки Кыргызстана и Центральной Азии.">
 <meta property="og:url" content="https://fundan.cc/">
 <meta property="og:locale" content="ru_RU">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://fundan.cc/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Fundan — ИИ-поиск грантов и инвесторов для Кыргызстана и Центральной Азии">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://fundan.cc/og.png">
 <meta name="twitter:title" content="Fundan — финансирование для вашего проекта за секунды">
 <meta name="twitter:description" content="ИИ-поиск по 460 грантам, инвесторам и программам поддержки Кыргызстана и Центральной Азии.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M10 9h12M10 16h8M10 9v14' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -21,7 +26,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Что входит в базу?","acceptedAnswer":{"@type":"Answer","text":"Более 450 записей: международные и местные доноры и гранты для бизнеса и НКО, инвесторы (международные, региональные и в Кыргызстане), акселераторы, программы финансирования МСБ в КР, стажировки и стипендии."}},{"@type":"Question","name":"Сколько стоит доступ?","acceptedAnswer":{"@type":"Answer","text":"Доступ на 6 месяцев — 1500 сом (Базовый) или 4500 сом (Расширенный: + календарь фандрайзинга, архив публикаций, пособия и шаблоны, ИИ-помощник fund4pro). Разовый подбор 5 вариантов — 200 сом в Telegram-боте @c4faq_bot."}},{"@type":"Question","name":"Как получить доступ после оплаты?","acceptedAnswer":{"@type":"Answer","text":"Оплата и выдача кода проходят в Telegram-боте @c4faq_bot: выбираете тариф, оплачиваете и присылаете чек, бот присылает код доступа. Код вводится на сайте, без регистрации и пароля."}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* Главная fundan.cc — тёмная тема «глубокий океан» (2026-09-26). Остальные страницы сайта
    живут на shared.css/shared.js и эту тему не используют. */
@@ -42,6 +47,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
 ::selection{background:rgba(34,211,238,.3)}
+:focus-visible{outline:2px solid var(--c1);outline-offset:3px;border-radius:6px}
+.search input:focus-visible,.fs-input:focus-visible,.fs-select:focus-visible,.token-panel input:focus-visible{outline:none}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--c1);color:#021018;padding:8px 14px;border-radius:8px;font-weight:600}
+.skip:focus{left:12px}
 
 /* nav */
 .nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(3,11,22,.72);border-bottom:1px solid var(--line)}
@@ -93,7 +102,7 @@ h1{font-size:clamp(32px,8.6vw,68px);overflow-wrap:break-word;font-weight:800;let
 .term{font-size:12.5px;color:var(--c1);margin-bottom:14px;display:flex;gap:10px;align-items:center}
 .term i{display:inline-block;width:7px;height:14px;background:var(--c1);animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-.dcard{background:rgba(10,27,48,.78);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;backdrop-filter:blur(10px);opacity:0;transform:translateY(16px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards;position:relative;overflow:hidden}
+.dcard{background:rgba(10,27,48,.78);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transform:translateY(16px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards;position:relative;overflow:hidden}
 .dcard::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(34,211,238,.07) 50%,transparent 70%);transform:translateX(-100%);animation:scan 3.6s ease-in-out infinite;animation-delay:inherit}
 @keyframes scan{60%,100%{transform:translateX(100%)}}
 @keyframes rise{to{opacity:1;transform:none}}
@@ -277,11 +286,16 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
   .search .btn-main{padding:12px 16px}
   .stats{gap:24px}
   .cta-box{padding:40px 20px}
+  /* на телефонах — без плавающих размытых пятен и стеклянного размытия: плавнее прокрутка */
+  .glow{animation:none;filter:blur(40px);opacity:.8}
+  .dcard{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--surf)}
+  .dcard::after{display:none}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.dcard,.reveal{opacity:1;transform:none}.match b{width:var(--w)}}
 </style>
 </head>
 <body>
+<a class="skip" href="#search">Перейти к поиску</a>
 
 <header class="nav">
   <div class="wrap">
@@ -298,7 +312,7 @@ footer{border-top:1px solid var(--line);padding:40px 0 48px;font-size:13.5px;col
       <a href="#faq">Вопросы</a>
       <a href="#access-code" class="btn btn-ghost">Войти по коду</a>
     </nav>
-    <button class="burger" aria-label="Меню" onclick="document.getElementById('menu').classList.toggle('open')"><span></span><span></span><span></span></button>
+    <button class="burger" id="burger" aria-label="Меню" aria-controls="menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded', document.getElementById('menu').classList.toggle('open'))"><span></span><span></span><span></span></button>
   </div>
 </header>
 
@@ -967,7 +981,7 @@ function escapeAttr(s){ return escapeHtml(s); }
 
 document.getElementById('fs-q').addEventListener('keydown', e => { if(e.key === 'Enter'){ runAllSearches(true); goResults(); } });
 document.getElementById('cta-q').addEventListener('keydown', e => { if(e.key === 'Enter') ctaSearch(); });
-document.querySelectorAll('#menu a').forEach(a => a.addEventListener('click', () => document.getElementById('menu').classList.remove('open')));
+document.querySelectorAll('#menu a').forEach(a => a.addEventListener('click', () => { document.getElementById('menu').classList.remove('open'); document.getElementById('burger').setAttribute('aria-expanded', 'false'); }));
 
 // Появление блоков при прокрутке.
 const io = 'IntersectionObserver' in window
@@ -994,6 +1008,13 @@ if(urlQ){ document.getElementById('fs-q').value = urlQ; }
 
 (async () => {
   if(!urlQ) await maybeFillHint();
+  if(!document.getElementById('fs-q').value.trim() && !TOKEN){
+    // Новый посетитель без запроса: сразу показываем примеры из архива, а базу — после
+    // первого настоящего запроса (бесплатные записи не тратятся на пустую загрузку).
+    document.getElementById('fs-grid').innerHTML = '<div class="no-results">Опишите задачу в строке поиска вверху — результаты появятся здесь. Например: «эко-НКО на Иссык-Куле» или «швейный цех, нужен кредит».</div>';
+    runArchiveSearch();
+    return;
+  }
   runAllSearches(true);
 })();
 </script>
