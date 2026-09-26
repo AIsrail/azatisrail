@@ -223,19 +223,66 @@ function paymentText(tariffLabel, price, isSingle, extraLine) {
   );
 }
 
-// Переход к оплате 1500/4500: здесь же проверяем зачёт 200 сом за разовый подбор.
+// Последняя действующая покупка 1500/4500 этого Telegram-аккаунта — для зачёта при переходе на
+// более высокий тариф и чтобы не продать человеку то, что у него уже есть.
+const buyerKey = (chatId) => `buyer:${chatId}`;
+
+async function activePurchase(env, chatId) {
+  const b = await env.TOKENS_KV.get(buyerKey(chatId), "json");
+  if (!b || !b.token || !b.expires_at || new Date(b.expires_at).getTime() < Date.now()) return null;
+  const rec = await env.TOKENS_KV.get(b.token, "json");
+  return rec ? b : null; // код отозван — покупки как будто нет
+}
+
+// Код — отдельным сообщением моноширинным шрифтом: в Telegram нажатие на него копирует код.
+async function sendCode(env, chatId, token) {
+  await tg(env, "sendMessage", { chat_id: chatId, text: `<code>${token}</code>`, parse_mode: "HTML" });
+}
+
+// Переход к оплате 1500/4500. Зачёт: Базовый → Расширенный (оплаченная сумма Базового, код тот же),
+// либо 200 сом за разовый подбор в течение 7 дней. Уже действующий тариф повторно не продаём.
 async function startPayment(env, chatId, tariff, audience) {
-  const credit = await env.TOKENS_KV.get(creditKey(chatId), "json");
-  const due = credit ? tariff.amount - SINGLE_CREDIT : tariff.amount;
-  const price = credit ? `${due} сом (зачтено ${SINGLE_CREDIT} сом за разовый подбор)` : tariff.price;
+  const active = await activePurchase(env, chatId);
+  if (active && (active.tier === "pro" || (active.tier === "db" && tariff.id === "db"))) {
+    await clearPending(env, chatId);
+    const label = active.tier === "pro" ? "Расширенный" : "Базовый";
+    await tg(env, "sendMessage", {
+      chat_id: chatId,
+      text:
+        `У вас уже действует тариф «${label}» до ${formatDateRu(active.expires_at)}. Ваш код — в следующем сообщении, ` +
+        `нажмите на него, чтобы скопировать.` +
+        (active.tier === "db" ? `\n\nЧтобы открыть всю базу и календарь, выберите «Расширенный» — оплаченные ${active.paid} сом зачтём.` : ""),
+    });
+    await sendCode(env, chatId, active.token);
+    return;
+  }
+
+  let due = tariff.amount;
+  let creditNote = "";
+  let upgradeToken = null;
+  let credit = null;
+  if (active && active.tier === "db" && tariff.id === "pro") {
+    due = Math.max(0, tariff.amount - (active.paid || 0));
+    creditNote = `зачтено ${active.paid} сом за тариф «Базовый»; код останется прежним, срок — 6 месяцев с момента оплаты`;
+    upgradeToken = active.token;
+  } else {
+    credit = await env.TOKENS_KV.get(creditKey(chatId), "json");
+    if (credit) {
+      due = tariff.amount - SINGLE_CREDIT;
+      creditNote = `зачтено ${SINGLE_CREDIT} сом за разовый подбор`;
+    }
+  }
+  const price = creditNote ? `${due} сом (${creditNote})` : tariff.price;
   const aud = AUDIENCES.find((a) => a.id === audience);
   await setPending(env, chatId, {
     step: "await_receipt",
     tariffId: tariff.id,
     tariffLabel: tariff.label,
     price,
+    due,
     audience: aud ? aud.id : null,
     credit: credit ? credit.paid_at : null,
+    upgradeToken,
   });
   await tg(env, "sendMessage", {
     chat_id: chatId,
@@ -267,6 +314,11 @@ async function startTariffFlow(env, chatId, tariff) {
     // обязан знать, что акселератор и инвестфонд лежат в разных разделах.
     await setPending(env, chatId, { step: "awaiting_hint", tariffId: tariff.id, tariffLabel: tariff.label, price: tariff.price });
     await tg(env, "sendMessage", { chat_id: chatId, text: greeting() + HINT_PROMPT });
+    return;
+  }
+  // Уже есть действующий тариф — startPayment сам скажет об этом и пришлёт код, без выбора профиля.
+  if (tariff.id === "db" && (await activePurchase(env, chatId))) {
+    await startPayment(env, chatId, tariff, null);
     return;
   }
   if (tariff.id === "db") {
@@ -378,6 +430,8 @@ async function handleReceiptPhoto(env, message) {
       hintRaw: pending.hintRaw || null,
       audience: pending.audience || null,
       credit: pending.credit || null,
+      due: pending.due || null,
+      upgradeToken: pending.upgradeToken || null,
       created_at: new Date().toISOString(),
     }),
     { expirationTtl: 86400 }
@@ -390,6 +444,7 @@ async function handleReceiptPhoto(env, message) {
       `Новый чек от ${buyerLabel}\nТариф: ${pending.tariffLabel} — ${pending.price}` +
       (pending.audience ? `\nПрофиль: ${(AUDIENCES.find((a) => a.id === pending.audience) || {}).label}` : "") +
       (pending.credit ? `\nЗачтено ${SINGLE_CREDIT} сом от разового подбора ${formatDateRu(pending.credit)}` : "") +
+      (pending.upgradeToken ? `\nПовышение с «Базового» (код ${pending.upgradeToken}), к оплате ${pending.due} сом` : "") +
       (pending.hintRaw ? "\nЗапрос: " + pending.hintRaw.slice(0, 300) : "") +
       `\nЗаявка: ${requestId}`,
     reply_markup: {
@@ -517,25 +572,47 @@ async function handleDecision(env, action, requestId, adminUserId, callbackQuery
   }
 
   const expires_at = accessUntil();
-  const tokenRec = await issueTokenRecord(env, {
-    tier: req.tariffId,
-    scope: null,
-    note: `TG ${req.buyer_label}, тариф ${req.tariffLabel} (${req.price}), оплата подтверждена в боте`,
-    expires_at,
-    buyer_chat_id: req.buyer_chat_id,
-    buyer_label: req.buyer_label,
-    audience: req.audience || undefined,
-  });
+  let tokenRec = null;
+  if (req.upgradeToken) {
+    // Переход Базовый → Расширенный: тот же код, новый тариф и новый срок.
+    const old = await env.TOKENS_KV.get(req.upgradeToken, "json");
+    if (old) {
+      tokenRec = { ...old, tier: req.tariffId, expires_at, note: `${old.note || ""}; повышен до «${req.tariffLabel}» (${req.price})` };
+      delete tokenRec.audience;
+      await env.TOKENS_KV.put(tokenRec.token, JSON.stringify(tokenRec));
+    }
+  }
+  if (!tokenRec) {
+    tokenRec = await issueTokenRecord(env, {
+      tier: req.tariffId,
+      scope: null,
+      note: `TG ${req.buyer_label}, тариф ${req.tariffLabel} (${req.price}), оплата подтверждена в боте`,
+      expires_at,
+      buyer_chat_id: req.buyer_chat_id,
+      buyer_label: req.buyer_label,
+      audience: req.audience || undefined,
+    });
+  }
   if (req.credit) await env.TOKENS_KV.delete(creditKey(req.buyer_chat_id));
+  const tariff = TARIFFS.find((t) => t.id === req.tariffId);
+  await env.TOKENS_KV.put(
+    buyerKey(req.buyer_chat_id),
+    JSON.stringify({ token: tokenRec.token, tier: req.tariffId, paid: tariff ? tariff.amount : req.due, expires_at, paid_at: new Date().toISOString() }),
+    { expirationTtl: 200 * 86400 }
+  );
 
   {
     const until = formatDateRu(expires_at);
-    let text =
-      `Оплата подтверждена! Код доступа: ${tokenRec.token}\n` +
-      `Действует до ${until}.\n\n` +
-      `Введите его в поле «Код доступа» на fundan.cc.`;
+    await tg(env, "sendMessage", {
+      chat_id: req.buyer_chat_id,
+      text:
+        (req.upgradeToken ? `Оплата подтверждена! Тариф повышен до «${req.tariffLabel}» — код остался прежним.\n` : `Оплата подтверждена! ✅\n`) +
+        `Ваш код доступа — в следующем сообщении: нажмите на него, чтобы скопировать. Действует до ${until}.`,
+    });
+    await sendCode(env, req.buyer_chat_id, tokenRec.token);
+    let text = `Как активировать: откройте fundan.cc → блок «Уже оплатили?» → вставьте код → «Активировать». Браузер его запомнит.`;
     const aud = AUDIENCES.find((a) => a.id === req.audience);
-    if (aud) text += `\n\nОткрыто: база для профиля «${aud.label}» + раздел «Стажировки».`;
+    if (aud && req.tariffId === "db") text += `\n\nОткрыто: база для профиля «${aud.label}» + раздел «Стажировки».`;
     if (req.tariffId === "pro") {
       text += `\n\n${fund4proText(env)}\nПособия и шаблоны пришлю сюда отдельно.`;
     }
